@@ -1,3 +1,11 @@
+import "source-map-support/register";
+
+import {
+  APIGatewayProxyEvent,
+  APIGatewayProxyResult,
+  APIGatewayProxyHandler
+} from "aws-lambda";
+
 import * as AWS from "aws-sdk";
 import * as AWSXRay from "aws-xray-sdk";
 import { parseUserId } from "../utils/parseUserId";
@@ -14,7 +22,9 @@ const entryIdIndex = process.env.ENTRIES_INDEX;
 const bucketName = process.env.FILES_S3_BUCKET;
 const urlExpiration = process.env.SIGNED_URL_EXPIRATION;
 
-export const handler = async event => {
+export const handler: APIGatewayProxyHandler = async (
+  event: APIGatewayProxyEvent
+): Promise<APIGatewayProxyResult> => {
   const todoId = event.pathParameters.todoId;
   const authorization = event.headers.Authorization;
   const split = authorization.split(" ");
@@ -40,7 +50,7 @@ export const handler = async event => {
 };
 
 //Create a presigned URL for file uploads
-function getUploadUrl(entryId) {
+function getUploadUrl(entryId: string) {
   return s3.getSignedUrl("putObject", {
     Bucket: bucketName,
     Key: entryId,
@@ -48,7 +58,7 @@ function getUploadUrl(entryId) {
   });
 }
 
-async function createAttachment(userId, entryId) {
+async function createAttachment(userId: string, entryId: string) {
   const result = await docClient
     .query({
       TableName: entriesTable,
