@@ -17,7 +17,7 @@
     "jsonwebtoken": "^8.5.1",
     "source-map-support": "^0.5.16",
     "uuid": "^7.0.1",
-    "winston-aws-cloudwatch": "^3.0.0"
+    "winston": "^3.2.1"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.46",

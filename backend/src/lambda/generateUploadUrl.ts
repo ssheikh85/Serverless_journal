@@ -6,8 +6,8 @@ import {
   APIGatewayProxyHandler
 } from "aws-lambda";
 
-import * as AWS from "aws-sdk";
-import * as AWSXRay from "aws-xray-sdk";
+const AWS = require("aws-sdk");
+const AWSXRay = require("aws-xray-sdk");
 import { parseUserId } from "../utils/parseUserId";
 
 const XAWS = AWSXRay.captureAWS(AWS);
