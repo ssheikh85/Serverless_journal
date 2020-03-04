@@ -1,23 +1,30 @@
 const AWS = require("aws-sdk");
 const AWSXRay = require("aws-xray-sdk");
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
-
 const XAWS = AWSXRay.captureAWS(AWS);
 
-import { EntryItem } from "../models/entryItem";
-import { EntryUpdate } from "../models/entryUpdate";
+import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import * as uuid from "uuid";
+import { Resolver, Query, Arg, Mutation } from "type-graphql";
+import { EntryItem } from "../schemas/EntryItem";
+import { EntryUpdate } from "../schemas/EntryUpdate";
+import { EntryInput } from "../requests/EntryInput";
 import { createLogger } from "../utils/logger";
 
 const logger = createLogger("entryAccess");
 
-export class EntriesAccess {
+//Creates a resolver for type EntryItem
+@Resolver()
+export class EntriesResolver {
   constructor(
     private readonly docClient: DocumentClient = createDynamoDBClient(),
     private readonly entriesTable = process.env.ENTRIES_TABLE,
     private readonly entryIdIndex = process.env.ENTRIES_INDEX
   ) {}
 
-  async getentries(userId: string): Promise<EntryItem[]> {
+  @Query({
+    description: "Get all the entries for a single user"
+  })
+  async getentries(@Arg("userID") userId: string): Promise<EntryItem[]> {
     const result = await this.docClient
       .query({
         TableName: this.entriesTable,
@@ -34,21 +41,51 @@ export class EntriesAccess {
     return items as EntryItem[];
   }
 
-  async createEntry(entry: EntryItem): Promise<EntryItem> {
+  @Mutation({
+    description: "Add a single Entry"
+  })
+  async createEntry(
+    @Arg("entry") userIdIn: string,
+    entry: EntryInput
+  ): Promise<EntryItem> {
+    const newEntryId = uuid.v4();
     await this.docClient
       .put({
         TableName: this.entriesTable,
-        Item: entry
+        Item: {
+          userId: userIdIn,
+          entryId: newEntryId,
+          createdAt: new Date().toISOString(),
+          content: entry.content
+        }
       })
       .promise();
 
-    return entry;
+    const result = await this.docClient
+      .query({
+        TableName: this.entriesTable,
+        IndexName: this.entryIdIndex,
+        KeyConditionExpression: "userId = :userId",
+        FilterExpression: "entryId = :entryId",
+        ExpressionAttributeValues: {
+          ":userId": userIdIn,
+          ":entryId": newEntryId
+        },
+        ScanIndexForward: false
+      })
+      .promise();
+
+    return result.Items[0] as EntryItem;
   }
 
+  @Mutation({
+    description: "Update a single Entry"
+  })
   async updateEntry(
+    @Arg("entryIn")
     userId: string,
     entryId: string,
-    entryUpdate: EntryUpdate
+    entryIn: EntryInput
   ): Promise<EntryUpdate> {
     const result = await this.docClient
       .query({
@@ -72,7 +109,7 @@ export class EntriesAccess {
         TableName: this.entriesTable,
         UpdateExpression: " SET #cnt = :cnt",
         ExpressionAttributeValues: {
-          ":cnt": entryUpdate.content
+          ":cnt": entryIn.content
         },
         ExpressionAttributeNames: {
           "#cnt": "content"
@@ -82,7 +119,13 @@ export class EntriesAccess {
     return;
   }
 
-  async deleteentry(userId: string, entryId: string): Promise<EntryItem> {
+  @Mutation({
+    description: "Delete a single Entry"
+  })
+  async deleteEntry(
+    @Arg("entryId") userId: string,
+    entryId: string
+  ): Promise<EntryItem> {
     const result = await this.docClient
       .query({
         TableName: this.entriesTable,
