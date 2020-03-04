@@ -1,6 +1,9 @@
 {
   "compilerOptions": {
-    "lib": ["es2017"],
+    "lib": ["es2017", "esnext.asynciterable"],
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "module": "commonjs",
     "moduleResolution": "node",
     "noUnusedLocals": true,
     "noUnusedParameters": true,
