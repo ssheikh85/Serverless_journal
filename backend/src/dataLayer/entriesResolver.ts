@@ -4,10 +4,12 @@ const XAWS = AWSXRay.captureAWS(AWS);
 
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import * as uuid from "uuid";
-import { Resolver, Query, Arg, Mutation } from "type-graphql";
+import { Resolver, Query, Arg, Mutation, Ctx } from "type-graphql";
 import { EntryItem } from "../schemas/EntryItem";
 import { EntryUpdate } from "../schemas/EntryUpdate";
 import { EntryInput } from "../requests/EntryInput";
+import { JwtPayload } from "../auth/JwtPayload";
+import { UploadUrl } from "../schemas/UploadUrl";
 import { createLogger } from "../utils/logger";
 
 const logger = createLogger("entryAccess");
@@ -17,21 +19,27 @@ const logger = createLogger("entryAccess");
 export class EntriesResolver {
   constructor(
     private readonly docClient: DocumentClient = createDynamoDBClient(),
+    private readonly s3 = new XAWS.S3({ signatureVersion: "v4" }),
     private readonly entriesTable = process.env.ENTRIES_TABLE,
-    private readonly entryIdIndex = process.env.ENTRIES_INDEX
+    private readonly entryIdIndex = process.env.ENTRIES_INDEX,
+    private readonly bucketName = process.env.FILES_S3_BUCKET,
+    private readonly urlExpiration = process.env.SIGNED_URL_EXPIRATION
   ) {}
 
+  //Gets entries for a specific authorized user
   @Query({
     description: "Get all the entries for a single user"
   })
-  async getentries(@Arg("userID") userId: string): Promise<EntryItem[]> {
+  async getEntries(
+    @Arg("userId") @Ctx() user: JwtPayload
+  ): Promise<EntryItem[]> {
     const result = await this.docClient
       .query({
         TableName: this.entriesTable,
         IndexName: this.entryIdIndex,
         KeyConditionExpression: "userId = :userId",
         ExpressionAttributeValues: {
-          ":userId": userId
+          ":userId": user.sub
         },
         ScanIndexForward: false
       })
@@ -41,22 +49,24 @@ export class EntriesResolver {
     return items as EntryItem[];
   }
 
+  //Adds an entry for a specific authorized user
   @Mutation({
     description: "Add a single Entry"
   })
   async createEntry(
-    @Arg("entry") userIdIn: string,
-    entry: EntryInput
+    @Arg("entryInput") @Ctx() user: JwtPayload,
+    entryInput: EntryInput
   ): Promise<EntryItem> {
+    const userId = user.sub;
     const newEntryId = uuid.v4();
     await this.docClient
       .put({
         TableName: this.entriesTable,
         Item: {
-          userId: userIdIn,
+          userId: userId,
           entryId: newEntryId,
           createdAt: new Date().toISOString(),
-          content: entry.content
+          content: entryInput.content
         }
       })
       .promise();
@@ -68,7 +78,7 @@ export class EntriesResolver {
         KeyConditionExpression: "userId = :userId",
         FilterExpression: "entryId = :entryId",
         ExpressionAttributeValues: {
-          ":userId": userIdIn,
+          ":userId": user.sub,
           ":entryId": newEntryId
         },
         ScanIndexForward: false
@@ -78,15 +88,19 @@ export class EntriesResolver {
     return result.Items[0] as EntryItem;
   }
 
+  //Updates an entry for a specific authorized user
   @Mutation({
     description: "Update a single Entry"
   })
   async updateEntry(
-    @Arg("entryIn")
-    userId: string,
-    entryId: string,
-    entryIn: EntryInput
+    @Arg("entryInput")
+    @Arg("entryId")
+    @Ctx()
+    user: JwtPayload,
+    entryId: String,
+    entryInput: EntryInput
   ): Promise<EntryUpdate> {
+    const userId = user.sub;
     const result = await this.docClient
       .query({
         TableName: this.entriesTable,
@@ -109,7 +123,7 @@ export class EntriesResolver {
         TableName: this.entriesTable,
         UpdateExpression: " SET #cnt = :cnt",
         ExpressionAttributeValues: {
-          ":cnt": entryIn.content
+          ":cnt": entryInput.content
         },
         ExpressionAttributeNames: {
           "#cnt": "content"
@@ -119,13 +133,17 @@ export class EntriesResolver {
     return;
   }
 
+  //Deletes an entry for a specific authorized user
   @Mutation({
     description: "Delete a single Entry"
   })
   async deleteEntry(
-    @Arg("entryId") userId: string,
+    @Arg("entryId")
+    @Ctx()
+    user: JwtPayload,
     entryId: string
   ): Promise<EntryItem> {
+    const userId = user.sub;
     const result = await this.docClient
       .query({
         TableName: this.entriesTable,
@@ -150,6 +168,58 @@ export class EntriesResolver {
           ":entryId": entryId
         },
         TableName: this.entriesTable
+      })
+      .promise();
+    return;
+  }
+  //Creates a pre-assigned url for file uploads
+  @Mutation({ description: "Creates a pre-assigned url for file uploads" })
+  async generateUploadUrl(
+    @Arg("entryId")
+    entryId: string
+  ): Promise<UploadUrl> {
+    //Create a presigned URL for file uploads
+    return this.s3.getSignedUrl("putObject", {
+      Bucket: this.bucketName,
+      Key: entryId,
+      Expires: this.urlExpiration
+    });
+  }
+
+  //Creates an attachment URL for uploaded files
+  @Mutation({ description: "Creates a pre-assigned url for file uploads" })
+  async createAttachment(
+    @Arg("entryId")
+    @Ctx()
+    user: JwtPayload,
+    entryId: string
+  ): Promise<EntryItem> {
+    const userId = user.sub;
+    const result = await this.docClient
+      .query({
+        TableName: this.entriesTable,
+        IndexName: this.entryIdIndex,
+        KeyConditionExpression: "userId = :userId",
+        FilterExpression: "entryId = :entryId",
+        ExpressionAttributeValues: {
+          ":userId": userId,
+          ":entryId": entryId
+        },
+        ScanIndexForward: false
+      })
+      .promise();
+
+    await this.docClient
+      .update({
+        Key: { userId, createdAt: result.Items[0].createdAt },
+        TableName: this.entriesTable,
+        UpdateExpression: " SET #attach = :attach",
+        ExpressionAttributeValues: {
+          ":attach": `https://${this.bucketName}.s3.amazonaws.com/${entryId}`
+        },
+        ExpressionAttributeNames: {
+          "#attach": "attachmentUrl"
+        }
       })
       .promise();
     return;
