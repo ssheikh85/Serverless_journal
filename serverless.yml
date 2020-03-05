@@ -20,43 +20,34 @@ provider:
     ENTRIES_INDEX: entryIdIndex
     FILES_S3_BUCKET: serverless-journal-files-47hyt-${self:provider.stage}
     SIGNED_URL_EXPIRATION: 300
+    JWKS_ENDPOINT: https://dev-rf-u05fp.auth0.com/.well-known/jwks.json
 
 functions:
-  Auth:
-    handler: src/lambda/auth/auth0Authorizer.handler
-    iamRoleStatements:
-      - Effect: "Allow" # xray permissions (required)
-        Action:
-          - "xray:PutTraceSegments"
-          - "xray:PutTelemetryRecords"
-        Resource:
-          - "*"
-
   Entries:
-    handler: src/businessLogic/entriesSchema.entriesHandler
+    handler: backend/src/lambda/entriesServer.entriesHandler
     events:
       - http:
           method: get
-          path: todos
+          path: entries
           cors: true
-          authorizer: Auth
       - http:
           method: post
-          path: todos
+          path: entries
           cors: true
-          authorizer: Auth
           reqValidatorName: RequestBodyValidator
       - http:
           method: put
-          path: todos/{todoId}
+          path: entries/{entryId}
           cors: true
-          authorizer: Auth
           reqValidatorName: RequestBodyValidator
       - http:
           method: delete
-          path: todos/{todoId}
+          path: entries/{entryId}
           cors: true
-          authorizer: Auth
+      - http:
+          method: put
+          path: entries/{entryId}/attachment
+          cors: true
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -81,30 +72,6 @@ functions:
         Resource:
           - "*"
 
-  GenerateUploadUrl:
-    handler: src/lambda/http/generateUploadUrl.handler
-    events:
-      - http:
-          method: put
-          path: todos/{todoId}/attachment
-          cors: true
-          authorizer: Auth
-    iamRoleStatements:
-      - Effect: Allow
-        Action:
-          - dynamodb:Query
-        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}
-      - Effect: Allow
-        Action:
-          - dynamodb:UpdateItem
-        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}
-      - Effect: "Allow"
-        Action:
-          - "xray:PutTraceSegments"
-          - "xray:PutTelemetryRecords"
-        Resource:
-          - "*"
-
 resources:
   Resources:
     # TODO: Add any necessary AWS resources
@@ -119,7 +86,7 @@ resources:
         RestApiId:
           Ref: ApiGatewayRestApi
 
-    TodosTable:
+    EntriesTable:
       Type: AWS::DynamoDB::Table
       Properties:
         AttributeDefinitions:
