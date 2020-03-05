@@ -27,13 +27,6 @@
     "@types/jsonwebtoken": "^8.3.8",
     "@types/node": "^13.7.7",
     "aws-sdk": "^2.631.0",
-    "path": "^0.12.7",
-    "serverless-iam-roles-per-function": "^2.0.2",
-    "serverless-plugin-tracing": "^2.0.0",
-    "serverless-reqvalidator-plugin": "^1.0.3",
-    "serverless-webpack": "^5.3.1",
-    "ts-loader": "^6.2.1",
-    "typescript": "^3.8.3",
-    "webpack": "^4.42.0"
+    "typescript": "^3.8.3"
   }
 }
