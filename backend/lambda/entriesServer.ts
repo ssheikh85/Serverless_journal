@@ -1,7 +1,7 @@
 import "reflect-metadata";
 import "source-map-support/register";
 
-import { buildTypeDefsAndResolvers } from "type-graphql";
+import { buildSchemaSync } from "type-graphql";
 import { EntriesResolver } from "../dataLayer/entriesResolver";
 import { Jwt } from "../auth/Jwt";
 import { JwtPayload } from "../auth/JwtPayload";
@@ -13,34 +13,29 @@ const { ApolloServer } = require("apollo-server-lambda");
 const logger = createLogger("auth");
 const jwksUrl = process.env.JWKS_ENDPOINT;
 
-async function bootstrap() {
-  const { typeDefs, resolvers } = await buildTypeDefsAndResolvers({
+const server = new ApolloServer({
+  schema: buildSchemaSync({
     resolvers: [EntriesResolver]
-  });
+  }),
+  context: async ({ req }) => {
+    logger.info("Authorizing a user", req.header.authorization);
+    try {
+      const user = await getUserFromToken(req.header.authorization);
+      logger.info("User was authorized", user);
 
-  const server = new ApolloServer({
-    typeDefs,
-    resolvers,
-    context: async ({ req }) => {
-      logger.info("Authorizing a user", req.header.authorization);
-      try {
-        const user = await getUserFromToken(req.header.authorization);
-        logger.info("User was authorized", user);
-
-        return user;
-      } catch (e) {
-        logger.error("User not authorized", { error: e.message });
-      }
+      return user;
+    } catch (e) {
+      logger.error("User not authorized", { error: e.message });
     }
-  });
+  }
+});
 
-  exports.entriesHandler = server.createHandler({
-    cors: {
-      origin: "*",
-      credentials: true
-    }
-  });
-}
+exports.entriesHandler = server.createHandler({
+  cors: {
+    origin: "*",
+    credentials: true
+  }
+});
 
 async function getUserFromToken(authHeader: string): Promise<String> {
   const token = getToken(authHeader);
@@ -69,5 +64,3 @@ function getToken(authHeader: string): string {
 
   return token;
 }
-
-bootstrap();

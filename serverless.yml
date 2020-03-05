@@ -24,7 +24,7 @@ provider:
 
 functions:
   Entries:
-    handler: backend/src/lambda/entriesServer.entriesHandler
+    handler: backend/lambda/entriesServer.entriesHandler
     events:
       - http:
           method: get
@@ -37,16 +37,16 @@ functions:
           reqValidatorName: RequestBodyValidator
       - http:
           method: put
-          path: entries/{entryId}
+          path: entries
           cors: true
           reqValidatorName: RequestBodyValidator
       - http:
           method: delete
-          path: entries/{entryId}
+          path: entries
           cors: true
       - http:
           method: put
-          path: entries/{entryId}/attachment
+          path: entries
           cors: true
     iamRoleStatements:
       - Effect: Allow
@@ -104,7 +104,7 @@ resources:
         BillingMode: PAY_PER_REQUEST
         TableName: ${self:provider.environment.ENTRIES_TABLE}
         LocalSecondaryIndexes:
-          - IndexName: ${self:provider.environment.ENTRY_INDEX}
+          - IndexName: ${self:provider.environment.ENTRIES_INDEX}
             KeySchema:
               - AttributeName: userId
                 KeyType: HASH
