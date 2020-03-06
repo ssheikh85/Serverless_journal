@@ -17,10 +17,12 @@
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.5.0",
     "@testing-library/user-event": "^7.2.1",
+    "@types/react-native-auth0": "^2.0.0",
     "expo": "^36.0.2",
     "react": "^16.13.0",
     "react-dom": "^16.13.0",
     "react-native": "0.61.5",
+    "react-native-auth0": "^2.3.0",
     "react-native-web": "^0.12.2",
     "react-scripts": "3.4.0"
   },

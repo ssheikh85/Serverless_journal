@@ -7,8 +7,9 @@
  *
  * @format
  */
+import Auth0 from 'react-native-auth0';
 
-import React from 'react';
+import React, {useState} from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -21,6 +22,24 @@ import {
 declare var global: {HermesInternal: null | {}};
 
 const App = () => {
+  let [accessToken, setAccessToken] = useState();
+  const auth0 = new Auth0({
+    domain: 'dev-rf-u05fp.auth0.com',
+    clientId: 'qQAsD4aGaOdg58ovHdQ7WWIRf4KTtdcg',
+  });
+
+  try {
+    async function authorize() {
+      const credentials = await auth0.webAuth.authorize({
+        scope: 'openid profile email',
+      });
+      setAccessToken(credentials.accessToken);
+    }
+    authorize();
+  } catch (error) {
+    console.log(error);
+  }
+
   return (
     <>
       <StatusBar barStyle="dark-content" />
