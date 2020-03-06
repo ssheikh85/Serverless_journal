@@ -17,6 +17,7 @@ import {
   View,
   Text,
   StatusBar,
+  Alert,
 } from 'react-native';
 
 declare var global: {HermesInternal: null | {}};
@@ -28,17 +29,32 @@ const App = () => {
     clientId: 'qQAsD4aGaOdg58ovHdQ7WWIRf4KTtdcg',
   });
 
-  try {
-    async function authorize() {
+  async function login() {
+    try {
       const credentials = await auth0.webAuth.authorize({
         scope: 'openid profile email',
       });
       setAccessToken(credentials.accessToken);
+    } catch (error) {
+      console.log(error);
     }
-    authorize();
-  } catch (error) {
-    console.log(error);
   }
+
+  async function logout() {
+    try {
+      const sucess = await auth0.webAuth.clearSession();
+      if (sucess) {
+        Alert.alert('Logged out!');
+      }
+      setAccessToken(null);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  login();
+
+  logout();
 
   return (
     <>
