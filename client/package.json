@@ -2,16 +2,11 @@
   "name": "client",
   "version": "0.0.1",
   "private": true,
-  "description": "A serverless fullstack application",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/ssheikh85/CDND_Capstone.git"
-  },
   "scripts": {
     "android": "react-native run-android",
     "ios": "react-native run-ios",
     "start": "react-native start",
-    "web": "react-scripts start",
+    "start-web": "react-scripts start",
     "build-web": "react-scripts build",
     "test-web": "react-scripts test",
     "eject-web": "react-scripts eject",
@@ -86,5 +81,10 @@
       "json",
       "node"
     ]
+  },
+  "description": "A serverless fullstack application",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ssheikh85/CDND_Capstone.git"
   }
 }

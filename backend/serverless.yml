@@ -24,7 +24,7 @@ provider:
 
 functions:
   Entries:
-    handler: backend/lambda/entriesServer.entriesHandler
+    handler: lambda/entriesServer.entriesHandler
     events:
       - http:
           method: get
