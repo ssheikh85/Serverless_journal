@@ -18,6 +18,7 @@ import {
   StatusBar,
   Alert,
   Button,
+  Platform,
 } from 'react-native';
 import Auth0 from 'react-native-auth0';
 import {authConfig} from '../clientCofig';
@@ -33,8 +34,9 @@ const App = () => {
   async function login() {
     try {
       const credentials = await auth0.webAuth.authorize({
-        scope: 'openid profile email',
+        scope: 'openid profile',
       });
+      console.log(credentials);
       setAccessToken(credentials.accessToken);
     } catch (error) {
       console.log(error);
@@ -47,14 +49,10 @@ const App = () => {
       if (sucess) {
         Alert.alert('Logged out!');
       }
-      setAccessToken(null);
     } catch (error) {
       console.log(error);
     }
   }
-
-  logout();
-
   return (
     <>
       <StatusBar barStyle="dark-content" />
