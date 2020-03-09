@@ -14,7 +14,6 @@ import {
   // StyleSheet,
   ScrollView,
   StatusBar,
-  Button,
   View,
   Text,
 } from 'react-native';
