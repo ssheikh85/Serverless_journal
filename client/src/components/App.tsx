@@ -18,22 +18,12 @@ import {
   View,
   Text,
 } from 'react-native';
-import {Router} from 'react-router-dom';
-import Auth from '../Auth/Auth';
 
 export interface AppProps {}
-
-export interface AppProps {
-  auth: Auth;
-  history: any;
-}
-export interface AppState {}
 
 declare var global: {HermesInternal: null | {}};
 
 const App: React.FC<AppProps> = props => {
-  const {auth, history} = props;
-
   return (
     <>
       <StatusBar barStyle="dark-content" />
