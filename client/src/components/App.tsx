@@ -25,22 +25,25 @@ export interface AppProps {
   auth: Auth;
   history: any;
 }
+export interface AppState {}
 
 declare var global: {HermesInternal: null | {}};
 
-const App: React.SFC<AppProps> = props => {
+const App: React.FC<AppProps> = props => {
+  const {auth, history} = props;
+
   return (
     <>
       <StatusBar barStyle="dark-content" />
       <SafeAreaView>
         <ScrollView contentInsetAdjustmentBehavior="automatic">
-          <Router history={props.history}>
-            {props.auth.isAuthenticated ? (
-              <Button title="Logout" onPress={() => props.auth.login}>
+          <Router history={history}>
+            {auth.isAuthenticated() ? (
+              <Button title="Logout" onPress={() => auth.login()}>
                 Log Out
               </Button>
             ) : (
-              <Button title="Login" onPress={() => props.auth.logout}>
+              <Button title="Login" onPress={() => auth.logout()}>
                 Log In
               </Button>
             )}

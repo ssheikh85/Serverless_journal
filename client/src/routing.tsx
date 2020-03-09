@@ -1,7 +1,9 @@
+import React from 'react';
 import Auth from './Auth/Auth';
 import {Router, Route} from 'react-router-dom';
-import createHistory from 'history/createBrowserHistory';
 import App from './components/App';
+import Loading from './components/Loading';
+const createHistory = require('history').createBrowserHistory;
 const history = createHistory();
 
 const authHandler = new Auth(history);
@@ -13,23 +15,21 @@ const handleAuthentication = (props: any) => {
   }
 };
 
-export const makeAuthRouting = () => {
+export const AuthRouting = () => {
   return (
     <Router history={history}>
-      <div>
-        <Route
-          path="/callback"
-          render={props => {
-            handleAuthentication(props);
-            return {};
-          }}
-        />
-        <Route
-          render={props => {
-            return <App auth={authHandler} {...props} />;
-          }}
-        />
-      </div>
+      <Route
+        path="/callback"
+        render={props => {
+          handleAuthentication(props);
+          return <Loading />;
+        }}
+      />
+      <Route
+        render={props => {
+          return <App auth={authHandler} {...props} />;
+        }}
+      />
     </Router>
   );
 };

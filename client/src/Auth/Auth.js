@@ -14,6 +14,7 @@ export default class Auth {
     clientID: authConfig.clientId,
     redirectUri: authConfig.callbackUrlWeb,
     responseType: 'token id_token',
+    scope: 'openid',
   });
 
   //mobile Auth0
@@ -31,7 +32,7 @@ export default class Auth {
       const credentials = await this.auth0Mobile.webAuth.authorize({
         scope: 'openid profile email',
       });
-      this.setAccesIdTokens(credentials);
+      this.setSession(credentials);
     } catch (error) {
       console.log(error);
     }
@@ -47,6 +48,7 @@ export default class Auth {
 
   handleAuthentication() {
     if (Platform.OS === 'web') {
+      console.log('Do I get here');
       this.auth0.parseHash((err, authResult) => {
         if (authResult && authResult.accessToken && authResult.idToken) {
           console.log('Access token: ', authResult.accessToken);
@@ -64,7 +66,8 @@ export default class Auth {
     }
   }
 
-  setAccesIdTokens(authResult) {
+  setSession(authResult) {
+    this.expiresAt = authResult.expiresIn * 1000 + new Date().getTime();
     this.accessToken = authResult.accessToken;
     this.idToken = authResult.idToken;
     this.history.replace('/');
