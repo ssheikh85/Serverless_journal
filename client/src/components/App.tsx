@@ -15,6 +15,8 @@ import {
   ScrollView,
   StatusBar,
   Button,
+  View,
+  Text,
 } from 'react-native';
 import {Router} from 'react-router-dom';
 import Auth from '../Auth/Auth';
@@ -37,17 +39,9 @@ const App: React.FC<AppProps> = props => {
       <StatusBar barStyle="dark-content" />
       <SafeAreaView>
         <ScrollView contentInsetAdjustmentBehavior="automatic">
-          <Router history={history}>
-            {auth.isAuthenticated() ? (
-              <Button title="Logout" onPress={() => auth.login()}>
-                Log Out
-              </Button>
-            ) : (
-              <Button title="Login" onPress={() => auth.logout()}>
-                Log In
-              </Button>
-            )}
-          </Router>
+          <View>
+            <Text>This is my app!</Text>
+          </View>
         </ScrollView>
       </SafeAreaView>
     </>

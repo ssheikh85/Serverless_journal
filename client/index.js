@@ -3,7 +3,8 @@
  */
 
 import {AppRegistry} from 'react-native';
-import {AuthRouting} from './src/routing';
+import App from './src/components/App';
 import {name as appName} from './app.json';
+import src from '*.bmp';
 
-AppRegistry.registerComponent(appName, () => AuthRouting);
+AppRegistry.registerComponent(appName, () => App);
