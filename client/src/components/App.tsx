@@ -1,13 +1,14 @@
 import React from 'react';
-import {View} from 'react-native';
 import Navbar from './Navbar';
+// import {View} from 'react-native';
 // import Journal from './Journal';
 
-const App = () => {
-  <View>
-    <Navbar />
-    {/* <Journal /> */}
-  </View>;
+interface AppProps {}
+
+const App: React.FC<AppProps> = () => {
+  return <Navbar />;
+
+  /* <Journal /> */
 };
 
 export default App;

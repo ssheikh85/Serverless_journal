@@ -1,92 +1,79 @@
 import React, {Component} from 'react';
 import {
   SafeAreaView,
-  StyleSheet,
+  //   StyleSheet,
   Text,
   View,
   Button,
   Platform,
+  // Platform,
 } from 'react-native';
-import axios from 'axios';
+import createAuth0Client from '@auth0/auth0-spa-js';
+import Auth0 from 'react-native-auth0';
 import {authConfig} from '../clientConfig';
 
+const authHandler = new Auth0({
+  domain: authConfig.domain,
+  clientId: authConfig.clientId,
+});
+
 export interface AppState {
-  userFirstName: string;
   loggedIn: boolean;
 }
 
 export default class Navbar extends Component<{}, AppState> {
   constructor(props: any) {
     super(props);
-    this.state = {userFirstName: '', loggedIn: false};
+    this.state = {loggedIn: false};
 
     this.handleLogin = this.handleLogin.bind(this);
     this.handleLogOut = this.handleLogOut.bind(this);
+    this.createAuthWeb = this.createAuthWeb.bind(this);
   }
 
+  async createAuthWeb() {
+    return await createAuth0Client({
+      domain: authConfig.domain,
+      client_id: authConfig.clientId,
+      redirect_uri: authConfig.callbackUrlWeb,
+    });
+  }
   async handleLogin() {
-    const endPoint = `https://${authConfig.domain}/authorize`;
-    const token = '?response_type=token&';
-    const client_Id = `client_id=${authConfig.clientId}&`;
-    const connection = 'connection=CONNECTION&';
-    const redirectUrlWeb = `redirect_uri=${authConfig.callbackUrlWeb}&`;
-    const redirectUrliOS = `redirect_uri=${authConfig.callbackUrliOS}&`;
-    const redirectUrlAndroid = `redirect_uri=${authConfig.callbackAndroid}&`;
-    const state = 'state=STATE';
-
-    let firstName = '';
+    const authWeb = await this.createAuthWeb();
     if (Platform.OS === 'web') {
+      await authWeb.loginWithRedirect();
+      await authWeb.handleRedirectCallback();
+      // const data = await authWeb.getUser();
+    } else {
       try {
-        const queryStringWeb =
-          endPoint + token + client_Id + connection + redirectUrlWeb + state;
-        const {data} = await axios.get(queryStringWeb);
-        firstName = data.given_name;
-      } catch (err) {
-        console.error(err);
-      }
-    } else if (Platform.OS === 'ios') {
-      try {
-        const queryStringIOS =
-          endPoint + token + client_Id + connection + redirectUrliOS + state;
-        const {data} = await axios.get(queryStringIOS);
-        firstName = data.given_name;
-      } catch (err) {
-        console.error(err);
-      }
-    } else if (Platform.OS === 'android') {
-      try {
-        const queryStringAndroid =
-          endPoint +
-          token +
-          client_Id +
-          connection +
-          redirectUrlAndroid +
-          state;
-        const {data} = await axios.get(queryStringAndroid);
-        firstName = data.given_name;
-      } catch (err) {
-        console.error(err);
+        const {data} = await authHandler.webAuth.authorize({
+          scope: 'openid profile email',
+        });
+        console.log(data);
+      } catch (error) {
+        console.error(error);
       }
     }
-    this.setState({userFirstName: firstName, loggedIn: true});
+    this.setState({loggedIn: true});
   }
 
   async handleLogOut() {
+    const authWeb = await this.createAuthWeb();
     if (Platform.OS === 'web') {
+      authWeb.logout();
+    } else {
       try {
-        const returnURL = 'http://localhost:3000/';
-        const queryStringLogout =
-          `https://${authConfig.domain}/v2/logout?client_id=${authConfig.clientId}&` +
-          returnURL;
-        const {data} = await axios.get(queryStringLogout);
-      } catch (err) {
-        console.error(err);
+        await authHandler.webAuth.clearSession();
+      } catch (error) {
+        console.error(error);
       }
     }
+
+    this.setState({loggedIn: false});
   }
 
   render() {
-    const {userFirstName, loggedIn} = this.state;
+    const {loggedIn} = this.state;
     return (
       <>
         <SafeAreaView>
@@ -97,15 +84,17 @@ export default class Navbar extends Component<{}, AppState> {
                   title="Logout"
                   onPress={() => {
                     this.handleLogOut();
-                  }}></Button>
-                <Text>Hi {userFirstName}!</Text>){' '}
+                  }}
+                />
+                <Text>Hi!</Text>
               </>
             ) : (
               <Button
                 title="Login"
                 onPress={() => {
                   this.handleLogin();
-                }}></Button>
+                }}
+              />
             )}
           </View>
         </SafeAreaView>
