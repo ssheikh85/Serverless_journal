@@ -1,14 +1,31 @@
 import React from 'react';
+import {ApolloClient} from 'apollo-client';
+import {InMemoryCache, NormalizedCacheObject} from 'apollo-cache-inmemory';
+import {HttpLink} from 'apollo-link-http';
+import {ApolloProvider} from '@apollo/react-hooks';
+import {apiEndpoint} from '../clientConfig';
 import Navbar from './Navbar';
 // import {View} from 'react-native';
 // import Journal from './Journal';
 
-interface AppProps {}
+const cache = new InMemoryCache();
+const link = new HttpLink({
+  uri: `${apiEndpoint}`,
+});
 
-const App: React.FC<AppProps> = () => {
-  return <Navbar />;
+const client: ApolloClient<NormalizedCacheObject> = new ApolloClient({
+  cache,
+  link,
+});
 
-  /* <Journal /> */
+const App = () => {
+  return (
+    <ApolloProvider client={client}>
+      <Navbar />
+    </ApolloProvider>
+  );
 };
+
+/* <Journal /> */
 
 export default App;
