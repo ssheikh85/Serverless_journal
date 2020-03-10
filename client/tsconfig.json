@@ -14,13 +14,9 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "types": ["jest"],
+    "typeRoots": ["./types", "./node_modules/@types"]
   },
-  "exclude": [
-    "node_modules",
-    "babel.config.js",
-    "metro.config.js",
-    "jest.config.js"
-  ],
-  "include": ["src"]
+  "include": ["src", "test", "./*.tsx", "./*.ts"]
 }
