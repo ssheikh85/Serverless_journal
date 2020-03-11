@@ -1,9 +1,10 @@
 import React from 'react';
-import {Button, Text, View} from 'react-native';
+import {Button, View} from 'react-native';
 import authHandlerWeb from '../auth/AuthHandlerWeb';
 
 const NavbarWeb = () => {
   if (authHandlerWeb.isAuthenticated()) {
+    console.log(authHandlerWeb.isAuthenticated());
     return (
       <View>
         <Button title="Logout" onPress={() => authHandlerWeb.logOut()} />
