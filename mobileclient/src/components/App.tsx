@@ -1,13 +1,13 @@
 import React from 'react';
-import {View, Platform} from 'react-native';
+import {Platform} from 'react-native';
 import NavbarWeb from '../components/NavbarWeb';
 
-const App = () => {
+const App: React.FC<{}> = () => {
   if (Platform.OS === 'web') {
     return (
-      <div>
+      <>
         <NavbarWeb />
-      </div>
+      </>
     );
   } else {
   }
