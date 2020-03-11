@@ -7,7 +7,7 @@ class AuthHandlerMobile {
       domain: authConfig.domain,
       clientId: authConfig.clientId,
     });
-    this.credentials;
+    this.credentials = null;
   }
 
   async handleLogin() {
