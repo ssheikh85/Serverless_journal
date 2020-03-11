@@ -1,22 +1,19 @@
 import React from 'react';
-import {Button, View} from 'react-native';
-import authHandlerWeb from '../auth/AuthHandlerWeb';
+import {Button} from 'react-native';
+import {useAuth0} from '../auth/react-auth0.spa';
 
 const NavbarWeb = () => {
-  if (authHandlerWeb.isAuthenticated()) {
-    console.log(authHandlerWeb.isAuthenticated());
-    return (
-      <View>
-        <Button title="Logout" onPress={() => authHandlerWeb.logOut()} />
-      </View>
-    );
-  } else {
-    return (
-      <View>
-        <Button title="Login" onPress={() => authHandlerWeb.handleLogin()} />
-      </View>
-    );
-  }
+  const {isAuthenticated, loginWithRedirect, logout} = useAuth0();
+
+  return (
+    <>
+      {!isAuthenticated && (
+        <Button title="Login" onPress={() => loginWithRedirect({})} />
+      )}
+
+      {isAuthenticated && <Button title="Logout" onPress={() => logout()} />}
+    </>
+  );
 };
 
 export default NavbarWeb;
