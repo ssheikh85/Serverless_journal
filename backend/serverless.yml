@@ -6,6 +6,8 @@ plugins:
   - serverless-iam-roles-per-function
   - serverless-reqvalidator-plugin
   - serverless-plugin-tracing
+  - serverless-dynamodb-local
+  - serverless-offline
 
 provider:
   name: aws
@@ -22,32 +24,91 @@ provider:
     SIGNED_URL_EXPIRATION: 300
     JWKS_ENDPOINT: https://dev-rf-u05fp.auth0.com/.well-known/jwks.json
 
+custom:
+  serverless-offline:
+    port: 3003
+
+  dynamodb:
+    start:
+      port: 8000
+      inMemory: true
+      migrate: true
+
 functions:
-  Entries:
-    handler: lambda/entriesServer.entriesHandler
+  # Entries:
+  #   handler: lambda/entriesServer.entriesHandler
+  #   events:
+  #     - http:
+  #         method: get
+  #         path: entries
+  #         cors: true
+  #     - http:
+  #         method: post
+  #         path: entries
+  #         cors: true
+  #         reqValidatorName: RequestBodyValidator
+  #     - http:
+  #         method: put
+  #         path: entries
+  #         cors: true
+  #         reqValidatorName: RequestBodyValidator
+  #     - http:
+  #         method: delete
+  #         path: entries
+  #         cors: true
+  # - http:
+  #     method: put
+  #     path: entries
+  #     cors: true
+  # iamRoleStatements:
+  #   - Effect: Allow
+  #     Action:
+  #       - dynamodb:Query
+  #     Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.ENTRIES_TABLE}
+  #   - Effect: Allow
+  #     Action:
+  #       - dynamodb:PutItem
+  #     Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.ENTRIES_TABLE}
+  #   - Effect: Allow
+  #     Action:
+  #       - dynamodb:UpdateItem
+  #     Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.ENTRIES_TABLE}
+  #   - Effect: Allow
+  #     Action:
+  #       - dynamodb:DeleteItem
+  #     Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.ENTRIES_TABLE}
+  #   - Effect: "Allow"
+  #     Action:
+  #       - "xray:PutTraceSegments"
+  #       - "xray:PutTelemetryRecords"
+  #     Resource:
+  #       - "*"
+  #Local Dev environment
+  Local:
+    handler: lambda/entriesServerLocal.entriesHandlerLocal
     events:
       - http:
           method: get
-          path: entries
+          path: local
           cors: true
       - http:
           method: post
-          path: entries
+          path: local
           cors: true
           reqValidatorName: RequestBodyValidator
       - http:
           method: put
-          path: entries
+          path: local
           cors: true
           reqValidatorName: RequestBodyValidator
       - http:
           method: delete
-          path: entries
+          path: local
           cors: true
-      - http:
-          method: put
-          path: entries
-          cors: true
+      # - http:
+      #     method: put
+      #     path: local
+      #     cors: true
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -65,16 +126,9 @@ functions:
         Action:
           - dynamodb:DeleteItem
         Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.ENTRIES_TABLE}
-      - Effect: "Allow"
-        Action:
-          - "xray:PutTraceSegments"
-          - "xray:PutTelemetryRecords"
-        Resource:
-          - "*"
 
 resources:
   Resources:
-    # TODO: Add any necessary AWS resources
     GatewayResponseDefault4XX:
       Type: AWS::ApiGateway::GatewayResponse
       Properties:
