@@ -1,6 +1,6 @@
 const { gql } = require("apollo-server-lambda");
 
-export const typeDefs = gql`
+const typeDefs = gql`
   type EntryIitem {
     userId: String!
     entryId: String
@@ -10,24 +10,30 @@ export const typeDefs = gql`
   }
 
   type EntryUpdate {
-    content: String;
+    content: String
   }
 
   type UploadUrl {
-    UploadUrl: String;
+    UploadUrl: String
   }
-  
-  input ReviewInput {
+
+  input EntryInput {
     content: String!
-  
+  }
+
   type Query {
     getEntries(userId: String): [EntryItem]!
   }
 
   type Mutation {
-    createEntry(entryInput: EntryInput, userId:String): EntryItem!
-    updateEntry((entryInput: EntryInput, userId:String, entryId:String): EntryUpdate
-    deleteEntry( userId:String, entryId:String): EntryIitem
+    createEntry(entryInput: EntryInput, userId: String): EntryItem!
+    updateEntry(
+      entryInput: EntryInput
+      userId: String
+      entryId: String
+    ): EntryUpdate
+    deleteEntry(userId: String, entryId: String): EntryIitem
   }
-}
 `;
+
+module.exports = typeDefs;
