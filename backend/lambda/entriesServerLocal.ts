@@ -1,4 +1,4 @@
-import "source-map-support/register";
+// import "source-map-support/register";
 
 // import { Jwt } from "../auth/Jwt";
 // import { JwtPayload } from "../auth/JwtPayload";
@@ -6,9 +6,9 @@ import "source-map-support/register";
 // import axios from "axios";
 // import { createLogger } from "../utils/logger";
 
-const typeDefs = require("../schema/EntrySchema");
-const entriesResolver = require("../businessLogic/entriesResolver");
-const { ApolloServer } = require("apollo-server-lambda");
+// const typeDefs = require("../schema/EntrySchema");
+// const entriesResolver = require("../businessLogic/entriesResolver");
+// const { ApolloServer } = require("apollo-server-lambda");
 // const logger = createLogger("auth");
 // const jwksUrl = process.env.JWKS_ENDPOINT;
 
@@ -52,16 +52,16 @@ const { ApolloServer } = require("apollo-server-lambda");
 //   return token;
 // };
 
-const context = () => {
-  const user = "123";
-  return { user };
-};
-const server = new ApolloServer({
-  typeDefs,
-  entriesResolver,
-  context,
-  introspection: true,
-  playground: true
-});
+// const context = () => {
+//   const user = "123";
+//   return { user };
+// };
+// const server = new ApolloServer({
+//   typeDefs,
+//   entriesResolver,
+//   context,
+//   introspection: true,
+//   playground: true
+// });
 
-exports.entriesHandlerLocal = server.createHandler();
+// exports.entriesHandlerLocal = server.createHandler();
