@@ -1,10 +1,10 @@
 const { gql } = require("apollo-server-lambda");
 
 const typeDefs = gql`
-  type EntryIitem {
-    userId: String!
+  type EntryItem {
+    userId: String
     entryId: String
-    createdAt: String!
+    createdAt: String
     content: String
     attachmentUrl: String
   }
@@ -18,21 +18,21 @@ const typeDefs = gql`
   }
 
   input EntryInput {
-    content: String!
+    content: String
   }
 
   type Query {
-    getEntries(userId: String): [EntryItem]!
+    getEntries(userId: String): [EntryItem]
   }
 
   type Mutation {
-    createEntry(entryInput: EntryInput, userId: String): EntryItem!
+    createEntry(userId: String, entryInput: EntryInput): EntryItem
     updateEntry(
       entryInput: EntryInput
       userId: String
       entryId: String
     ): EntryUpdate
-    deleteEntry(userId: String, entryId: String): EntryIitem
+    deleteEntry(userId: String, entryId: String): EntryItem
   }
 `;
 

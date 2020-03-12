@@ -21,20 +21,24 @@ export class EntriesAccess {
 
   //Gets entries for a specific authorized user
   async getEntries(userId: String): Promise<EntryItem[]> {
-    const result = await this.docClient
-      .query({
-        TableName: this.entriesTable,
-        IndexName: this.entryIdIndex,
-        KeyConditionExpression: "userId = :userId",
-        ExpressionAttributeValues: {
-          ":userId": userId
-        },
-        ScanIndexForward: false
-      })
-      .promise();
+    try {
+      const result = await this.docClient
+        .query({
+          TableName: this.entriesTable,
+          IndexName: this.entryIdIndex,
+          KeyConditionExpression: "userId = :userId",
+          ExpressionAttributeValues: {
+            ":userId": userId
+          },
+          ScanIndexForward: false
+        })
+        .promise();
 
-    const items = result.Items;
-    return items as EntryItem[];
+      const items = result.Items;
+      return items as EntryItem[];
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   //Adds an entry for a specific authorized user
@@ -42,34 +46,38 @@ export class EntriesAccess {
     userIdIn: String,
     entryInput: EntryInput
   ): Promise<EntryItem> {
-    const newEntryId = uuid.v4();
-    await this.docClient
-      .put({
-        TableName: this.entriesTable,
-        Item: {
-          userId: userIdIn,
-          entryId: newEntryId,
-          createdAt: new Date().toISOString(),
-          content: entryInput.content
-        }
-      })
-      .promise();
+    try {
+      const newEntryId = uuid.v4();
+      await this.docClient
+        .put({
+          TableName: this.entriesTable,
+          Item: {
+            userId: userIdIn,
+            entryId: newEntryId,
+            createdAt: new Date().toISOString(),
+            content: entryInput.content
+          }
+        })
+        .promise();
 
-    const result = await this.docClient
-      .query({
-        TableName: this.entriesTable,
-        IndexName: this.entryIdIndex,
-        KeyConditionExpression: "userId = :userId",
-        FilterExpression: "entryId = :entryId",
-        ExpressionAttributeValues: {
-          ":userId": userIdIn,
-          ":entryId": newEntryId
-        },
-        ScanIndexForward: false
-      })
-      .promise();
+      const result = await this.docClient
+        .query({
+          TableName: this.entriesTable,
+          IndexName: this.entryIdIndex,
+          KeyConditionExpression: "userId = :userId",
+          FilterExpression: "entryId = :entryId",
+          ExpressionAttributeValues: {
+            ":userId": userIdIn,
+            ":entryId": newEntryId
+          },
+          ScanIndexForward: false
+        })
+        .promise();
 
-    return result.Items[0] as EntryItem;
+      return result.Items[0] as EntryItem;
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   //Updates an entry for a specific authorized user
@@ -78,67 +86,75 @@ export class EntriesAccess {
     entryIdIn: String,
     entryInput: EntryInput
   ): Promise<EntryUpdate> {
-    const result = await this.docClient
-      .query({
-        TableName: this.entriesTable,
-        IndexName: this.entryIdIndex,
-        KeyConditionExpression: "userId = :userId",
-        FilterExpression: "entryId = :entryId",
-        ExpressionAttributeValues: {
-          ":userId": userIdIn,
-          ":entryId": entryIdIn
-        },
-        ScanIndexForward: false
-      })
-      .promise();
+    try {
+      const result = await this.docClient
+        .query({
+          TableName: this.entriesTable,
+          IndexName: this.entryIdIndex,
+          KeyConditionExpression: "userId = :userId",
+          FilterExpression: "entryId = :entryId",
+          ExpressionAttributeValues: {
+            ":userId": userIdIn,
+            ":entryId": entryIdIn
+          },
+          ScanIndexForward: false
+        })
+        .promise();
 
-    logger.info("results of query for update", result, entryIdIn);
+      logger.info("results of query for update", result, entryIdIn);
 
-    await this.docClient
-      .update({
-        Key: { userIdIn, createdAt: result.Items[0].createdAt },
-        TableName: this.entriesTable,
-        UpdateExpression: " SET #cnt = :cnt",
-        ExpressionAttributeValues: {
-          ":cnt": entryInput.content
-        },
-        ExpressionAttributeNames: {
-          "#cnt": "content"
-        }
-      })
-      .promise();
-    return;
+      await this.docClient
+        .update({
+          Key: { userIdIn, createdAt: result.Items[0].createdAt },
+          TableName: this.entriesTable,
+          UpdateExpression: " SET #cnt = :cnt",
+          ExpressionAttributeValues: {
+            ":cnt": entryInput.content
+          },
+          ExpressionAttributeNames: {
+            "#cnt": "content"
+          }
+        })
+        .promise();
+      return;
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   //Deletes an entry for a specific authorized user
   async deleteEntry(userIdIn: String, entryIdIn: String): Promise<EntryItem> {
-    const result = await this.docClient
-      .query({
-        TableName: this.entriesTable,
-        IndexName: this.entryIdIndex,
-        KeyConditionExpression: "userId = :userId",
-        FilterExpression: "entryId = :entryId",
-        ExpressionAttributeValues: {
-          ":userId": userIdIn,
-          ":entryId": entryIdIn
-        },
-        ScanIndexForward: false
-      })
-      .promise();
+    try {
+      const result = await this.docClient
+        .query({
+          TableName: this.entriesTable,
+          IndexName: this.entryIdIndex,
+          KeyConditionExpression: "userId = :userId",
+          FilterExpression: "entryId = :entryId",
+          ExpressionAttributeValues: {
+            ":userId": userIdIn,
+            ":entryId": entryIdIn
+          },
+          ScanIndexForward: false
+        })
+        .promise();
 
-    logger.info("results of query for delete", result, entryIdIn);
+      logger.info("results of query for delete", result, entryIdIn);
 
-    await this.docClient
-      .delete({
-        Key: { userIdIn, createdAt: result.Items[0].createdAt },
-        ConditionExpression: "entryId = :entryId",
-        ExpressionAttributeValues: {
-          ":entryId": entryIdIn
-        },
-        TableName: this.entriesTable
-      })
-      .promise();
-    return;
+      await this.docClient
+        .delete({
+          Key: { userIdIn, createdAt: result.Items[0].createdAt },
+          ConditionExpression: "entryId = :entryId",
+          ExpressionAttributeValues: {
+            ":entryId": entryIdIn
+          },
+          TableName: this.entriesTable
+        })
+        .promise();
+      return;
+    } catch (error) {
+      console.error(error);
+    }
   }
   //Creates a pre-assigned url for file uploads
   // async generateUploadUrl(): Promise<UploadUrl> {
