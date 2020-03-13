@@ -12,15 +12,14 @@ const { ApolloServer } = require("apollo-server-lambda");
 const logger = createLogger("auth");
 const jwksUrl = process.env.JWKS_ENDPOINT;
 
-const context = async ({ req }) => {
-  logger.info("Authorizing a user", req.header.authorization);
+const addToContext = async event => {
   try {
-    const user = await getUserFromToken(req.header.authorization);
+    const user = await getUserFromToken(event.AuthorizationToken);
     logger.info("User was authorized", user);
 
-    return user;
-  } catch (e) {
-    logger.error("User not authorized", { error: e.message });
+    return { user };
+  } catch (error) {
+    logger.error("User not authorized", { error: error.message });
   }
 };
 
@@ -55,7 +54,12 @@ const getToken = (authHeader: string): string => {
 const server = new ApolloServer({
   typeDefs,
   entriesResolver,
-  context,
+  context: ({ event, context }) => ({
+    headers: event.headers,
+    functionName: context.functionName,
+    event,
+    context: addToContext(event)
+  }),
   introspection: true,
   playground: true
 });

@@ -3,8 +3,18 @@ import {Button} from 'react-native';
 import {useAuth0} from '../auth/authHandlerWeb';
 
 const NavbarWeb = () => {
-  const {isAuthenticated, loginWithRedirect, logout} = useAuth0();
+  const {
+    isAuthenticated,
+    loginWithRedirect,
+    logout,
+    // getIdTokenClaims,
+  } = useAuth0();
 
+  // const getToken = async () => {
+  //   const token = await getIdTokenClaims();
+  //   const idToken = token.__raw;
+  //   console.log(idToken);
+  // };
   return (
     <>
       {!isAuthenticated && (
@@ -12,6 +22,7 @@ const NavbarWeb = () => {
       )}
 
       {isAuthenticated && <Button title="Logout" onPress={() => logout()} />}
+      {/* <Button title="GetToken" onPress={() => getToken()} /> */}
     </>
   );
 };
