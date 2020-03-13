@@ -2,7 +2,7 @@ import { EntriesAccess } from "../dataLayer/entriesAccess";
 
 const entriesHandler = new EntriesAccess();
 
-module.exports = {
+const resolvers = {
   Query: {
     getEntries: async context => {
       try {
@@ -41,3 +41,28 @@ module.exports = {
     }
   }
 };
+
+// const entries = [
+//   {
+//     userId: "123",
+//     entryId: uuid.v4(),
+//     createdAt: new Date().toISOString(),
+//     content: "A post for all times",
+//     attachmentUrl: ""
+//   },
+//   {
+//     userId: "123",
+//     entryId: uuid.v4(),
+//     createdAt: new Date().toISOString(),
+//     content: "Another post",
+//     attachmentUrl: ""
+//   }
+// ];
+
+// const resolvers = {
+//   Query: {
+//     entries: () => entries
+//   }
+// };
+
+module.exports = resolvers;

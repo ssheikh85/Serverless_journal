@@ -7,14 +7,14 @@ const NavbarWeb = () => {
     isAuthenticated,
     loginWithRedirect,
     logout,
-    // getIdTokenClaims,
+    getIdTokenClaims,
   } = useAuth0();
 
-  // const getToken = async () => {
-  //   const token = await getIdTokenClaims();
-  //   const idToken = token.__raw;
-  //   console.log(idToken);
-  // };
+  const getToken = async () => {
+    const token = await getIdTokenClaims();
+    const idToken = token.__raw;
+    console.log(idToken);
+  };
   return (
     <>
       {!isAuthenticated && (
@@ -22,7 +22,7 @@ const NavbarWeb = () => {
       )}
 
       {isAuthenticated && <Button title="Logout" onPress={() => logout()} />}
-      {/* <Button title="GetToken" onPress={() => getToken()} /> */}
+      <Button title="GetToken" onPress={() => getToken()} />
     </>
   );
 };
