@@ -6,25 +6,20 @@
 // import axios from "axios";
 // import { createLogger } from "../utils/logger";
 
-const typeDefs = require("../schema/EntrySchema");
+import { typeDefs } from "../schema/EntrySchema";
 const resolvers = require("../businessLogic/entriesResolver");
 const { ApolloServer } = require("apollo-server-lambda");
 // const logger = createLogger("auth");
 // const jwksUrl = process.env.JWKS_ENDPOINT;
 
-// const addToContext = async event => {
-//   try {
-//     const user = await getUserFromToken(event.AuthorizationToken);
-//     logger.info("User was authorized", user);
+// const getAuthenticatedUser = async (authHeader: string): Promise<String> => {
+//   if (!authHeader) throw new Error("No authentication header");
 
-//     return { user };
-//   } catch (error) {
-//     logger.error("User not authorized", { error: error.message });
-//   }
-// };
+//   if (!authHeader.toLowerCase().startsWith("bearer "))
+//     throw new Error("Invalid authentication header");
 
-// const getUserFromToken = async (authHeader: string): Promise<String> => {
-//   const token = getToken(authHeader);
+//   const split = authHeader.split(" ");
+//   const token = split[1];
 //   const jwt: Jwt = decode(token, { complete: true }) as Jwt;
 
 //   const response = await axios.get(jwksUrl);
@@ -39,32 +34,20 @@ const { ApolloServer } = require("apollo-server-lambda");
 //   }
 // };
 
-// const getToken = (authHeader: string): string => {
-//   if (!authHeader) throw new Error("No authentication header");
-
-//   if (!authHeader.toLowerCase().startsWith("bearer "))
-//     throw new Error("Invalid authentication header");
-
-//   const split = authHeader.split(" ");
-//   const token = split[1];
-
-//   return token;
-// };
-
-const addToContext = () => {
-  const user = "123";
-  return { user };
-};
 const server = new ApolloServer({
   typeDefs,
   resolvers,
-  context: ({ event, context }) => ({
-    headers: event.headers,
-    functionName: context.functionName,
-    event,
-    context: addToContext
-  }),
-  introspection: true,
+  context: async event => {
+    return event.headers;
+    // try {
+    //   const user = await getAuthenticatedUser(event.headers.Authorization);
+    //   logger.info("User was authorized", user);
+    //   return user;
+    // } catch (error) {
+    //   logger.error("User not authorized", { error: error.message });
+    // }
+  },
+  introspection: false,
   playground: true
 });
 

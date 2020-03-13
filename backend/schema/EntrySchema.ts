@@ -1,6 +1,6 @@
 const { gql } = require("apollo-server-lambda");
 
-const typeDefs = gql`
+export const typeDefs = gql`
   type EntryItem {
     userId: String
     entryId: String
@@ -35,5 +35,3 @@ const typeDefs = gql`
     deleteEntry(userId: String, entryId: String): EntryItem
   }
 `;
-
-module.exports = typeDefs;
