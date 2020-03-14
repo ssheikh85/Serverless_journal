@@ -41,19 +41,7 @@ functions:
     handler: lambda/entriesServer.entriesHandler
     events:
       - http:
-          method: get
-          path: entries
-          cors: true
-      - http:
-          method: post
-          path: entries
-          cors: true
-      - http:
-          method: put
-          path: entries
-          cors: true
-      - http:
-          method: delete
+          method: any
           path: entries
           cors: true
     # - http:
