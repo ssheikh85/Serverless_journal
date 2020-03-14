@@ -4,12 +4,12 @@
 // import { JwtPayload } from "../auth/JwtPayload";
 // import { verify, decode } from "jsonwebtoken";
 // import axios from "axios";
-// import { createLogger } from "../utils/logger";
+import { createLogger } from "../utils/logger";
 
 import { typeDefs } from "../schema/EntrySchema";
-const resolvers = require("../businessLogic/entriesResolver");
+import { resolvers } from "../businessLogic/entriesResolver";
 const { ApolloServer } = require("apollo-server-lambda");
-// const logger = createLogger("auth");
+const logger = createLogger("auth");
 // const jwksUrl = process.env.JWKS_ENDPOINT;
 
 // const getAuthenticatedUser = async (authHeader: string): Promise<String> => {
@@ -37,7 +37,8 @@ const { ApolloServer } = require("apollo-server-lambda");
 const server = new ApolloServer({
   typeDefs,
   resolvers,
-  context: async event => {
+  context: event => {
+    logger.info(event.headers);
     return event.headers;
     // try {
     //   const user = await getAuthenticatedUser(event.headers.Authorization);

@@ -2,13 +2,14 @@ const AWS = require("aws-sdk");
 const AWSXRay = require("aws-xray-sdk");
 const XAWS = AWSXRay.captureAWS(AWS);
 const { createLogger } = require("../utils/logger");
-const logger = createLogger("entryAccess");
 const uuid = require("uuid");
 
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { EntryItem } from "../models/EntryItem";
 import { EntryUpdate } from "../models/EntryUpdate";
 import { EntryInput } from "../request/EntryInput";
+
+const logger = createLogger("entryAccess");
 
 // Class to Access DynamoDB table for entries create, read, update and delete options
 export class EntriesAccess {
@@ -22,6 +23,7 @@ export class EntriesAccess {
   //Gets entries for a specific authorized user
   async getEntries(userId: String): Promise<EntryItem[]> {
     try {
+      logger.info(userId);
       const result = await this.docClient
         .query({
           TableName: this.entriesTable,
@@ -34,6 +36,7 @@ export class EntriesAccess {
         })
         .promise();
 
+      logger.info(result);
       const items = result.Items;
       return items as EntryItem[];
     } catch (error) {
