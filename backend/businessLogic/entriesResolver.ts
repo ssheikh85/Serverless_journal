@@ -1,12 +1,16 @@
 import { EntriesAccess } from "../dataLayer/entriesAccess";
+import { createLogger } from "../utils/logger";
+
+const logger = createLogger("resolver");
 
 const entriesHandler = new EntriesAccess();
 
-const resolvers = {
+export const resolvers = {
   Query: {
-    getEntries: async (userId: string) => {
+    getEntries: async args => {
       try {
-        return await entriesHandler.getEntries(userId);
+        logger.info(args.userId);
+        return await entriesHandler.getEntries(args.id);
       } catch (error) {
         console.error(error);
       }
@@ -64,5 +68,3 @@ const resolvers = {
 //     entries: () => entries
 //   }
 // };
-
-module.exports = resolvers;
