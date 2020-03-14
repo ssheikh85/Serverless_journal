@@ -4,9 +4,9 @@ const entriesHandler = new EntriesAccess();
 
 const resolvers = {
   Query: {
-    getEntries: async () => {
+    getEntries: async (userId: string) => {
       try {
-        return await entriesHandler.getEntries("123");
+        return await entriesHandler.getEntries(userId);
       } catch (error) {
         console.error(error);
       }
