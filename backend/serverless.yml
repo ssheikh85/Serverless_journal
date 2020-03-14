@@ -1,5 +1,5 @@
 org: ssheikh85
-app: serverless-journal-backend
+app: backend
 service:
   name: serverless-journal-app
 
@@ -69,7 +69,7 @@ functions:
           - dynamodb:PutItem
           - dynamodb:UpdateItem
           - dynamodb:DeleteItem
-        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.ENTRIES_TABLE}
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:*
       - Effect: "Allow"
         Action:
           - "xray:PutTraceSegments"
