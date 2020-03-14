@@ -1,7 +1,8 @@
 import { EntriesAccess } from "../dataLayer/entriesAccess";
-import { createLogger } from "../utils/logger";
 
-const logger = createLogger("resolver");
+// import { createLogger } from "../utils/logger";
+
+// const logger = createLogger("resolver");
 
 const entriesHandler = new EntriesAccess();
 
@@ -9,7 +10,6 @@ export const resolvers = {
   Query: {
     getEntries: async args => {
       try {
-        logger.info(args.userId);
         return await entriesHandler.getEntries(args.id);
       } catch (error) {
         console.error(error);
@@ -46,6 +46,7 @@ export const resolvers = {
   // }
 };
 
+//Dummy test data
 // const entries = [
 //   {
 //     userId: "123",
@@ -62,9 +63,3 @@ export const resolvers = {
 //     attachmentUrl: ""
 //   }
 // ];
-
-// const resolvers = {
-//   Query: {
-//     entries: () => entries
-//   }
-// };

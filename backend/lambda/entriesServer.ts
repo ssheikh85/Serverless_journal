@@ -4,12 +4,12 @@
 // import { JwtPayload } from "../auth/JwtPayload";
 // import { verify, decode } from "jsonwebtoken";
 // import axios from "axios";
-import { createLogger } from "../utils/logger";
+// import { createLogger } from "../utils/logger";
 
 import { typeDefs } from "../schema/EntrySchema";
 import { resolvers } from "../businessLogic/entriesResolver";
 const { ApolloServer } = require("apollo-server-lambda");
-const logger = createLogger("auth");
+// const logger = createLogger("auth");
 // const jwksUrl = process.env.JWKS_ENDPOINT;
 
 // const getAuthenticatedUser = async (authHeader: string): Promise<String> => {
@@ -37,17 +37,12 @@ const logger = createLogger("auth");
 const server = new ApolloServer({
   typeDefs,
   resolvers,
-  context: event => {
-    logger.info(event.headers);
-    return event.headers;
-    // try {
-    //   const user = await getAuthenticatedUser(event.headers.Authorization);
-    //   logger.info("User was authorized", user);
-    //   return user;
-    // } catch (error) {
-    //   logger.error("User not authorized", { error: error.message });
-    // }
-  },
+  context: ({ event, context }) => ({
+    headers: event.headers,
+    functionName: context.functionName,
+    event,
+    context
+  }),
   introspection: false,
   playground: true
 });
@@ -58,3 +53,11 @@ exports.entriesHandler = server.createHandler({
     credentials: true
   }
 });
+
+// try {
+//   const user = await getAuthenticatedUser(event.headers.Authorization);
+//   logger.info("User was authorized", user);
+//   return user;
+// } catch (error) {
+//   logger.error("User not authorized", { error: error.message });
+// }
