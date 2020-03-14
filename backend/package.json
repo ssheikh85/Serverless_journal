@@ -24,7 +24,6 @@
     "aws-sdk": "^2.631.0",
     "path": "^0.12.7",
     "serverless-iam-roles-per-function": "^2.0.2",
-    "serverless-offline": "^5.12.1",
     "serverless-plugin-tracing": "^2.0.0",
     "serverless-reqvalidator-plugin": "^1.0.3",
     "serverless-webpack": "^5.3.1",
