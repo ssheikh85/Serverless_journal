@@ -15,35 +15,35 @@ export const resolvers = {
         console.error(error);
       }
     }
-  }
+  },
 
-  // Mutation: {
-  //   createEntry: async (args, context) => {
-  //     try {
-  //       return await entriesHandler.createEntry(context.user, args.EntryInput);
-  //     } catch (error) {
-  //       console.error(error);
-  //     }
-  //   },
-  //   updateEntry: async (args, context) => {
-  //     try {
-  //       return await entriesHandler.updateEntry(
-  //         context.user,
-  //         args.entryId,
-  //         args.EntryInput
-  //       );
-  //     } catch (error) {
-  //       console.error(error);
-  //     }
-  //   },
-  //   deleteEntry: async (args, context) => {
-  //     try {
-  //       return await entriesHandler.deleteEntry(context.user, args.entryId);
-  //     } catch (error) {
-  //       console.error(error);
-  //     }
-  //   }
-  // }
+  Mutation: {
+    createEntry: async (args, context) => {
+      try {
+        return await entriesHandler.createEntry(context.user, args.EntryInput);
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    updateEntry: async (args, context) => {
+      try {
+        return await entriesHandler.updateEntry(
+          context.user,
+          args.entryId,
+          args.EntryInput
+        );
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    deleteEntry: async (args, context) => {
+      try {
+        return await entriesHandler.deleteEntry(context.user, args.entryId);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  }
 };
 
 //Dummy test data

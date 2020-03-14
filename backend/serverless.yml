@@ -24,18 +24,6 @@ provider:
     SIGNED_URL_EXPIRATION: 300
     JWKS_ENDPOINT: https://dev-rf-u05fp.auth0.com/.well-known/jwks.json
 
-custom:
-  serverless-offline:
-    port: 3003
-
-  dynamodb:
-    stages:
-      - dev
-    start:
-      port: 8000
-      inMemory: true
-      migrate: true
-
 functions:
   Entries:
     handler: lambda/entriesServer.entriesHandler
