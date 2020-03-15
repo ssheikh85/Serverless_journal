@@ -10,6 +10,9 @@ import { typeDefs } from "../schema/EntrySchema";
 import { resolvers } from "../businessLogic/entriesResolver";
 const { ApolloServer } = require("apollo-server-lambda");
 import { EntriesAccess } from "../dataLayer/entriesAccess";
+const { createDynamoDBClient } = require("../dataLayer/entriesConfig");
+
+const dynamoClient = createDynamoDBClient();
 
 // import { createLogger } from "../utils/logger";
 // const logger = createLogger("auth");
@@ -37,7 +40,7 @@ import { EntriesAccess } from "../dataLayer/entriesAccess";
 // };
 
 const dataSources = () => ({
-  entriesAccess: new EntriesAccess()
+  entriesAccess: new EntriesAccess({ dynamoClient })
 });
 
 const server = new ApolloServer({

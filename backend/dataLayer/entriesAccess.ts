@@ -1,10 +1,6 @@
-const AWS = require("aws-sdk");
-const AWSXRay = require("aws-xray-sdk");
-const XAWS = AWSXRay.captureAWS(AWS);
 const uuid = require("uuid");
 const { DataSource } = require("apollo-datasource");
 
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { EntryItem } from "../models/EntryItem";
 import { EntryUpdate } from "../models/EntryUpdate";
 import { EntryInput } from "../request/EntryInput";
@@ -17,21 +13,22 @@ export class EntriesAccess extends DataSource {
   // private readonly s3 = new XAWS.S3({ signatureVersion: "v4" });
   // private readonly bucketName = process.env.FILES_S3_BUCKET;
   // private readonly urlExpiration = process.env.SIGNED_URL_EXPIRATION;
-  private readonly docClient: DocumentClient = createDynamoDBClient();
-  private readonly entriesTable = process.env.ENTRIES_TABLE;
-  private readonly entryIdIndex = process.env.ENTRIES_INDEX;
 
-  constructor() {
+  constructor({ dynamoClient }) {
     super();
+    this.dynamoClient = dynamoClient;
   }
 
   //Gets entries for a specific authorized user
   async getEntries(userId: String): Promise<EntryItem[]> {
     try {
-      const result = await this.docClient
+      logger.info(this.dynamoClient.docClient);
+      logger.info(this.dynamoClient.entriesTable);
+      logger.info(this.dynamoClient.entryIdIndex);
+      const result = await this.dynamoClient.docClient
         .query({
-          TableName: this.entriesTable,
-          IndexName: this.entryIdIndex,
+          TableName: this.dynamoClient.entriesTable,
+          IndexName: this.dynamoClient.entryIdIndex,
           ScanIndexForward: false,
           KeyConditionExpression: "userId = :userId",
           ExpressionAttributeValues: {
@@ -55,9 +52,9 @@ export class EntriesAccess extends DataSource {
   ): Promise<EntryItem> {
     try {
       const newEntryId = uuid.v4();
-      await this.docClient
+      await this.dynamoClient.docClient
         .put({
-          TableName: this.entriesTable,
+          TableName: this.dynamoClient.entriesTable,
           Item: {
             userId: userIdIn,
             entryId: newEntryId,
@@ -67,10 +64,10 @@ export class EntriesAccess extends DataSource {
         })
         .promise();
 
-      const result = await this.docClient
+      const result = await this.dynamoClient.docClient
         .query({
-          TableName: this.entriesTable,
-          IndexName: this.entryIdIndex,
+          TableName: this.dynamoClient.entriesTable,
+          IndexName: this.dynamoClient.entryIdIndex,
           KeyConditionExpression: "userId = :userId",
           FilterExpression: "entryId = :entryId",
           ScanIndexForward: false,
@@ -94,10 +91,10 @@ export class EntriesAccess extends DataSource {
     entryInput: EntryInput
   ): Promise<EntryUpdate> {
     try {
-      const result = await this.docClient
+      const result = await this.dynamoClient.docClient
         .query({
-          TableName: this.entriesTable,
-          IndexName: this.entryIdIndex,
+          TableName: this.dynamoClient.entriesTable,
+          IndexName: this.dynamoClient.entryIdIndex,
           KeyConditionExpression: "userId = :userId",
           FilterExpression: "entryId = :entryId",
           ScanIndexForward: false,
@@ -110,10 +107,10 @@ export class EntriesAccess extends DataSource {
 
       logger.info("results of query for update", result, entryIdIn);
 
-      await this.docClient
+      await this.dynamoClient.docClient
         .update({
           Key: { userIdIn, createdAt: result.Items[0].createdAt },
-          TableName: this.entriesTable,
+          TableName: this.dynamoClient.entriesTable,
           UpdateExpression: " SET #cnt = :cnt",
           ExpressionAttributeValues: {
             ":cnt": entryInput.content
@@ -132,10 +129,10 @@ export class EntriesAccess extends DataSource {
   //Deletes an entry for a specific authorized user
   async deleteEntry(userIdIn: String, entryIdIn: String): Promise<EntryItem> {
     try {
-      const result = await this.docClient
+      const result = await this.dynamoClient.docClient
         .query({
-          TableName: this.entriesTable,
-          IndexName: this.entryIdIndex,
+          TableName: this.dynamoClient.entriesTable,
+          IndexName: this.dynamoClient.entryIdIndex,
           KeyConditionExpression: "userId = :userId",
           FilterExpression: "entryId = :entryId",
           ScanIndexForward: false,
@@ -148,14 +145,14 @@ export class EntriesAccess extends DataSource {
 
       logger.info("results of query for delete", result, entryIdIn);
 
-      await this.docClient
+      await this.dynamoClient.docClient
         .delete({
           Key: { userIdIn, createdAt: result.Items[0].createdAt },
           ConditionExpression: "entryId = :entryId",
           ExpressionAttributeValues: {
             ":entryId": entryIdIn
           },
-          TableName: this.entriesTable
+          TableName: this.dynamoClient.entriesTable
         })
         .promise();
       return;
@@ -205,16 +202,4 @@ export class EntriesAccess extends DataSource {
   //     .promise();
   //   return;
   // }
-}
-
-function createDynamoDBClient() {
-  if (process.env.IS_OFFLINE) {
-    console.log("Creating a local DynamoDB instance");
-    return new XAWS.DynamoDB.DocumentClient({
-      region: "localhost",
-      endpoint: "http://localhost:8000"
-    });
-  }
-
-  return new XAWS.DynamoDB.DocumentClient();
 }
