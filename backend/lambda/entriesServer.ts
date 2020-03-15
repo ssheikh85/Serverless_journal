@@ -4,14 +4,15 @@
 // import { JwtPayload } from "../auth/JwtPayload";
 // import { verify, decode } from "jsonwebtoken";
 // import axios from "axios";
-// import { createLogger } from "../utils/logger";
+// const jwksUrl = process.env.JWKS_ENDPOINT;
 
 import { typeDefs } from "../schema/EntrySchema";
 import { resolvers } from "../businessLogic/entriesResolver";
 const { ApolloServer } = require("apollo-server-lambda");
-// const logger = createLogger("auth");
-// const jwksUrl = process.env.JWKS_ENDPOINT;
 import { EntriesAccess } from "../dataLayer/entriesAccess";
+
+// import { createLogger } from "../utils/logger";
+// const logger = createLogger("auth");
 
 // const getAuthenticatedUser = async (authHeader: string): Promise<String> => {
 //   if (!authHeader) throw new Error("No authentication header");
@@ -43,12 +44,6 @@ const server = new ApolloServer({
   typeDefs,
   resolvers,
   dataSources,
-  context: ({ event, context }) => ({
-    headers: event.headers,
-    functionName: context.functionName,
-    event,
-    context
-  }),
   introspection: false,
   playground: true
 });

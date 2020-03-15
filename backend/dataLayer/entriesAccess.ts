@@ -1,7 +1,6 @@
 const AWS = require("aws-sdk");
 const AWSXRay = require("aws-xray-sdk");
 const XAWS = AWSXRay.captureAWS(AWS);
-const { createLogger } = require("../utils/logger");
 const uuid = require("uuid");
 const { DataSource } = require("apollo-datasource");
 
@@ -10,6 +9,7 @@ import { EntryItem } from "../models/EntryItem";
 import { EntryUpdate } from "../models/EntryUpdate";
 import { EntryInput } from "../request/EntryInput";
 
+const { createLogger } = require("../utils/logger");
 const logger = createLogger("entryAccess");
 
 // Class to Access DynamoDB table for entries create, read, update and delete options
@@ -28,17 +28,15 @@ export class EntriesAccess extends DataSource {
   //Gets entries for a specific authorized user
   async getEntries(userId: String): Promise<EntryItem[]> {
     try {
-      logger.info(this.entriesTable);
-      logger.info(this.entryIdIndex);
       const result = await this.docClient
         .query({
           TableName: this.entriesTable,
           IndexName: this.entryIdIndex,
+          ScanIndexForward: false,
           KeyConditionExpression: "userId = :userId",
           ExpressionAttributeValues: {
             ":userId": userId
-          },
-          ScanIndexForward: false
+          }
         })
         .promise();
 
@@ -75,11 +73,11 @@ export class EntriesAccess extends DataSource {
           IndexName: this.entryIdIndex,
           KeyConditionExpression: "userId = :userId",
           FilterExpression: "entryId = :entryId",
+          ScanIndexForward: false,
           ExpressionAttributeValues: {
             ":userId": userIdIn,
             ":entryId": newEntryId
-          },
-          ScanIndexForward: false
+          }
         })
         .promise();
 
@@ -102,11 +100,11 @@ export class EntriesAccess extends DataSource {
           IndexName: this.entryIdIndex,
           KeyConditionExpression: "userId = :userId",
           FilterExpression: "entryId = :entryId",
+          ScanIndexForward: false,
           ExpressionAttributeValues: {
             ":userId": userIdIn,
             ":entryId": entryIdIn
-          },
-          ScanIndexForward: false
+          }
         })
         .promise();
 
@@ -140,11 +138,11 @@ export class EntriesAccess extends DataSource {
           IndexName: this.entryIdIndex,
           KeyConditionExpression: "userId = :userId",
           FilterExpression: "entryId = :entryId",
+          ScanIndexForward: false,
           ExpressionAttributeValues: {
             ":userId": userIdIn,
             ":entryId": entryIdIn
-          },
-          ScanIndexForward: false
+          }
         })
         .promise();
 
