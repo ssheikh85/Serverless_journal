@@ -1,5 +1,5 @@
-const uuid = require("uuid");
 const { DataSource } = require("apollo-datasource");
+const uuid = require("uuid");
 
 import { EntryItem } from "../models/EntryItem";
 import { EntryUpdate } from "../models/EntryUpdate";
@@ -22,9 +22,6 @@ export class EntriesAccess extends DataSource {
   //Gets entries for a specific authorized user
   async getEntries(userId: String): Promise<EntryItem[]> {
     try {
-      logger.info(this.dynamoClient.docClient);
-      logger.info(this.dynamoClient.entriesTable);
-      logger.info(this.dynamoClient.entryIdIndex);
       const result = await this.dynamoClient.docClient
         .query({
           TableName: this.dynamoClient.entriesTable,
@@ -64,21 +61,14 @@ export class EntriesAccess extends DataSource {
         })
         .promise();
 
-      const result = await this.dynamoClient.docClient
-        .query({
-          TableName: this.dynamoClient.entriesTable,
-          IndexName: this.dynamoClient.entryIdIndex,
-          KeyConditionExpression: "userId = :userId",
-          FilterExpression: "entryId = :entryId",
-          ScanIndexForward: false,
-          ExpressionAttributeValues: {
-            ":userId": userIdIn,
-            ":entryId": newEntryId
-          }
-        })
-        .promise();
+      const newEntry = {
+        userId: userIdIn,
+        entryId: newEntryId,
+        createdAt: new Date().toISOString(),
+        content: entryInput.content
+      };
 
-      return result.Items[0] as EntryItem;
+      return newEntry as EntryItem;
     } catch (error) {
       console.error(error);
     }
