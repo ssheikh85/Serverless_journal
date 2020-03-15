@@ -2,7 +2,7 @@ const { DataSource } = require("apollo-datasource");
 const uuid = require("uuid");
 
 import { EntryItem } from "../models/EntryItem";
-import { EntryUpdate } from "../models/EntryUpdate";
+// import { EntryUpdate } from "../models/EntryUpdate";
 import { EntryInput } from "../request/EntryInput";
 
 const { createLogger } = require("../utils/logger");
@@ -34,7 +34,7 @@ export class EntriesAccess extends DataSource {
         })
         .promise();
 
-      logger.info(result);
+      // logger.info(result);
       const items = result.Items;
       return items as EntryItem[];
     } catch (error) {
@@ -76,30 +76,32 @@ export class EntriesAccess extends DataSource {
 
   //Updates an entry for a specific authorized user
   async updateEntry(
-    userIdIn: String,
+    userId: String,
     entryIdIn: String,
     entryInput: EntryInput
-  ): Promise<EntryUpdate> {
+  ): Promise<EntryItem> {
     try {
-      const result = await this.dynamoClient.docClient
+      const results = await this.dynamoClient.docClient
         .query({
           TableName: this.dynamoClient.entriesTable,
           IndexName: this.dynamoClient.entryIdIndex,
-          KeyConditionExpression: "userId = :userId",
-          FilterExpression: "entryId = :entryId",
           ScanIndexForward: false,
+          KeyConditionExpression: "userId = :userId",
           ExpressionAttributeValues: {
-            ":userId": userIdIn,
-            ":entryId": entryIdIn
+            ":userId": userId
           }
         })
         .promise();
 
-      logger.info("results of query for update", result, entryIdIn);
+      const createdAtEntry = results.Items.find(
+        elem => elem.entryId === entryIdIn
+      );
+
+      logger.info(entryIdIn, createdAtEntry);
 
       await this.dynamoClient.docClient
         .update({
-          Key: { userIdIn, createdAt: result.Items[0].createdAt },
+          Key: { userId, createdAt: createdAtEntry.createdAt },
           TableName: this.dynamoClient.entriesTable,
           UpdateExpression: " SET #cnt = :cnt",
           ExpressionAttributeValues: {
@@ -117,27 +119,29 @@ export class EntriesAccess extends DataSource {
   }
 
   //Deletes an entry for a specific authorized user
-  async deleteEntry(userIdIn: String, entryIdIn: String): Promise<EntryItem> {
+  async deleteEntry(userId: String, entryIdIn: String): Promise<EntryItem> {
     try {
-      const result = await this.dynamoClient.docClient
+      const results = await this.dynamoClient.docClient
         .query({
           TableName: this.dynamoClient.entriesTable,
           IndexName: this.dynamoClient.entryIdIndex,
-          KeyConditionExpression: "userId = :userId",
-          FilterExpression: "entryId = :entryId",
           ScanIndexForward: false,
+          KeyConditionExpression: "userId = :userId",
           ExpressionAttributeValues: {
-            ":userId": userIdIn,
-            ":entryId": entryIdIn
+            ":userId": userId
           }
         })
         .promise();
 
-      logger.info("results of query for delete", result, entryIdIn);
+      const createdAtEntry = results.Items.find(
+        elem => elem.entryId === entryIdIn
+      );
+
+      // logger.info(entryIdIn, createdAtEntry);
 
       await this.dynamoClient.docClient
         .delete({
-          Key: { userIdIn, createdAt: result.Items[0].createdAt },
+          Key: { userId, createdAt: createdAtEntry.createdAt },
           ConditionExpression: "entryId = :entryId",
           ExpressionAttributeValues: {
             ":entryId": entryIdIn
