@@ -1,0 +1,9 @@
+query getEntries($userId: String){
+    getEntries(userId: $userId){
+        userId
+        entryId
+        createdAt
+        content
+        attachmentUrl
+    }
+}

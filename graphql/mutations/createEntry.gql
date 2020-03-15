@@ -1,0 +1,9 @@
+mutation createEntry($userId: String, $entryInput: EntryInput){
+    createEntry(userId: $userId, entryInput: $entryInput){
+        userId
+        entryId
+        createdAt
+        content
+        attachmentUrl
+    }
+}

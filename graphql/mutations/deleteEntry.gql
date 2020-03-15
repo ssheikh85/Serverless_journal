@@ -1,0 +1,9 @@
+mutation deleteEntry($userId: String, $entryId: String){
+    deleteEntry(userId: $userId, entryId: $entryId){
+        userId
+        entryId
+        createdAt
+        content
+        attachmentUrl
+    }
+}
