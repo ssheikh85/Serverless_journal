@@ -11,6 +11,7 @@ import { resolvers } from "../businessLogic/entriesResolver";
 const { ApolloServer } = require("apollo-server-lambda");
 // const logger = createLogger("auth");
 // const jwksUrl = process.env.JWKS_ENDPOINT;
+import { EntriesAccess } from "../dataLayer/entriesAccess";
 
 // const getAuthenticatedUser = async (authHeader: string): Promise<String> => {
 //   if (!authHeader) throw new Error("No authentication header");
@@ -34,9 +35,14 @@ const { ApolloServer } = require("apollo-server-lambda");
 //   }
 // };
 
+const dataSources = () => ({
+  entriesAccess: new EntriesAccess()
+});
+
 const server = new ApolloServer({
   typeDefs,
   resolvers,
+  dataSources,
   context: ({ event, context }) => ({
     headers: event.headers,
     functionName: context.functionName,

@@ -3,6 +3,7 @@ const AWSXRay = require("aws-xray-sdk");
 const XAWS = AWSXRay.captureAWS(AWS);
 const { createLogger } = require("../utils/logger");
 const uuid = require("uuid");
+const { DataSource } = require("apollo-datasource");
 
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { EntryItem } from "../models/EntryItem";
@@ -12,18 +13,23 @@ import { EntryInput } from "../request/EntryInput";
 const logger = createLogger("entryAccess");
 
 // Class to Access DynamoDB table for entries create, read, update and delete options
-export class EntriesAccess {
-  constructor(
-    private readonly docClient: DocumentClient = createDynamoDBClient(),
-    // private readonly s3 = new XAWS.S3({ signatureVersion: "v4" }),
-    private readonly entriesTable = process.env.ENTRIES_TABLE,
-    private readonly entryIdIndex = process.env.ENTRIES_INDEX // private readonly bucketName = process.env.FILES_S3_BUCKET, // private readonly urlExpiration = process.env.SIGNED_URL_EXPIRATION
-  ) {}
+export class EntriesAccess extends DataSource {
+  // private readonly s3 = new XAWS.S3({ signatureVersion: "v4" });
+  // private readonly bucketName = process.env.FILES_S3_BUCKET;
+  // private readonly urlExpiration = process.env.SIGNED_URL_EXPIRATION;
+  private readonly docClient: DocumentClient = createDynamoDBClient();
+  private readonly entriesTable = process.env.ENTRIES_TABLE;
+  private readonly entryIdIndex = process.env.ENTRIES_INDEX;
+
+  constructor() {
+    super();
+  }
 
   //Gets entries for a specific authorized user
   async getEntries(userId: String): Promise<EntryItem[]> {
     try {
-      logger.info(userId);
+      logger.info(this.entriesTable);
+      logger.info(this.entryIdIndex);
       const result = await this.docClient
         .query({
           TableName: this.entriesTable,

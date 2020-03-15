@@ -1,15 +1,11 @@
-import { EntriesAccess } from "../dataLayer/entriesAccess";
-
 // import { createLogger } from "../utils/logger";
 // const logger = createLogger("resolver");
 
-const entriesHandler = new EntriesAccess();
-
 export const resolvers = {
   Query: {
-    getEntries: async (_, args) => {
+    getEntries: async (_, args, { dataSources }) => {
       try {
-        return await entriesHandler.getEntries(args.userId);
+        return await dataSources.entriesAccess.getEntries(args.userId);
       } catch (error) {
         console.error(error);
       }
@@ -17,16 +13,19 @@ export const resolvers = {
   },
 
   Mutation: {
-    createEntry: async (_, args) => {
+    createEntry: async (_, args, { dataSources }) => {
       try {
-        return await entriesHandler.createEntry(args.userId, args.entryInput);
+        return await dataSources.entriesAccess.createEntry(
+          args.userId,
+          args.entryInput
+        );
       } catch (error) {
         console.error(error);
       }
     },
-    updateEntry: async (_, args) => {
+    updateEntry: async (_, args, { dataSources }) => {
       try {
-        return await entriesHandler.updateEntry(
+        return await dataSources.entriesAccess.updateEntry(
           args.userId,
           args.entryId,
           args.entryInput
@@ -35,9 +34,12 @@ export const resolvers = {
         console.error(error);
       }
     },
-    deleteEntry: async (_, args) => {
+    deleteEntry: async (_, args, { dataSources }) => {
       try {
-        return await entriesHandler.deleteEntry(args.userId, args.entryId);
+        return await dataSources.entriesAccess.deleteEntry(
+          args.userId,
+          args.entryId
+        );
       } catch (error) {
         console.error(error);
       }
