@@ -2,7 +2,6 @@ import { EntriesAccess } from "../dataLayer/entriesAccess";
 import { EntryInput } from "../request/EntryInput";
 
 // import { createLogger } from "../utils/logger";
-
 // const logger = createLogger("resolver");
 
 const entriesHandler = new EntriesAccess();
@@ -19,20 +18,20 @@ export const resolvers = {
   },
 
   Mutation: {
-    createEntry: async (userId: string, EntryInput: EntryInput) => {
+    createEntry: async (userId: string, entryInput: EntryInput) => {
       try {
-        return await entriesHandler.createEntry(userId, EntryInput);
+        return await entriesHandler.createEntry(userId, entryInput);
       } catch (error) {
         console.error(error);
       }
     },
     updateEntry: async (
+      entryInput: EntryInput,
       userId: string,
-      entryId: string,
-      EntryInput: EntryInput
+      entryId: string
     ) => {
       try {
-        return await entriesHandler.updateEntry(userId, entryId, EntryInput);
+        return await entriesHandler.updateEntry(userId, entryId, entryInput);
       } catch (error) {
         console.error(error);
       }
