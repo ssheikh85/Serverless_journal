@@ -1,9 +1,8 @@
 const { DataSource } = require("apollo-datasource");
 const uuid = require("uuid");
 
-import { EntryItem } from "../models/EntryItem";
-// import { EntryUpdate } from "../models/EntryUpdate";
-import { EntryInput } from "../request/EntryInput";
+import { EntryItem } from "../models_requests/EntryItem";
+import { EntryInput } from "../models_requests/EntryInput";
 
 const { createLogger } = require("../utils/logger");
 const logger = createLogger("entryAccess");
