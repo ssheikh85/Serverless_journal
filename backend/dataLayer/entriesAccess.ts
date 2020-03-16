@@ -9,10 +9,6 @@ const logger = createLogger("entryAccess");
 
 // Class to Access DynamoDB table for entries create, read, update and delete options
 export class EntriesAccess extends DataSource {
-  // private readonly s3 = new XAWS.S3({ signatureVersion: "v4" });
-  // private readonly bucketName = process.env.FILES_S3_BUCKET;
-  // private readonly urlExpiration = process.env.SIGNED_URL_EXPIRATION;
-
   constructor({ dynamoClient }) {
     super();
     this.dynamoClient = dynamoClient;
@@ -153,46 +149,4 @@ export class EntriesAccess extends DataSource {
       console.error(error);
     }
   }
-  //Creates a pre-assigned url for file uploads
-  // async generateUploadUrl(): Promise<UploadUrl> {
-  //   //Create a presigned URL for file uploads
-  //   return this.s3.getSignedUrl("putObject", {
-  //     Bucket: this.bucketName,
-  //     Key: entryId,
-  //     Expires: this.urlExpiration
-  //   });
-  // }
-
-  //Creates an attachment URL for uploaded files
-  // async createAttachment(): Promise<EntryItem> {
-  //   const userId = user.sub;
-  //   const result = await this.docClient
-  //     .query({
-  //       TableName: this.entriesTable,
-  //       IndexName: this.entryIdIndex,
-  //       KeyConditionExpression: "userId = :userId",
-  //       FilterExpression: "entryId = :entryId",
-  //       ExpressionAttributeValues: {
-  //         ":userId": userId,
-  //         ":entryId": entryId
-  //       },
-  //       ScanIndexForward: false
-  //     })
-  //     .promise();
-
-  //   await this.docClient
-  //     .update({
-  //       Key: { userId, createdAt: result.Items[0].createdAt },
-  //       TableName: this.entriesTable,
-  //       UpdateExpression: " SET #attach = :attach",
-  //       ExpressionAttributeValues: {
-  //         ":attach": `https://${this.bucketName}.s3.amazonaws.com/${entryId}`
-  //       },
-  //       ExpressionAttributeNames: {
-  //         "#attach": "attachmentUrl"
-  //       }
-  //     })
-  //     .promise();
-  //   return;
-  // }
 }
