@@ -1,0 +1,232 @@
+{
+	"info": {
+		"_postman_id": "f6d5d91b-ba62-4934-8247-3f26551831fb",
+		"name": "gql-entries-dev",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GET entries for an id",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": " bearer {{authToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "query getEntries($userId: String){\n    getEntries(userId: $userId){\n        userId\n        entryId\n        createdAt\n        content\n        attachmentUrl\n    }\n}",
+						"variables": "{\n\t\"userId\": \"google-oauth2|117735456242439233665\"\n}"
+					}
+				},
+				"url": {
+					"raw": "https://{{apiId}}.execute-api.us-east-1.amazonaws.com/dev/entries",
+					"protocol": "https",
+					"host": [
+						"{{apiId}}",
+						"execute-api",
+						"us-east-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"dev",
+						"entries"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create a new entry",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": " bearer {{authToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "mutation createEntry($userId: String, $entryInput: EntryInput){\n    createEntry(userId: $userId, entryInput: $entryInput){\n        userId\n        entryId\n        createdAt\n        content\n        attachmentUrl\n    }\n}",
+						"variables": "{\n\t\"userId\": \"google-oauth2|117735456242439233665\",\n\t\"entryInput\":{\n\t\t\"content\":\"My third post\"\n\t\t\n\t}\n}\n\n\n\n"
+					}
+				},
+				"url": {
+					"raw": "https://{{apiId}}.execute-api.us-east-1.amazonaws.com/dev/entries",
+					"protocol": "https",
+					"host": [
+						"{{apiId}}",
+						"execute-api",
+						"us-east-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"dev",
+						"entries"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update entry content",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": " bearer {{authToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "mutation updateEntry($entryInput: EntryInput, $userId: String, $entryId: String){\n    updateEntry(entryInput: $entryInput, userId: $userId, entryId: $entryId){\n        content\n    }\n}",
+						"variables": "{\n\t\"entryInput\":{\n\t\t\"content\":\"Something!\"\n\t\t\n\t},\n\t\"userId\": \"google-oauth2|117735456242439233665\",\n\t\"entryId\": \"d3fdd35b-0f87-45e9-a32b-8357be9332f9\"\n}"
+					}
+				},
+				"url": {
+					"raw": "https://{{apiId}}.execute-api.us-east-1.amazonaws.com/dev/entries?Authorization= bearer {{authToken}}",
+					"protocol": "https",
+					"host": [
+						"{{apiId}}",
+						"execute-api",
+						"us-east-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"dev",
+						"entries"
+					],
+					"query": [
+						{
+							"key": "Authorization",
+							"value": " bearer {{authToken}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete an entry",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": " bearer {{authToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "mutation deleteEntry($userId: String, $entryId: String){\n    deleteEntry(userId: $userId, entryId: $entryId){\n        userId\n        entryId\n        createdAt\n        content\n        attachmentUrl\n    }\n}",
+						"variables": "{\n\t\"userId\": \"google-oauth2|117735456242439233665\",\n\t\"entryId\": \"d3fdd35b-0f87-45e9-a32b-8357be9332f9\"\n}"
+					}
+				},
+				"url": {
+					"raw": "https://{{apiId}}.execute-api.us-east-1.amazonaws.com/dev/entries",
+					"protocol": "https",
+					"host": [
+						"{{apiId}}",
+						"execute-api",
+						"us-east-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"dev",
+						"entries"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Generate upload url",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": " bearer {{authToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "mutation generateUploadUrl($userId: String, $entryId: String){\n    generateUploadUrl(userId: $userId, entryId: $entryId)\n}",
+						"variables": "{\n\t\"userId\": \"google-oauth2|117735456242439233665\",\n\t\"entryId\": \"d3fdd35b-0f87-45e9-a32b-8357be9332f9\"\n}"
+					}
+				},
+				"url": {
+					"raw": "https://{{apiId}}.execute-api.us-east-1.amazonaws.com/dev/entries",
+					"protocol": "https",
+					"host": [
+						"{{apiId}}",
+						"execute-api",
+						"us-east-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"dev",
+						"entries"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "1d264aa1-2de6-4fc7-accf-7b1525c12e7e",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "a389f82e-8f34-4681-bbb1-a284e0cdd138",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "6e44033c-64d2-488e-866b-77e3a2c0a70f",
+			"key": "apiId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "cc85d10f-24ad-4c59-8d58-41b7a268c2d8",
+			"key": "authToken",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"protocolProfileBehavior": {}
+}
