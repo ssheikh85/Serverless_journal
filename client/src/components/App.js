@@ -5,25 +5,8 @@ import {ApolloClient} from 'apollo-client';
 import {InMemoryCache} from 'apollo-cache-inmemory';
 import {createHttpLink} from 'apollo-link-http';
 import {setContext} from 'apollo-link-context';
-import Root from '../components/root';
+import Root from './Root';
 import {apiEndpoint} from '../client_config';
-// import {useAuth0} from '../auth/authHandlerWeb';
-// import authHandlerMobile from '../auth/authHandlerMobile';
-
-// let idToken = '';
-
-// const {getTokenSilently} = useAuth0();
-
-// const getToken = async () => {
-//   const idTokenMobile = await authHandlerMobile.getIdToken();
-//   idToken = idTokenMobile;
-// };
-
-// if (Platform.OS === 'web') {
-//   idToken = getTokenSilently();
-// } else {
-//   getToken();
-// }
 
 //Apollo Client set-up
 const httpLink = createHttpLink({

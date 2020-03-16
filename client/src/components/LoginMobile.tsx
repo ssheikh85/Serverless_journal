@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import {Alert, Button, StyleSheet, Text, View} from 'react-native';
 import authHandlerMobile from '../auth/authHandlerMobile';
 
-const NavbarMobile = () => {
+const LoginMobile = () => {
   const [accessToken, setAccessToken] = useState(null);
 
   const login = async () => {
@@ -12,7 +12,7 @@ const NavbarMobile = () => {
 
   const logout = async () => {
     const sucess = await authHandlerMobile.handleLogout();
-    console.log(sucess);
+
     if (sucess) {
       setAccessToken(null);
     } else {
@@ -20,9 +20,15 @@ const NavbarMobile = () => {
     }
   };
 
+  const getUserName = async () => {
+    const user = await authHandlerMobile.getUserInfo(accessToken);
+    return user.firstName;
+  };
+
+  const userFirstName = getUserName();
   return (
     <View style={styles.container}>
-      <Text style={styles.header}> Login </Text>
+      <Text style={styles.header}> Welcome, {userFirstName}</Text>
       <Text>You are{accessToken ? ' ' : ' not '}logged in . </Text>
       <Button
         onPress={accessToken ? logout : login}
@@ -35,15 +41,15 @@ const NavbarMobile = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'flex-start',
-    alignItems: 'flex-start',
+    justifyContent: 'center',
+    alignItems: 'center',
     backgroundColor: '#F5FCFF',
   },
   header: {
-    fontSize: 20,
+    fontSize: 48,
     textAlign: 'center',
     margin: 10,
   },
 });
 
-export default NavbarMobile;
+export default LoginMobile;

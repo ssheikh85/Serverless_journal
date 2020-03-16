@@ -5,9 +5,9 @@ import {EntryItem} from '../models_requests/EntryItem';
 import {EntryInput} from '../models_requests/EntryInput';
 
 //Application state variable
-const initialState = {
-  allEntries: [],
-  singleEntry: {},
+const initialState: any = {
+  allEntries: [] as EntryItem[],
+  singleEntry: {} as EntryItem,
 };
 
 //Action Creators
@@ -153,7 +153,7 @@ export const updateNewEntry = (
 };
 
 export const deleteSingleEntry = (userId: String, entryId: String) => {
-  return async (dispatch: any) => {
+  return async () => {
     try {
       const [deleteEntry, {data, error}] = useMutation(DELETE_ENTRY_M, {
         variables: {userId, entryId},
