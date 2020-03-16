@@ -14,11 +14,14 @@ The backend is built using the following technologies:
 - AWS CloudFormation, AWS APIGateway, AWS Lambda, AWS DynamodB
 - Apollo Server Lambda
 - Graphql
+- NodeJS - Typescript
 
 The Front is built using the following technologies _(Under Development)_
 
+- Typescript
 - Graphql
 - Apollo Client
+- Auth0
 - React
 - React Native
 

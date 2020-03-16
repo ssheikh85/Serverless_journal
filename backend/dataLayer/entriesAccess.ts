@@ -99,7 +99,7 @@ export class EntriesAccess extends DataSource {
 
       logger.info(entryIdIn, createdAtEntry);
 
-      await this.awsAssets.docClient
+      const updatedEntry = await this.awsAssets.docClient
         .update({
           Key: { userId, createdAt: createdAtEntry.createdAt },
           TableName: this.awsAssets.entriesTable,
@@ -112,7 +112,7 @@ export class EntriesAccess extends DataSource {
           }
         })
         .promise();
-      return;
+      return updatedEntry as EntryItem;
     } catch (error) {
       console.error(error);
     }
@@ -144,7 +144,7 @@ export class EntriesAccess extends DataSource {
 
       // logger.info(entryIdIn, createdAtEntry);
 
-      await this.awsAssets.docClient
+      const deletedEntry = await this.awsAssets.docClient
         .delete({
           Key: { userId, createdAt: createdAtEntry.createdAt },
           ConditionExpression: "entryId = :entryId",
@@ -154,7 +154,7 @@ export class EntriesAccess extends DataSource {
           TableName: this.awsAssets.entriesTable
         })
         .promise();
-      return;
+      return deletedEntry as EntryItem;
     } catch (error) {
       console.error(error);
     }
