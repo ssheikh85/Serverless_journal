@@ -1,3 +1,5 @@
+org: ssheikh85
+app: backend
 service:
   name: serverless-journal-app
 
