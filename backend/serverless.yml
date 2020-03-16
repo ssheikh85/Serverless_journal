@@ -30,10 +30,6 @@ functions:
           method: any
           path: entries
           cors: true
-    # - http:
-    #     method: put
-    #     path: entries
-    #     cors: true
     iamRoleStatements:
       - Effect: Allow
         Action:
