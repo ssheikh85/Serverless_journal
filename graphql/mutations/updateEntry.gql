@@ -1,5 +1,9 @@
 mutation updateEntry($entryInput: EntryInput, $userId: String, $entryId: String){
     updateEntry(entryInput: $entryInput, userId: $userId, entryId: $entryId){
+        userId
+        entryId
+        createdAt
         content
+        attachmentUrl
     }
 }

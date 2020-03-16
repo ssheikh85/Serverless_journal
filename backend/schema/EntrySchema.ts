@@ -9,10 +9,6 @@ export const typeDefs = gql`
     attachmentUrl: String
   }
 
-  type UploadUrl {
-    UploadUrl: String
-  }
-
   input EntryInput {
     content: String
   }

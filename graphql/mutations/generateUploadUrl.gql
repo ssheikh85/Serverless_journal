@@ -1,0 +1,3 @@
+mutation generateUploadUrl($userId: String, $entryId: String){
+    generateUploadUrl(userId: $userId, entryId: $entryId)
+}
