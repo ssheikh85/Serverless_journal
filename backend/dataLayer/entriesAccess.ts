@@ -92,6 +92,11 @@ export class EntriesAccess extends DataSource {
         elem => elem.entryId === entryIdIn
       );
 
+      if (!createdAtEntry)
+        throw new Error(
+          "Entry could not be found, please check entryId or if entry exists"
+        );
+
       logger.info(entryIdIn, createdAtEntry);
 
       await this.awsAssets.docClient
@@ -132,6 +137,11 @@ export class EntriesAccess extends DataSource {
         elem => elem.entryId === entryIdIn
       );
 
+      if (!createdAtEntry)
+        throw new Error(
+          "Entry could not be found, please check entryId or if entry exists"
+        );
+
       // logger.info(entryIdIn, createdAtEntry);
 
       await this.awsAssets.docClient
@@ -156,7 +166,7 @@ export class EntriesAccess extends DataSource {
       const preSignedUrl = this.awsAssets.s3.getSignedUrl("putObject", {
         Bucket: this.awsAssets.bucketName,
         Key: entryIdIn,
-        Expires: this.awsAssets.urlExpiration
+        Expires: parseInt(this.awsAssets.urlExpiration)
       });
 
       const results = await this.awsAssets.docClient
@@ -174,6 +184,13 @@ export class EntriesAccess extends DataSource {
       const createdAtEntry = results.Items.find(
         elem => elem.entryId === entryIdIn
       );
+
+      if (!createdAtEntry)
+        throw new Error(
+          "Entry could not be found, please check entryId or if entry exists"
+        );
+
+      // logger.info(results);
 
       await this.awsAssets.docClient
         .update({
