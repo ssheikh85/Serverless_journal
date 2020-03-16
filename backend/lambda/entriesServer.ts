@@ -25,6 +25,7 @@ const dataSources = () => ({
 const context = async ({ event }): Promise<any> => {
   try {
     const authHeader = event.headers.Authorization;
+
     if (!authHeader) throw new Error("No authentication header");
 
     if (!authHeader.toLowerCase().startsWith("bearer "))

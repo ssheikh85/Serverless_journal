@@ -1,8 +1,12 @@
+// const { createLogger } = require("../utils/logger");
+// const logger = createLogger("resolver");
+
 export const resolvers = {
   Query: {
-    getEntries: async (_, args, { dataSources }, context) => {
+    getEntries: async (_, args, { dataSources, user }) => {
       try {
-        if (context.user === args.userId) {
+        // logger.info(user, args.userId);
+        if (user === args.userId) {
           return await dataSources.entriesAccess.getEntries(args.userId);
         } else {
           console.log("User is not authorized to perform this action");
@@ -14,9 +18,9 @@ export const resolvers = {
   },
 
   Mutation: {
-    createEntry: async (_, args, { dataSources }, context) => {
+    createEntry: async (_, args, { dataSources, user }) => {
       try {
-        if (context.user === args.userId) {
+        if (user === args.userId) {
           return await dataSources.entriesAccess.createEntry(
             args.userId,
             args.entryInput
@@ -28,9 +32,9 @@ export const resolvers = {
         console.error(error);
       }
     },
-    updateEntry: async (_, args, { dataSources }, context) => {
+    updateEntry: async (_, args, { dataSources, user }) => {
       try {
-        if (context.user === args.userId) {
+        if (user === args.userId) {
           return await dataSources.entriesAccess.updateEntry(
             args.userId,
             args.entryId,
@@ -43,9 +47,9 @@ export const resolvers = {
         console.error(error);
       }
     },
-    deleteEntry: async (_, args, { dataSources }, context) => {
+    deleteEntry: async (_, args, { dataSources, user }) => {
       try {
-        if (context.user === args.userId) {
+        if (user === args.userId) {
           return await dataSources.entriesAccess.deleteEntry(
             args.userId,
             args.entryId
