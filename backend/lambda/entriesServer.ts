@@ -10,16 +10,16 @@ import { typeDefs } from "../schema/EntrySchema";
 import { resolvers } from "../businessLogic/entriesResolver";
 const { ApolloServer } = require("apollo-server-lambda");
 import { EntriesAccess } from "../dataLayer/entriesAccess";
-const { createDynamoDBClient } = require("../dataLayer/entriesConfig");
+const { createAWSAssets } = require("../dataLayer/entriesConfig");
 
-const dynamoClient = createDynamoDBClient();
+const awsAssets = createAWSAssets();
 
 import { createLogger } from "../utils/logger";
 const logger = createLogger("auth");
 
 //Dynamodb docClient datasource
 const dataSources = () => ({
-  entriesAccess: new EntriesAccess({ dynamoClient })
+  entriesAccess: new EntriesAccess({ awsAssets })
 });
 
 const context = async ({ event }): Promise<any> => {
@@ -71,9 +71,3 @@ exports.entriesHandler = server.createHandler({
     credentials: true
   }
 });
-
-// try {
-//   const user = await getAuthenticatedUser(event.headers.Authorization);
-//   logger.info("User was authorized", user);
-//   return user;
-// }

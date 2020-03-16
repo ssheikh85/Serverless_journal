@@ -9,18 +9,18 @@ const logger = createLogger("entryAccess");
 
 // Class to Access DynamoDB table for entries create, read, update and delete options
 export class EntriesAccess extends DataSource {
-  constructor({ dynamoClient }) {
+  constructor({ awsAssets }) {
     super();
-    this.dynamoClient = dynamoClient;
+    this.awsAssets = awsAssets;
   }
 
   //Gets entries for a specific authorized user
   async getEntries(userId: String): Promise<EntryItem[]> {
     try {
-      const result = await this.dynamoClient.docClient
+      const result = await this.awsAssets.docClient
         .query({
-          TableName: this.dynamoClient.entriesTable,
-          IndexName: this.dynamoClient.entryIdIndex,
+          TableName: this.awsAssets.entriesTable,
+          IndexName: this.awsAssets.entryIdIndex,
           ScanIndexForward: false,
           KeyConditionExpression: "userId = :userId",
           ExpressionAttributeValues: {
@@ -44,9 +44,9 @@ export class EntriesAccess extends DataSource {
   ): Promise<EntryItem> {
     try {
       const newEntryId = uuid.v4();
-      await this.dynamoClient.docClient
+      await this.awsAssets.docClient
         .put({
-          TableName: this.dynamoClient.entriesTable,
+          TableName: this.awsAssets.entriesTable,
           Item: {
             userId: userIdIn,
             entryId: newEntryId,
@@ -76,10 +76,10 @@ export class EntriesAccess extends DataSource {
     entryInput: EntryInput
   ): Promise<EntryItem> {
     try {
-      const results = await this.dynamoClient.docClient
+      const results = await this.awsAssets.docClient
         .query({
-          TableName: this.dynamoClient.entriesTable,
-          IndexName: this.dynamoClient.entryIdIndex,
+          TableName: this.awsAssets.entriesTable,
+          IndexName: this.awsAssets.entryIdIndex,
           ScanIndexForward: false,
           KeyConditionExpression: "userId = :userId",
           ExpressionAttributeValues: {
@@ -94,10 +94,10 @@ export class EntriesAccess extends DataSource {
 
       logger.info(entryIdIn, createdAtEntry);
 
-      await this.dynamoClient.docClient
+      await this.awsAssets.docClient
         .update({
           Key: { userId, createdAt: createdAtEntry.createdAt },
-          TableName: this.dynamoClient.entriesTable,
+          TableName: this.awsAssets.entriesTable,
           UpdateExpression: " SET #cnt = :cnt",
           ExpressionAttributeValues: {
             ":cnt": entryInput.content
@@ -116,10 +116,10 @@ export class EntriesAccess extends DataSource {
   //Deletes an entry for a specific authorized user
   async deleteEntry(userId: String, entryIdIn: String): Promise<EntryItem> {
     try {
-      const results = await this.dynamoClient.docClient
+      const results = await this.awsAssets.docClient
         .query({
-          TableName: this.dynamoClient.entriesTable,
-          IndexName: this.dynamoClient.entryIdIndex,
+          TableName: this.awsAssets.entriesTable,
+          IndexName: this.awsAssets.entryIdIndex,
           ScanIndexForward: false,
           KeyConditionExpression: "userId = :userId",
           ExpressionAttributeValues: {
@@ -134,17 +134,62 @@ export class EntriesAccess extends DataSource {
 
       // logger.info(entryIdIn, createdAtEntry);
 
-      await this.dynamoClient.docClient
+      await this.awsAssets.docClient
         .delete({
           Key: { userId, createdAt: createdAtEntry.createdAt },
           ConditionExpression: "entryId = :entryId",
           ExpressionAttributeValues: {
             ":entryId": entryIdIn
           },
-          TableName: this.dynamoClient.entriesTable
+          TableName: this.awsAssets.entriesTable
         })
         .promise();
       return;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  //Crates a presigned url and updates the entry with the correspondign url
+  async generateUploadUrl(userId: String, entryIdIn: String): Promise<String> {
+    try {
+      const preSignedUrl = this.awsAssets.s3.getSignedUrl("putObject", {
+        Bucket: this.awsAssets.bucketName,
+        Key: entryIdIn,
+        Expires: this.awsAssets.urlExpiration
+      });
+
+      const results = await this.awsAssets.docClient
+        .query({
+          TableName: this.awsAssets.entriesTable,
+          IndexName: this.awsAssets.entryIdIndex,
+          ScanIndexForward: false,
+          KeyConditionExpression: "userId = :userId",
+          ExpressionAttributeValues: {
+            ":userId": userId
+          }
+        })
+        .promise();
+
+      const createdAtEntry = results.Items.find(
+        elem => elem.entryId === entryIdIn
+      );
+
+      await this.awsAssets.docClient
+        .update({
+          Key: { userId, createdAt: createdAtEntry.createdAt },
+          TableName: this.awsAssets.entriesTable,
+          UpdateExpression: " SET #attach = :attach",
+          ExpressionAttributeValues: {
+            ":attach": `https://${this.awsAssets.bucketName}.s3.amazonaws.com/${entryIdIn}`
+          },
+          ExpressionAttributeNames: {
+            "#attach": "attachmentUrl"
+          }
+        })
+        .promise();
+
+      return preSignedUrl;
     } catch (error) {
       console.error(error);
     }

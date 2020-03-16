@@ -9,10 +9,6 @@ export const typeDefs = gql`
     attachmentUrl: String
   }
 
-  type EntryUpdate {
-    content: String
-  }
-
   type UploadUrl {
     UploadUrl: String
   }
@@ -31,7 +27,8 @@ export const typeDefs = gql`
       entryInput: EntryInput
       userId: String
       entryId: String
-    ): EntryUpdate
+    ): EntryItem
     deleteEntry(userId: String, entryId: String): EntryItem
+    generateUploadUrl(userId: String, entryId: String): String
   }
 `;
