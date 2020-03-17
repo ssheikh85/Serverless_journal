@@ -16,7 +16,7 @@ export const SingleEntryItem = (props: any) => {
     );
   };
 
-  const [deleteEntry, {data, error}] = useMutation(DELETE_ENTRY_M);
+  const [deleteEntry] = useMutation(DELETE_ENTRY_M);
 
   const {userId, entryId} = entryItem as EntryItem;
 

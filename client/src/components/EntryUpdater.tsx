@@ -28,7 +28,8 @@ export const EntryUpdater = (props: any) => {
     content: entryItem.content,
   });
 
-  const [updateEntry, {data}] = useMutation(UPDATE_ENTRY_M);
+  const [updateEntry] = useMutation(UPDATE_ENTRY_M);
+  const [generateUploadUrl, {error}] = useMutation(GENERATE_URL_M);
 
   //File Uploader function that handles files from web upload or mobile upload and
   //sends file to S3 presigned URL
@@ -71,13 +72,7 @@ export const EntryUpdater = (props: any) => {
         alert('Please select a file');
         return;
       }
-      const {generateUrl} = props;
 
-      const uploadUrl = await generateUrl(userId, entryId);
-
-      const [generateUploadUrl, {data, error}] = useMutation(GENERATE_URL_M, {
-        variables: {userId, entryId},
-      });
       let presignedUrl = '';
       if (error) {
         alert(`An error has occurred ${error.message}`);

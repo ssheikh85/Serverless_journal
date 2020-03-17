@@ -10,7 +10,7 @@ export const AddEntry = (props: any) => {
   });
   const {userId} = props;
 
-  const [createEntry, {data}] = useMutation(ADD_ENTRY_M);
+  const [createEntry] = useMutation(ADD_ENTRY_M);
   return (
     <View>
       <Text>Add a new Entry</Text>
