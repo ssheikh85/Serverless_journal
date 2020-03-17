@@ -14,10 +14,9 @@ import {SingleEntryItem} from '../components/SingleEntryItem';
 import {EntryItem} from '../models_requests/EntryItem';
 import authHandlerMobile from '../auth/authHandlerMobile';
 import {useAuth0} from '../auth/authHandlerWeb';
-import {EntryInput} from 'src/models_requests/EntryInput';
 
 //List of entries
-const Entries = (props: any) => {
+export const Entries = (props: any) => {
   const [userId, setUserId] = useState('');
   const [inputNewContent, setInputNewContent] = useState({
     content: '',
@@ -72,16 +71,8 @@ const Entries = (props: any) => {
     setEntrieesFromServer(userId);
   });
 
-  const handleNewEntry = async (userId: string, newEntry: EntryInput) => {
-    const [createEntry, {data, error}] = useMutation(ADD_ENTRY_M, {
-      variables: {userId, newEntry},
-    });
-    if (error) {
-      alert(`An error has occurred ${error.message}`);
-    } else {
-      await createEntry({variables: {userId, newEntry}});
-    }
-  };
+  const [createEntry, {data}] = useMutation(ADD_ENTRY_M);
+
   return (
     <>
       <SafeAreaView style={styles.container}>
@@ -97,7 +88,7 @@ const Entries = (props: any) => {
         <Button
           title="Add a new entry"
           onPress={() => {
-            handleNewEntry(userId, inputNewContent);
+            createEntry({variables: {userId, inputNewContent}});
           }}></Button>
         <FlatList
           data={entries as EntryItem[]}

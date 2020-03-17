@@ -4,7 +4,7 @@ import LoginWeb from './LoginWeb';
 import LoginMobile from './LoginMobile';
 import authHandlerMobile from '../auth/authHandlerMobile';
 import {useAuth0} from '../auth/authHandlerWeb';
-import Entries from '../components/Entries';
+import {Entries} from '../components/Entries';
 const {isAuthenticated} = useAuth0();
 const authToken = authHandlerMobile.getAccessToken();
 

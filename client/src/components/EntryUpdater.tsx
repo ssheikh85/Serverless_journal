@@ -14,8 +14,6 @@ import {
   GENERATE_URL_M,
   uploadFileToS3,
 } from '../graphql-api/entries_api';
-import {EntryItem} from '../models_requests/EntryItem';
-import {EntryInput} from '../models_requests/EntryInput';
 import Dropzone from 'react-dropzone';
 import ImagePicker from 'react-native-image-picker';
 
@@ -30,17 +28,7 @@ export const EntryUpdater = (props: any) => {
     content: entryItem.content,
   });
 
-  //Handle Update
-  const handleContentUpdate = async (inputContent: EntryInput) => {
-    const [updateEntry, {data, error}] = useMutation(UPDATE_ENTRY_M, {
-      variables: {userId, entryId, inputContent},
-    });
-    if (error) {
-      alert(`An error has occurred ${error.message}`);
-    } else {
-      await updateEntry({variables: {userId, entryId, inputContent}});
-    }
-  };
+  const [updateEntry, {data}] = useMutation(UPDATE_ENTRY_M);
 
   //File Uploader function that handles files from web upload or mobile upload and
   //sends file to S3 presigned URL
@@ -126,7 +114,7 @@ export const EntryUpdater = (props: any) => {
             <Button
               title="Update"
               onPress={() => {
-                handleContentUpdate(inputContent);
+                updateEntry({variables: {userId, entryId, inputContent}});
               }}></Button>
 
             <Text>Upload some content</Text>

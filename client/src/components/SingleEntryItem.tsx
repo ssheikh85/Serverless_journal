@@ -15,16 +15,10 @@ export const SingleEntryItem = (props: any) => {
       <EntryUpdater entryItem={entryItem} modalVisible={modalVisibleProp} />
     );
   };
-  const handleDelete = async (userId: string, entryId: string) => {
-    const [deleteEntry, {data, error}] = useMutation(DELETE_ENTRY_M, {
-      variables: {userId, entryId},
-    });
-    if (error) {
-      alert(`An error has occurred ${error.message}`);
-    } else {
-      await deleteEntry({variables: {userId, entryId}});
-    }
-  };
+
+  const [deleteEntry, {data, error}] = useMutation(DELETE_ENTRY_M);
+
+  const {userId, entryId} = entryItem as EntryItem;
 
   return (
     <View style={styles.entry}>
@@ -32,7 +26,7 @@ export const SingleEntryItem = (props: any) => {
       <Button
         title="Delete"
         onPress={() => {
-          handleDelete(entryItem.userId, entryItem.entryId);
+          deleteEntry({variables: {userId, entryId}});
         }}></Button>
       <Button
         title="Update"
