@@ -20,7 +20,9 @@ import Dropzone from 'react-dropzone';
 import ImagePicker from 'react-native-image-picker';
 
 const EntryUpdater = (props: any) => {
-  const {userId, entryId, entryItem, modalVisibleProp} = props;
+  const {entryItem, modalVisibleProp} = props;
+  const userId = entryItem.userId as string;
+  const entryId = entryItem.entryId as string;
 
   const [modalVisible, setModalVisible] = useState(modalVisibleProp);
   const [file, setFile] = useState();
