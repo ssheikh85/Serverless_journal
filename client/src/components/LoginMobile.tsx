@@ -21,8 +21,12 @@ const LoginMobile = () => {
   };
 
   const getUserName = async () => {
-    const user = await authHandlerMobile.getUserInfo(accessToken);
-    return user.firstName;
+    try {
+      const user = await authHandlerMobile.getUserInfo(accessToken);
+      return user.givenName;
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const userFirstName = getUserName();

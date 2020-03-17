@@ -3,6 +3,8 @@ import React from 'react';
 import {ApolloProvider} from '@apollo/react-hooks';
 import {ApolloClient} from 'apollo-client';
 import {InMemoryCache} from 'apollo-cache-inmemory';
+import {Provider} from 'react-redux';
+import store from '../graphql-api/index';
 import {createHttpLink} from 'apollo-link-http';
 import {setContext} from 'apollo-link-context';
 import Root from './Root';
@@ -32,9 +34,9 @@ const client = new ApolloClient({
 
 const App = () => (
   <ApolloProvider client={client}>
-    <>
+    <Provider store={store}>
       <Root />
-    </>
+    </Provider>
   </ApolloProvider>
 );
 

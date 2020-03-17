@@ -185,7 +185,7 @@ export const generateUrl = (userId: String, entryId: String) => {
   }
 };
 
-export async function uploadFile(
+export async function uploadFileToS3(
   uploadUrl: string,
   file: Buffer,
 ): Promise<void> {

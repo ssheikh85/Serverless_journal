@@ -11,7 +11,7 @@ const LoginWeb = () => {
     // getIdTokenClaims,
   } = useAuth0();
 
-  const userFirstName = user.firstName;
+  const userFirstName = user.givenName;
   return (
     <>
       <View style={styles.container}>
