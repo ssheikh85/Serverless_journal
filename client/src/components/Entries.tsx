@@ -8,9 +8,9 @@ import {
   Button,
   Platform,
 } from 'react-native';
-import {connect} from 'react-redux';
-import {getEntries, createNewEntry} from '../graphql-api/entries_api';
-import SingleEntryItem from '../components/SingleEntryItem';
+import {useQuery, useMutation} from '@apollo/react-hooks';
+import {GET_ENTRIES_Q, ADD_ENTRY_M} from '../graphql-api/entries_api';
+import {SingleEntryItem} from '../components/SingleEntryItem';
 import {EntryItem} from '../models_requests/EntryItem';
 import authHandlerMobile from '../auth/authHandlerMobile';
 import {useAuth0} from '../auth/authHandlerWeb';
@@ -18,11 +18,11 @@ import {EntryInput} from 'src/models_requests/EntryInput';
 
 //List of entries
 const Entries = (props: any) => {
-  const {entries} = props;
   const [userId, setUserId] = useState('');
   const [inputNewContent, setInputNewContent] = useState({
     content: '',
   });
+  const [entries, setEntries] = useState([]);
 
   const {user} = useAuth0();
 
@@ -44,6 +44,16 @@ const Entries = (props: any) => {
     getUserId();
   }
 
+  const setEntrieesFromServer = (userId: string) => {
+    const {data, error} = useQuery(GET_ENTRIES_Q, {
+      variables: {userId},
+    });
+    if (error) {
+      alert(`An error has occurred ${error.message}`);
+    }
+    setEntries(data);
+  };
+
   const usePrevious = (value: any) => {
     const ref = useRef();
     useEffect(() => {
@@ -57,24 +67,19 @@ const Entries = (props: any) => {
     const prevEntries = prevValues as [];
 
     if (entries.length !== prevEntries.length) {
-      props.getEntries(userId);
+      setEntrieesFromServer(userId);
     }
-    props.getEntries(userId);
+    setEntrieesFromServer(userId);
   });
 
   const handleNewEntry = async (userId: string, newEntry: EntryInput) => {
-    const {addEntry} = props;
-    const addTheEntry = await addEntry(userId, newEntry);
-    try {
-      if (!addTheEntry) {
-        alert('An issue occurred adding the entry');
-      } else {
-        await addTheEntry({
-          variables: {userId, newEntry},
-        });
-      }
-    } catch (error) {
-      alert('An issue occurred in adding the entry: ' + error.message);
+    const [createEntry, {data, error}] = useMutation(ADD_ENTRY_M, {
+      variables: {userId, newEntry},
+    });
+    if (error) {
+      alert(`An error has occurred ${error.message}`);
+    } else {
+      await createEntry({variables: {userId, newEntry}});
     }
   };
   return (
@@ -118,21 +123,3 @@ const styles = StyleSheet.create({
     margin: 10,
   },
 });
-
-//Map State to Props
-const mapState = (state: any) => {
-  return {
-    entries: state.allEntries,
-  };
-};
-
-//Map Dispatch to Props
-const mapDispatch = (dispatch: any) => {
-  return {
-    getAllEntries: (userId: String) => dispatch(getEntries(userId)),
-    addEntry: (userId: String, newEntry: EntryInput) =>
-      dispatch(createNewEntry(userId, newEntry)),
-  };
-};
-
-export default connect(mapState, mapDispatch)(Entries);

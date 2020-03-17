@@ -8,10 +8,10 @@ import {
   TextInput,
   Platform,
 } from 'react-native';
-import {connect} from 'react-redux';
+import {useMutation} from '@apollo/react-hooks';
 import {
-  updateNewEntry,
-  generateUrl,
+  UPDATE_ENTRY_M,
+  GENERATE_URL_M,
   uploadFileToS3,
 } from '../graphql-api/entries_api';
 import {EntryItem} from '../models_requests/EntryItem';
@@ -19,7 +19,7 @@ import {EntryInput} from '../models_requests/EntryInput';
 import Dropzone from 'react-dropzone';
 import ImagePicker from 'react-native-image-picker';
 
-const EntryUpdater = (props: any) => {
+export const EntryUpdater = (props: any) => {
   const {entryItem, modalVisibleProp} = props;
   const userId = entryItem.userId as string;
   const entryId = entryItem.entryId as string;
@@ -32,19 +32,13 @@ const EntryUpdater = (props: any) => {
 
   //Handle Update
   const handleContentUpdate = async (inputContent: EntryInput) => {
-    try {
-      const {updateEntry} = props;
-      const updateTheEntry = await updateEntry(userId, entryId, inputContent);
-
-      if (!updateTheEntry) {
-        alert('An issue occurred updating the entry');
-      } else {
-        await updateTheEntry({
-          variables: {userId, entryId, inputContent},
-        });
-      }
-    } catch (error) {
-      alert('An issue occurred in updating the entry: ' + error.message);
+    const [updateEntry, {data, error}] = useMutation(UPDATE_ENTRY_M, {
+      variables: {userId, entryId, inputContent},
+    });
+    if (error) {
+      alert(`An error has occurred ${error.message}`);
+    } else {
+      await updateEntry({variables: {userId, entryId, inputContent}});
     }
   };
 
@@ -93,17 +87,21 @@ const EntryUpdater = (props: any) => {
 
       const uploadUrl = await generateUrl(userId, entryId);
 
-      if (!uploadUrl) {
-        alert('Upload Url is undefined');
+      const [generateUploadUrl, {data, error}] = useMutation(GENERATE_URL_M, {
+        variables: {userId, entryId},
+      });
+      let presignedUrl = '';
+      if (error) {
+        alert(`An error has occurred ${error.message}`);
       } else {
-        const presignedUrl = (await uploadUrl({
+        presignedUrl = (await generateUploadUrl({
           variables: {userId, entryId},
         })) as string;
-        const fileType = file as unknown;
-        const fileToUpload = fileType as Buffer;
-        await uploadFileToS3(presignedUrl, fileToUpload);
-        alert('File was uploaded!');
       }
+      const fileType = file as unknown;
+      const fileToUpload = fileType as Buffer;
+      await uploadFileToS3(presignedUrl, fileToUpload);
+      alert('File was uploaded!');
     } catch (e) {
       alert('Could not upload a file: ' + e.message);
     }
@@ -145,11 +143,7 @@ const EntryUpdater = (props: any) => {
                 )}
               </Dropzone>
             ) : (
-              <Button
-                title="Upload"
-                onPress={() => {
-                  handleFileUpload;
-                }}></Button>
+              <Button title="Upload" onPress={() => handleFileUpload}></Button>
             )}
 
             <Button
@@ -163,15 +157,3 @@ const EntryUpdater = (props: any) => {
     </View>
   );
 };
-
-//Map Dispatch to Props
-const mapDispatch = (dispatch: any) => {
-  return {
-    generateUrl: (userId: String, entryId: String) =>
-      dispatch(generateUrl(userId, entryId)),
-    updateEntry: (userId: String, entryId: String, newEntry: EntryInput) =>
-      dispatch(updateNewEntry(userId, entryId, newEntry)),
-  };
-};
-
-export default connect(null, mapDispatch)(EntryUpdater);

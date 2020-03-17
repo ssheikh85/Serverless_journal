@@ -22,7 +22,6 @@ The Front is built using the following technologies _(Under Development)_
 - Graphql
 - Apollo Client
 - Auth0
-- Redux
 - React
 - React Native
 
