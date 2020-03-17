@@ -8,7 +8,6 @@ import {
   TextInput,
   Platform,
 } from 'react-native';
-import ImagePicker from 'react-native-image-picker';
 import {connect} from 'react-redux';
 import {
   updateNewEntry,
@@ -17,48 +16,19 @@ import {
 } from '../graphql-api/entries_api';
 import {EntryItem} from '../models_requests/EntryItem';
 import {EntryInput} from '../models_requests/EntryInput';
-const dataUriToBuffer = require('data-uri-to-buffer');
+import Dropzone from 'react-dropzone';
+import ImagePicker from 'react-native-image-picker';
 
-const EntryItemView = (props: any) => {
-  const {entry} = props;
-  const entryItem = entry as EntryItem;
-  const userId = entryItem.userId as String;
-  const entryId = entryItem.entryId as String;
+const EntryUpdater = (props: any) => {
+  const {userId, entryId, entryItem, modalVisibleProp} = props;
 
-  const [modalVisible, setModalVisible] = useState(false);
-  const [file, setFile] = useState(undefined);
+  const [modalVisible, setModalVisible] = useState(modalVisibleProp);
+  const [file, setFile] = useState();
   const [inputContent, setInputContent] = useState({
     content: entryItem.content,
   });
 
-  const handleFileChangeWeb = (event: any) => {
-    const files = event.target.files;
-    if (!files) return;
-
-    const file = files[0];
-    setFile(file);
-  };
-
-  const handleFileChangeMobile = () => {
-    const options = {
-      title: 'Select Image',
-    };
-
-    ImagePicker.showImagePicker(options, response => {
-      console.log('Response = ', response);
-
-      if (response.didCancel) {
-        console.log('User cancelled image picker');
-      } else if (response.error) {
-        console.log('ImagePicker Error: ', response.error);
-      } else if (response.customButton) {
-        console.log('User tapped custom button: ', response.customButton);
-      } else {
-        setFile(dataUriToBuffer(response.uri));
-      }
-    });
-  };
-
+  //Handle Update
   const handleContentUpdate = async (inputContent: EntryInput) => {
     try {
       const {updateEntry} = props;
@@ -76,9 +46,42 @@ const EntryItemView = (props: any) => {
     }
   };
 
-  const handleFileUpload = async (event: React.SyntheticEvent) => {
-    event.preventDefault();
+  //File Uploader function that handles files from web upload or mobile upload and
+  //sends file to S3 presigned URL
+  const handleFileUpload = async (files: any) => {
+    if (Platform.OS === 'web') {
+      //web upload
+      if (!files) return;
 
+      const file = files[0];
+      setFile(file);
+    } else {
+      //mobile upload
+      const options = {
+        title: 'Select your content',
+      };
+
+      ImagePicker.showImagePicker(options, response => {
+        console.log('Response = ', response);
+
+        if (response.didCancel) {
+          console.log('User cancelled image picker');
+        } else if (response.error) {
+          console.log('ImagePicker Error: ', response.error);
+        } else if (response.customButton) {
+          console.log('User tapped custom button: ', response.customButton);
+        } else {
+          const file = {
+            uri: response.uri,
+            type: response.type,
+            name: response.fileName,
+          } as any;
+          setFile(file);
+        }
+      });
+    }
+
+    //Upload to presignedURL
     try {
       if (!file) {
         alert('Please select a file');
@@ -126,23 +129,27 @@ const EntryItemView = (props: any) => {
                 handleContentUpdate(inputContent);
               }}></Button>
 
-            <Text>Upload an Image</Text>
+            <Text>Upload some content</Text>
+
             {Platform.OS === 'web' ? (
-              <>
-                <input
-                  type="file"
-                  accept="image/*"
-                  placeholder="Image to upload"
-                  onChange={handleFileChangeWeb}
-                />
-              </>
+              <Dropzone onDrop={handleFileUpload}>
+                {({getRootProps, getInputProps}) => (
+                  <div {...getRootProps()}>
+                    <input {...getInputProps()} />
+                    <p>
+                      Drag 'n' drop some files here, or click to select files
+                    </p>
+                  </div>
+                )}
+              </Dropzone>
             ) : (
               <Button
                 title="Upload"
                 onPress={() => {
-                  handleFileChangeMobile;
+                  handleFileUpload;
                 }}></Button>
             )}
+
             <Button
               title="Cancel"
               onPress={() => {
@@ -151,21 +158,8 @@ const EntryItemView = (props: any) => {
           </View>
         </View>
       </Modal>
-
-      <Button
-        title="Edit Item"
-        onPress={() => {
-          setModalVisible(!modalVisible);
-        }}></Button>
     </View>
   );
-};
-
-//Map State to Props
-const mapState = (state: any) => {
-  return {
-    entry: state.singleEntry as EntryItem,
-  };
 };
 
 //Map Dispatch to Props
@@ -178,4 +172,4 @@ const mapDispatch = (dispatch: any) => {
   };
 };
 
-export default connect(mapState, mapDispatch)(EntryItemView);
+export default connect(null, mapDispatch)(EntryUpdater);

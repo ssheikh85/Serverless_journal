@@ -8,11 +8,8 @@ import {
   Platform,
 } from 'react-native';
 import {connect} from 'react-redux';
-import {
-  getEntries,
-  createNewEntry,
-  deleteSingleEntry,
-} from '../graphql-api/entries_api';
+import {getEntries, createNewEntry} from '../graphql-api/entries_api';
+import SingleEntryItem from '../components/SingleEntryItem';
 import {EntryItem} from '../models_requests/EntryItem';
 import {EntryInput} from '../models_requests/EntryInput';
 import authHandlerMobile from '../auth/authHandlerMobile';
@@ -56,9 +53,9 @@ const Entries = (props: any) => {
     const prevEntries = prevValues as [];
 
     if (entries.length !== prevEntries.length) {
-      props.getEntries();
+      props.getEntries(userId);
     }
-    props.getEntries();
+    props.getEntries(userId);
   });
 
   const handleNewEntry = (newEntry: EntryInput) => {};
@@ -90,21 +87,12 @@ const styles = StyleSheet.create({
     textAlign: 'left',
     margin: 10,
   },
-  entry: {
-    padding: 20,
-    marginVertical: 8,
-    marginHorizontal: 16,
-  },
-  content: {
-    fontSize: 20,
-  },
 });
 
 //Map State to Props
 const mapState = (state: any) => {
   return {
     entries: state.allEntries,
-    entry: state.singleEntry,
   };
 };
 
@@ -114,8 +102,6 @@ const mapDispatch = (dispatch: any) => {
     getAllEntries: (userId: String) => dispatch(getEntries(userId)),
     addEntry: (userId: String, newEntry: EntryInput) =>
       dispatch(createNewEntry(userId, newEntry)),
-    deleteEntry: (userId: String, entryId: String) =>
-      dispatch(deleteSingleEntry(userId, entryId)),
   };
 };
 
