@@ -7,20 +7,27 @@ const LoginWeb = () => {
     isAuthenticated,
     loginWithRedirect,
     logout,
-    user,
-    // getIdTokenClaims,
+    // user,
+    getIdTokenClaims,
   } = useAuth0();
 
-  const userFirstName = user.givenName;
+  const getToken = async () => {
+    const token = await getIdTokenClaims();
+    const idToken = token.__raw;
+    console.log(idToken);
+  };
+
+  // const userFirstName = user.givenName;
   return (
     <>
       <View style={styles.container}>
-        <Text style={styles.header}> Welcome, {userFirstName}</Text>
+        {/* <Text style={styles.header}> Welcome, {userFirstName}</Text> */}
         <Text>You are{isAuthenticated ? ' ' : ' not '}logged in . </Text>
-        <Button
-          onPress={isAuthenticated ? logout() : loginWithRedirect({})}
-          title={isAuthenticated ? 'Log Out' : 'Log In'}
-        />
+        {!isAuthenticated && (
+          <Button onPress={loginWithRedirect({})} title={'Log In'} />
+        )}
+        {isAuthenticated && <Button onPress={logout()} title={'Log Out'} />}
+        <Button title="GetToken" onPress={() => getToken()} />;
       </View>
     </>
   );
@@ -40,10 +47,3 @@ const styles = StyleSheet.create({
   },
 });
 export default LoginWeb;
-
-// const getToken = async () => {
-//   const token = await getIdTokenClaims();
-//   const idToken = token.__raw;
-//   console.log(idToken);
-// };
-//<Button title="GetToken" onPress={() => getToken()} />

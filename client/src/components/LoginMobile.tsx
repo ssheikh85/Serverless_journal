@@ -20,19 +20,19 @@ const LoginMobile = () => {
     }
   };
 
-  const getUserName = async () => {
-    try {
-      const user = await authHandlerMobile.getUserInfo(accessToken);
-      return user.givenName;
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  // const getUserName = async () => {
+  //   try {
+  //     const user = await authHandlerMobile.getUserInfo(accessToken);
+  //     return user.givenName;
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
 
-  const userFirstName = getUserName();
+  // const userFirstName = getUserName();
   return (
     <View style={styles.container}>
-      <Text style={styles.header}> Welcome, {userFirstName}</Text>
+      {/* <Text style={styles.header}> Welcome, {userFirstName}</Text> */}
       <Text>You are{accessToken ? ' ' : ' not '}logged in . </Text>
       <Button
         onPress={accessToken ? logout : login}
