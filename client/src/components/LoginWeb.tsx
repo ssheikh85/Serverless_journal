@@ -23,10 +23,10 @@ const LoginWeb = () => {
       <View style={styles.container}>
         {/* <Text style={styles.header}> Welcome, {userFirstName}</Text> */}
         <Text>You are{isAuthenticated ? ' ' : ' not '}logged in . </Text>
-        {!isAuthenticated && (
-          <Button onPress={loginWithRedirect({})} title={'Log In'} />
-        )}
-        {isAuthenticated && <Button onPress={logout()} title={'Log Out'} />}
+        <Button
+          onPress={!isAuthenticated ? loginWithRedirect({}) : logout()}
+          title={!isAuthenticated ? 'Log In' : 'Log Out'}
+        />
         <Button title="GetToken" onPress={() => getToken()} />;
       </View>
     </>
