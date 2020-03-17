@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {View, StyleSheet, Text, TextInput, Button} from 'react-native';
+import {View, Text, TextInput, Button} from 'react-native';
 import {useMutation} from '@apollo/react-hooks';
 import {ADD_ENTRY_M} from '../graphql-api/entries_api';
 

@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import {
   Modal,
   View,
-  StyleSheet,
+  // StyleSheet,
   Button,
   Text,
   TextInput,
@@ -14,8 +14,9 @@ import {
   GENERATE_URL_M,
   uploadFileToS3,
 } from '../graphql-api/entries_api';
-import Dropzone from 'react-dropzone';
-import ImagePicker from 'react-native-image-picker';
+import * as ImagePicker from 'expo-image-picker';
+import * as Permissions from 'expo-permissions';
+const dataUriToBuffer = require('data-uri-to-buffer');
 
 export const EntryUpdater = (props: any) => {
   const {entryItem, modalVisibleProp} = props;
@@ -33,46 +34,32 @@ export const EntryUpdater = (props: any) => {
 
   //File Uploader function that handles files from web upload or mobile upload and
   //sends file to S3 presigned URL
-  const handleFileUpload = async (files: any) => {
-    if (Platform.OS === 'web') {
-      //web upload
-      if (!files) return;
+  const handleFileUpload = async () => {
+    if (!file) {
+      alert('Please select a file');
+      return;
+    }
 
-      const file = files[0];
-      setFile(file);
-    } else {
-      //mobile upload
-      const options = {
-        title: 'Select your content',
-      };
+    if (Platform.OS === 'ios') {
+      const {status} = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+      if (status !== 'granted') {
+        alert('Sorry, we need camera roll permissions to make this work!');
+      } else {
+        const result = await ImagePicker.launchImageLibraryAsync({
+          mediaTypes: ImagePicker.MediaTypeOptions.All,
+          allowsEditing: true,
+          aspect: [4, 3],
+          quality: 1,
+        });
 
-      ImagePicker.showImagePicker(options, response => {
-        console.log('Response = ', response);
-
-        if (response.didCancel) {
-          console.log('User cancelled image picker');
-        } else if (response.error) {
-          console.log('ImagePicker Error: ', response.error);
-        } else if (response.customButton) {
-          console.log('User tapped custom button: ', response.customButton);
-        } else {
-          const file = {
-            uri: response.uri,
-            type: response.type,
-            name: response.fileName,
-          } as any;
-          setFile(file);
+        if (!result.cancelled) {
+          setFile(dataUriToBuffer(result.uri));
         }
-      });
+      }
     }
 
     //Upload to presignedURL
     try {
-      if (!file) {
-        alert('Please select a file');
-        return;
-      }
-
       let presignedUrl = '';
       if (error) {
         alert(`An error has occurred ${error.message}`);
@@ -114,20 +101,7 @@ export const EntryUpdater = (props: any) => {
 
             <Text>Upload some content</Text>
 
-            {Platform.OS === 'web' ? (
-              <Dropzone onDrop={handleFileUpload}>
-                {({getRootProps, getInputProps}) => (
-                  <div {...getRootProps()}>
-                    <input {...getInputProps()} />
-                    <p>
-                      Drag 'n' drop some files here, or click to select files
-                    </p>
-                  </div>
-                )}
-              </Dropzone>
-            ) : (
-              <Button title="Upload" onPress={() => handleFileUpload}></Button>
-            )}
+            <Button title="Upload" onPress={() => handleFileUpload}></Button>
 
             <Button
               title="Cancel"

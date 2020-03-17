@@ -1,7 +1,5 @@
 import gql from 'graphql-tag';
 import axios from 'axios';
-import {EntryItem} from '../models_requests/EntryItem';
-import {EntryInput} from '../models_requests/EntryInput';
 
 //Query
 export const GET_ENTRIES_Q = gql`
