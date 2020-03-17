@@ -50,22 +50,6 @@ export const Entries = (props: any) => {
     setEntries(data);
   }
 
-  const usePrevious = (value: any) => {
-    const ref = useRef();
-    useEffect(() => {
-      ref.current = value;
-    });
-    return ref.current;
-  };
-
-  const prevValues = usePrevious(entries) as unknown;
-  const prevEntries = prevValues as [];
-
-  useEffect(() => {
-    if (entries.length !== prevEntries.length) {
-    }
-  });
-
   return (
     <>
       <SafeAreaView style={styles.container}>
@@ -101,3 +85,19 @@ const styles = StyleSheet.create({
     margin: 10,
   },
 });
+
+// const usePrevious = (value: any) => {
+//   const ref = useRef();
+//   useEffect(() => {
+//     ref.current = value;
+//   });
+//   return ref.current;
+// };
+
+// const prevValues = usePrevious(entries) as unknown;
+// const prevEntries = prevValues as [];
+
+// useEffect(() => {
+//   if (entries.length !== prevEntries.length) {
+//   }
+// });
