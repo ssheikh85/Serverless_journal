@@ -4,10 +4,17 @@ import authHandlerMobile from '../auth/authHandlerMobile';
 
 const LoginMobile = () => {
   const [accessToken, setAccessToken] = useState(null);
+  const [name, setName] = useState(' ');
 
   const login = async () => {
-    const credentials = await authHandlerMobile.handleLogin();
-    setAccessToken(credentials.accessToken);
+    try {
+      const credentials = await authHandlerMobile.handleLogin();
+      const user = await authHandlerMobile.getUserInfo(credentials.accessToken);
+      setAccessToken(credentials.accessToken);
+      setName(user.givenName);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const logout = async () => {
@@ -20,25 +27,23 @@ const LoginMobile = () => {
     }
   };
 
-  // const getUserName = async () => {
-  //   try {
-  //     const user = await authHandlerMobile.getUserInfo(accessToken);
-  //     return user.givenName;
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
-
-  // const userFirstName = getUserName();
   return (
-    <View style={styles.container}>
-      {/* <Text style={styles.header}> Welcome, {userFirstName}</Text> */}
-      <Text>You are{accessToken ? ' ' : ' not '}logged in . </Text>
-      <Button
-        onPress={accessToken ? logout : login}
-        title={accessToken ? 'Log Out' : 'Log In'}
-      />
-    </View>
+    <>
+      <View style={styles.container}>
+        {!accessToken && (
+          <>
+            <Text>Please log in</Text>
+            <Button onPress={() => login()} title="Login" />
+          </>
+        )}
+        {accessToken && (
+          <>
+            <Text style={styles.header}> Welcome, {name} </Text>
+            <Button onPress={() => logout()} title="Logout" />
+          </>
+        )}
+      </View>
+    </>
   );
 };
 
@@ -50,7 +55,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5FCFF',
   },
   header: {
-    fontSize: 48,
+    fontSize: 36,
     textAlign: 'center',
     margin: 10,
   },

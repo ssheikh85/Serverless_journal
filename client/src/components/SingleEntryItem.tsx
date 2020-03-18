@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, StyleSheet, Text, Button} from 'react-native';
+import {View, StyleSheet, Text, Button, Image} from 'react-native';
 import {EntryItem} from '../models_requests/EntryItem';
 import {EntryInput} from '../models_requests/EntryInput';
 import {EntryUpdater} from '../components/EntryUpdater';
@@ -23,15 +23,21 @@ export const SingleEntryItem = (props: any) => {
   return (
     <View style={styles.entry}>
       <Text style={styles.content}>{entryItem.content}</Text>
-      <Button
-        title="Delete"
-        onPress={() => {
-          deleteEntry({variables: {userId, entryId}});
-        }}></Button>
+
+      <Image
+        source={{uri: entryItem.attachmentUrl}}
+        style={{width: 400, height: 400}}
+      />
+
       <Button
         title="Update"
         onPress={() => {
           handleUpdate(entryItem);
+        }}></Button>
+      <Button
+        title="Delete"
+        onPress={() => {
+          deleteEntry({variables: {userId, entryId}});
         }}></Button>
     </View>
   );

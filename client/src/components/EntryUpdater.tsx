@@ -16,7 +16,6 @@ import {
 } from '../graphql-api/entries_api';
 import * as ImagePicker from 'expo-image-picker';
 import * as Permissions from 'expo-permissions';
-const dataUriToBuffer = require('data-uri-to-buffer');
 
 export const EntryUpdater = (props: any) => {
   const {entryItem, modalVisibleProp} = props;
@@ -53,7 +52,8 @@ export const EntryUpdater = (props: any) => {
         });
 
         if (!result.cancelled) {
-          setFile(dataUriToBuffer(result.uri));
+          let file = result.uri as any;
+          setFile(file);
         }
       }
     }
@@ -68,8 +68,7 @@ export const EntryUpdater = (props: any) => {
           variables: {userId, entryId},
         })) as string;
       }
-      const fileType = file as unknown;
-      const fileToUpload = fileType as Buffer;
+      const fileToUpload = file as any;
       await uploadFileToS3(presignedUrl, fileToUpload);
       alert('File was uploaded!');
     } catch (e) {

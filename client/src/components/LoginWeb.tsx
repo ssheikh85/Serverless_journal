@@ -22,7 +22,7 @@ const LoginWeb = () => {
         {isAuthenticated && (
           <>
             <Text style={styles.header}> Welcome, {name} </Text>
-            <Button onPress={() => logout({})} title="Logout" />
+            <Button onPress={() => logout()} title="Logout" />
           </>
         )}
       </View>
@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5FCFF',
   },
   header: {
-    fontSize: 48,
+    fontSize: 36,
     textAlign: 'center',
     margin: 10,
   },

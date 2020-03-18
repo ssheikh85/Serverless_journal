@@ -25,7 +25,6 @@
     "apollo-client": "^2.6.8",
     "apollo-link-context": "^1.0.19",
     "apollo-link-http": "^1.5.16",
-    "data-uri-to-buffer": "^3.0.0",
     "eslint-plugin-graphql": "^3.1.1",
     "expo": "^36.0.2",
     "expo-image-picker": "^8.0.2",
