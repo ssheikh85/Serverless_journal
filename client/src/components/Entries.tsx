@@ -3,12 +3,15 @@ import {
   SafeAreaView,
   StyleSheet,
   ScrollView,
+  View,
   Text,
+  TextInput,
   FlatList,
+  Button,
   Platform,
 } from 'react-native';
-import {useQuery} from '@apollo/react-hooks';
-import {GET_ENTRIES_Q} from '../graphql-api/entries_api';
+import {useQuery, useMutation} from '@apollo/react-hooks';
+import {GET_ENTRIES_Q, ADD_ENTRY_M} from '../graphql-api/entries_api';
 import {SingleEntryItem} from '../components/SingleEntryItem';
 import {AddEntry} from '../components/AddEntry';
 import {EntryItem} from '../models_requests/EntryItem';
@@ -19,6 +22,9 @@ import {useAuth0} from '../auth/authHandlerWeb';
 export const Entries = (props: any) => {
   const [userId, setUserId] = useState('');
   const [entries, setEntries] = useState([]);
+  const [inputNewContent, setInputNewContent] = useState({
+    content: '',
+  });
 
   const {user} = useAuth0();
 
@@ -44,6 +50,8 @@ export const Entries = (props: any) => {
     variables: {userId},
   });
 
+  const [createEntry] = useMutation(ADD_ENTRY_M);
+
   if (error) {
     alert(`An error has occurred ${error.message}`);
   } else {
@@ -54,7 +62,21 @@ export const Entries = (props: any) => {
     <>
       <SafeAreaView style={styles.container}>
         <ScrollView style={styles.scrollView}>
-          <AddEntry userID={userId} />
+          <View>
+            <Text>Add a new Entry</Text>
+            <TextInput
+              style={{height: 40}}
+              placeholder="Type here to create a new entry"
+              onChangeText={text => setInputNewContent({content: text})}
+              value={inputNewContent.content}
+            />
+
+            <Button
+              title="Add a new entry"
+              onPress={() => {
+                createEntry({variables: {userId, inputNewContent}});
+              }}></Button>
+          </View>
           <Text style={styles.header}>Your Entries</Text>
           <FlatList
             data={entries as EntryItem[]}
