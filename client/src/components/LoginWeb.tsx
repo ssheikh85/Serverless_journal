@@ -1,29 +1,30 @@
 import React from 'react';
-import {Button, StyleSheet, View} from 'react-native';
+import {Button, StyleSheet, View, Text} from 'react-native';
 import {useAuth0} from '../auth/authHandlerWeb';
 
 const LoginWeb = () => {
-  const {
-    isAuthenticated,
-    loginWithRedirect,
-    logout,
-    getIdTokenClaims,
-  } = useAuth0();
+  const {isAuthenticated, loginWithRedirect, logout, user} = useAuth0();
 
-  const getToken = async () => {
-    const token = await getIdTokenClaims();
-    const idToken = token.__raw;
-    console.log(idToken);
-  };
+  let name = '';
+  if (isAuthenticated && user) {
+    name = user.given_name;
+  }
 
   return (
     <>
       <View style={styles.container}>
-        {/* <Text style={styles.header}> Welcome, {userFirstName}</Text> */}
-        {/* <Text>You are{isAuthenticated ? ' ' : ' not '}logged in . </Text> */}
-        <Button onPress={() => loginWithRedirect({})} title="Login" />
-        <Button onPress={() => getToken()} title="Token" />
-        <Button onPress={() => logout()} title="Logout" />
+        {!isAuthenticated && (
+          <>
+            <Text>Please log in</Text>
+            <Button onPress={() => loginWithRedirect({})} title="Login" />
+          </>
+        )}
+        {isAuthenticated && (
+          <>
+            <Text style={styles.header}> Welcome, {name} </Text>
+            <Button onPress={() => logout({})} title="Logout" />
+          </>
+        )}
       </View>
     </>
   );
@@ -44,3 +45,11 @@ const styles = StyleSheet.create({
 });
 
 export default LoginWeb;
+
+//Code to get a jwt token to test the server
+// const getToken = async () => {
+//   const token = await getIdTokenClaims();
+//   const idToken = token.__raw;
+//   console.log(idToken);
+// };
+// <Button onPress={() => getToken()} title="Token" />
