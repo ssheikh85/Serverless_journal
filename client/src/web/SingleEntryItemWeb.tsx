@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button} from 'react-bootstrap';
+import {Button, Container, Row, Col} from 'react-bootstrap';
 import {EntryItem} from '../models_requests/EntryItem';
 import {EntryInput} from '../models_requests/EntryInput';
 import {EntryUpdater} from './EntryUpdaterWeb';
@@ -22,22 +22,41 @@ export const SingleEntryItem = (props: any) => {
 
   return (
     <div>
-      <h3>{entryItem.content}</h3>
-      <img src={entryItem.attachmentUrl} width="400" height="300" alt="" />
-      <Button
-        variant="primary"
-        onClick={() => {
-          handleUpdate(entryItem);
-        }}>
-        Update
-      </Button>
-      <Button
-        variant="danger"
-        onClick={() => {
-          deleteEntry({variables: {userId, entryId}});
-        }}>
-        Delete
-      </Button>
+      <Container>
+        <Row className="justify-content-md-center">
+          <Col xs lg="auto">
+            {entryItem.content}
+          </Col>
+          <Col xs lg="2">
+            <Button
+              variant="primary"
+              onClick={() => {
+                handleUpdate(entryItem);
+              }}>
+              Update
+            </Button>
+          </Col>
+          <Col xs lg="2">
+            <Button
+              variant="danger"
+              onClick={() => {
+                deleteEntry({variables: {userId, entryId}});
+              }}>
+              Delete
+            </Button>
+          </Col>
+        </Row>
+        <Row>
+          <Col>
+            <img
+              src={entryItem.attachmentUrl}
+              width="400"
+              height="300"
+              alt=""
+            />
+          </Col>
+        </Row>
+      </Container>
     </div>
   );
 };

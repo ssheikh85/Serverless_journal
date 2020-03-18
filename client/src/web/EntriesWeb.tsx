@@ -18,7 +18,7 @@ export const EntriesWeb = (props: any) => {
 
   setUserId(user.sub);
 
-  const {data} = useQuery(GET_ENTRIES_Q, {
+  const {loading, data, error} = useQuery(GET_ENTRIES_Q, {
     variables: {userId},
   });
 
