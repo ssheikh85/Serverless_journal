@@ -1,16 +1,14 @@
 import React from 'react';
-import {Navbar, Button} from 'react-bootstrap';
+import {Navbar, Nav, Card, Button} from 'react-bootstrap';
 import {useAuth0} from './authHandlerWeb';
-import {EntriesWeb} from './EntriesWeb';
+// import {EntriesWeb} from './EntriesWeb';
 
 const RootWeb = () => {
   const {isAuthenticated, loginWithRedirect, logout, user} = useAuth0();
 
   let name = '';
-  let userProp = {};
   if (isAuthenticated && user) {
     name = user.given_name;
-    userProp = user;
   }
 
   return (
@@ -18,22 +16,25 @@ const RootWeb = () => {
       <div>
         {!isAuthenticated && (
           <>
-            <h2>Please log in</h2>
-            <button onClick={() => loginWithRedirect({})}>Login</button>
+            <Card className="text-center">
+              <Card.Header>Welcome</Card.Header>
+              <Card.Body>
+                <Card.Title>Please Login In</Card.Title>
+                <Button onClick={() => loginWithRedirect({})}>Login</Button>
+              </Card.Body>
+            </Card>
           </>
         )}
         {isAuthenticated && (
           <>
-            <Navbar bg="light" variant="light">
-              {' '}
-              Welcome, {name}{' '}
+            <Navbar bg="primary" variant="dark">
+              <Navbar.Brand href="#home"> Hello {name} </Navbar.Brand>
+              <Nav className="mr-auto"></Nav>
               <Button variant="danger" onClick={() => logout()}>
                 Logout
               </Button>
             </Navbar>
-            <>
-              <EntriesWeb userProp={userProp} />
-            </>
+            <>{/* <EntriesWeb userProp={userProp} /> */}</>
           </>
         )}
       </div>
