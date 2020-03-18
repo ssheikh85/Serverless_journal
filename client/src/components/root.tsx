@@ -14,5 +14,5 @@ const Root = () => {
 export default Root;
 
 // {(isAuthenticated || authToken) &&
-
+//component={Login}
 //   component={Entries}
