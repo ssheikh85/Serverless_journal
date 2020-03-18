@@ -62,11 +62,11 @@ export const EntriesWeb = (props: any) => {
       </div>
       <div>
         <h2>Your Entries</h2>
-        {entries.map((entry: EntryItem) => {
+        {entries.map((entry: EntryItem) => (
           <div key={entry.entryId}>
             <SingleEntryItem entryItem={entry} />
-          </div>;
-        })}
+          </div>
+        ))}
       </div>
     </div>
   );

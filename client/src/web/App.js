@@ -4,7 +4,7 @@ import {ApolloClient} from 'apollo-client';
 import {InMemoryCache} from 'apollo-cache-inmemory';
 import {createHttpLink} from 'apollo-link-http';
 import {setContext} from 'apollo-link-context';
-import Root from './Root';
+import RootWeb from './RootWeb';
 import {apiEndpoint} from '../client_config';
 
 //Apollo Client set-up
@@ -31,7 +31,7 @@ const client = new ApolloClient({
 
 const App = () => (
   <ApolloProvider client={client}>
-    <Root />
+    <RootWeb />
   </ApolloProvider>
 );
 

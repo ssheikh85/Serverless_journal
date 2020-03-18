@@ -3,7 +3,7 @@ import {Alert, Button, StyleSheet, Text, View} from 'react-native';
 import authHandlerMobile from './authHandlerMobile';
 import {EntriesM} from './EntriesM';
 
-const LoginMobile = () => {
+const RootMobile = () => {
   const [accessToken, setAccessToken] = useState(null);
   const [name, setName] = useState(' ');
 
@@ -65,4 +65,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default LoginMobile;
+export default RootMobile;

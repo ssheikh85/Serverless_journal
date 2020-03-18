@@ -3,7 +3,7 @@ import {Navbar, Button} from 'react-bootstrap';
 import {useAuth0} from './authHandlerWeb';
 import {EntriesWeb} from './EntriesWeb';
 
-const LoginWeb = () => {
+const RootWeb = () => {
   const {isAuthenticated, loginWithRedirect, logout, user} = useAuth0();
 
   let name = '';
@@ -39,7 +39,7 @@ const LoginWeb = () => {
   );
 };
 
-export default LoginWeb;
+export default RootWeb;
 
 //Code to get a jwt token to test the server
 // const getToken = async () => {
