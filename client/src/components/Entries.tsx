@@ -13,7 +13,6 @@ import {
 import {useQuery, useMutation} from '@apollo/react-hooks';
 import {GET_ENTRIES_Q, ADD_ENTRY_M} from '../graphql-api/entries_api';
 import {SingleEntryItem} from '../components/SingleEntryItem';
-import {AddEntry} from '../components/AddEntry';
 import {EntryItem} from '../models_requests/EntryItem';
 import authHandlerMobile from '../auth/authHandlerMobile';
 import {useAuth0} from '../auth/authHandlerWeb';
