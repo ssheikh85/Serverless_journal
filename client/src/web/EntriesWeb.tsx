@@ -5,20 +5,19 @@ import {GET_ENTRIES_Q, ADD_ENTRY_M} from '../graphql-api/entries_api';
 import {SingleEntryItem} from './SingleEntryItemWeb';
 import {EntryItem} from '../models_requests/EntryItem';
 import {EntryInput} from '../models_requests/EntryInput';
-import {useAuth0} from './authHandlerWeb';
 
 //List of entries
 export const EntriesWeb = (props: any) => {
   const [userId, setUserId] = useState('');
   const [entries, setEntries] = useState([]);
   const [inputNewContent, setInputNewContent] = useState('');
-
+  const {userProp} = props;
+  console.log(userProp);
   const newContent = {
     content: inputNewContent,
   } as EntryInput;
 
-  const {user} = useAuth0();
-  setUserId(user.sub);
+  setUserId(userProp.sub);
 
   const {data, error} = useQuery(GET_ENTRIES_Q, {
     variables: {userId},

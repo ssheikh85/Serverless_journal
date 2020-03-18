@@ -1,5 +1,4 @@
 import gql from 'graphql-tag';
-import {PushNotificationIOS} from 'react-native';
 
 //Query
 export const GET_ENTRIES_Q = gql`

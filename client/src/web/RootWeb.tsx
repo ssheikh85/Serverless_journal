@@ -7,8 +7,10 @@ const RootWeb = () => {
   const {isAuthenticated, loginWithRedirect, logout, user} = useAuth0();
 
   let name = '';
+  let userProp = {};
   if (isAuthenticated && user) {
     name = user.given_name;
+    userProp = user;
   }
 
   return (
@@ -30,7 +32,7 @@ const RootWeb = () => {
               </Button>
             </Navbar>
             <>
-              <EntriesWeb />
+              <EntriesWeb userProp={userProp} />
             </>
           </>
         )}

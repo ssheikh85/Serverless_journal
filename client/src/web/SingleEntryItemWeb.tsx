@@ -23,7 +23,7 @@ export const SingleEntryItem = (props: any) => {
   return (
     <div>
       <h3>{entryItem.content}</h3>
-      <img src={entryItem.attachmentUrl} width="400" height="300" />
+      <img src={entryItem.attachmentUrl} width="400" height="300" alt="" />
       <Button
         variant="primary"
         onClick={() => {
