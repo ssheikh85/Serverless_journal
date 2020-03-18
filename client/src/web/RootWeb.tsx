@@ -1,16 +1,26 @@
 import React from 'react';
 import {Navbar, Nav, Card, Button} from 'react-bootstrap';
-import authHandlerWeb from './authHandlerWeb';
+import {withRouter} from 'react-router-dom';
+import authHandlerWeb from './AuthHandlerWeb';
 // import {EntriesWeb} from './EntriesWeb';
 
-const isAuthenticated = authHandlerWeb.isAuthenticated();
-const user = authHandlerWeb.getUserInfo();
+const RootWeb = (props: any) => {
+  const isAuthenticated = authHandlerWeb.isAuthenticated();
+  const user = authHandlerWeb.getUserInfo();
 
-const RootWeb = () => {
   let name = '';
   if (isAuthenticated && user) {
     name = user.given_name;
   }
+
+  const handleLogin = () => {
+    authHandlerWeb.login();
+  };
+
+  const handleLogout = () => {
+    authHandlerWeb.logout();
+    props.history.replace('/');
+  };
 
   return (
     <>
@@ -21,7 +31,7 @@ const RootWeb = () => {
               <Card.Header>Welcome</Card.Header>
               <Card.Body>
                 <Card.Title>Please Login In</Card.Title>
-                <Button onClick={() => authHandlerWeb.login()}>Login</Button>
+                <Button onClick={() => handleLogin()}>Login</Button>
               </Card.Body>
             </Card>
           </>
@@ -31,7 +41,7 @@ const RootWeb = () => {
             <Navbar bg="primary" variant="dark">
               <Navbar.Brand href="#home"> Hello {name} </Navbar.Brand>
               <Nav className="mr-auto"></Nav>
-              <Button variant="danger" onClick={() => authHandlerWeb.logout()}>
+              <Button variant="danger" onClick={() => handleLogout()}>
                 Logout
               </Button>
             </Navbar>
@@ -43,4 +53,4 @@ const RootWeb = () => {
   );
 };
 
-export default RootWeb;
+export default withRouter(RootWeb);

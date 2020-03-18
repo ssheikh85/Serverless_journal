@@ -4,7 +4,7 @@ import * as serviceWorker from './serviceWorker';
 import {ApolloProvider} from '@apollo/react-hooks';
 import {ApolloClient} from 'apollo-client';
 import {InMemoryCache} from 'apollo-cache-inmemory';
-// import {setContext} from 'apollo-link-context';
+import {BrowserRouter} from 'react-router-dom';
 import {apiEndpoint} from '../client_config';
 import authHandlerWeb from './authHandlerWeb';
 import App from './web/App';
@@ -24,9 +24,11 @@ const client = new ApolloClient({
 });
 
 ReactDOM.render(
-  <ApolloProvider client={client}>
-    <App />
-  </ApolloProvider>,
+  <BrowserRouter>
+    <ApolloProvider client={client}>
+      <App />
+    </ApolloProvider>
+  </BrowserRouter>,
   document.getElementById('root'),
 );
 

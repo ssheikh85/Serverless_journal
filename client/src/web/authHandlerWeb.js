@@ -1,7 +1,10 @@
 import auth0 from 'auth0-js';
 import {authConfig} from '../client_config';
 
-export default class AuthHandlerWeb {
+class AuthHandlerWeb {
+  static isAuthenticated() {
+    throw new Error('Method not implemented.');
+  }
   accessToken;
   idToken;
   expiresAt;
@@ -22,6 +25,7 @@ export default class AuthHandlerWeb {
     this.getAccessToken = this.getAccessToken.bind(this);
     this.getIdToken = this.getIdToken.bind(this);
     this.renewSession = this.renewSession.bind(this);
+    this.silentAuth = this.silentAuth.bind(this);
   }
 
   login() {
@@ -34,6 +38,16 @@ export default class AuthHandlerWeb {
         console.log('Access token: ', authResult.accessToken);
         console.log('id token: ', authResult.idToken);
         this.setSession(authResult);
+        this.auth0.client.userInfo(authResult.accessToken, function(err, user) {
+          if (err) {
+            console.log(err);
+            alert(
+              `Could not get user info (${err.error}: ${err.error_description}).`,
+            );
+          } else {
+            this.user = user;
+          }
+        });
       } else if (err) {
         this.history.replace('/');
         console.log(err);
@@ -90,9 +104,6 @@ export default class AuthHandlerWeb {
     this.auth0.logout({
       return_to: window.location.origin,
     });
-
-    // navigate to the home route
-    this.history.replace('/');
   }
 
   isAuthenticated() {
@@ -101,18 +112,22 @@ export default class AuthHandlerWeb {
     let expiresAt = this.expiresAt;
     return new Date().getTime() < expiresAt;
   }
-  setUserInfo() {
-    this.auth0.client.userInfo(this.accessToken, function(err, user) {
-      if (err) {
-        console.log(err);
-        alert(
-          `Could not get user info (${err.error}: ${err.error_description}).`,
-        );
-      } else {
-        this.user = user;
-      }
-    });
+
+  silentAuth() {
+    if (this.isAuthenticated()) {
+      return new Promise((resolve, reject) => {
+        this.auth0.checkSession({}, (err, authResult) => {
+          if (err) {
+            localStorage.removeItem('isLoggedIn');
+            return reject(err);
+          }
+          this.setSession(authResult);
+          resolve();
+        });
+      });
+    }
   }
+
   getUserInfo() {
     return this.user;
   }
