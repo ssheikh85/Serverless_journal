@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {Alert, Button, StyleSheet, Text, View} from 'react-native';
-// import authHandlerMobile from './authHandlerMobile'
+import authHandleMobile from './AuthHandlerMobile';
 import {EntriesM} from './EntriesM';
 
 const App = () => {
