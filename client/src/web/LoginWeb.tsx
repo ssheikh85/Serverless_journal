@@ -1,4 +1,5 @@
 import React from 'react';
+import {Navbar, Button} from 'react-bootstrap';
 import {useAuth0} from './authHandlerWeb';
 import {EntriesWeb} from './EntriesWeb';
 
@@ -21,8 +22,13 @@ const LoginWeb = () => {
         )}
         {isAuthenticated && (
           <>
-            <h1> Welcome, {name} </h1>>
-            <button onClick={() => logout()}>Logout</button>
+            <Navbar bg="light" variant="light">
+              {' '}
+              Welcome, {name}{' '}
+              <Button variant="danger" onClick={() => logout()}>
+                Logout
+              </Button>
+            </Navbar>
             <>
               <EntriesWeb />
             </>
