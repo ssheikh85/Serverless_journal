@@ -12,10 +12,10 @@ import {
 } from 'react-native';
 import {useQuery, useMutation} from '@apollo/react-hooks';
 import {GET_ENTRIES_Q, ADD_ENTRY_M} from '../graphql-api/entries_api';
-import {SingleEntryItem} from '../components/SingleEntryItem';
+import {SingleEntryItem} from './SingleEntryItem';
 import {EntryItem} from '../models_requests/EntryItem';
-import authHandlerMobile from '../auth/authHandlerMobile';
-import {useAuth0} from '../auth/authHandlerWeb';
+import authHandlerMobile from './authHandlerMobile';
+import {useAuth0} from '../web/authHandlerWeb';
 
 //List of entries
 export const Entries = (props: any) => {

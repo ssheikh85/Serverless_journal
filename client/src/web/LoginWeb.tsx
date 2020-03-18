@@ -1,7 +1,6 @@
 import React from 'react';
 import {Button, StyleSheet, View, Text} from 'react-native';
-import {useAuth0} from '../auth/authHandlerWeb';
-import {Entries} from '../components/Entries';
+import {useAuth0} from './authHandlerWeb';
 
 const LoginWeb = () => {
   const {isAuthenticated, loginWithRedirect, logout, user} = useAuth0();
@@ -24,9 +23,7 @@ const LoginWeb = () => {
           <>
             <Text style={styles.header}> Welcome, {name} </Text>
             <Button onPress={() => logout()} title="Logout" />
-            <>
-              <Entries />
-            </>
+            <></>
           </>
         )}
       </View>

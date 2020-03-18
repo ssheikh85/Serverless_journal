@@ -2,7 +2,7 @@ import React from 'react';
 import {View, StyleSheet, Text, Button, Image} from 'react-native';
 import {EntryItem} from '../models_requests/EntryItem';
 import {EntryInput} from '../models_requests/EntryInput';
-import {EntryUpdater} from '../components/EntryUpdater';
+import {EntryUpdater} from './EntryUpdater';
 import {useMutation} from '@apollo/react-hooks';
 import {DELETE_ENTRY_M} from '../graphql-api/entries_api';
 

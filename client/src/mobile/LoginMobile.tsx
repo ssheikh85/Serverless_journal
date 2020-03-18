@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {Alert, Button, StyleSheet, Text, View} from 'react-native';
-import authHandlerMobile from '../auth/authHandlerMobile';
-import {Entries} from '../components/Entries';
+import authHandlerMobile from './authHandlerMobile';
+import {Entries} from './Entries';
 
 const LoginMobile = () => {
   const [accessToken, setAccessToken] = useState(null);
