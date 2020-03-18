@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "f6d5d91b-ba62-4934-8247-3f26551831fb",
+		"_postman_id": "5ce755e1-ec01-473c-9a9b-fe55356b61a8",
 		"name": "gql-entries-dev",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -91,8 +91,8 @@
 				"body": {
 					"mode": "graphql",
 					"graphql": {
-						"query": "mutation updateEntry($entryInput: EntryInput, $userId: String, $entryId: String){\n    updateEntry(entryInput: $entryInput, userId: $userId, entryId: $entryId){\n        content\n    }\n}",
-						"variables": "{\n\t\"entryInput\":{\n\t\t\"content\":\"Something!\"\n\t\t\n\t},\n\t\"userId\": \"google-oauth2|117735456242439233665\",\n\t\"entryId\": \"d3fdd35b-0f87-45e9-a32b-8357be9332f9\"\n}"
+						"query": "mutation updateEntry($entryInput: EntryInput, $userId: String, $entryId: String){\n    updateEntry(entryInput: $entryInput, userId: $userId, entryId: $entryId){\n        userId\n        entryId\n        createdAt\n        content\n        attachmentUrl\n    }\n}",
+						"variables": "{\n\t\"entryInput\":{\n\t\t\"content\":\"Last Thing!\"\n\t\t\n\t},\n\t\"userId\": \"google-oauth2|117735456242439233665\",\n\t\"entryId\": \"cd0a3186-0166-49d6-8d91-27cfbe6389e5\"\n}"
 					}
 				},
 				"url": {
@@ -216,13 +216,13 @@
 	],
 	"variable": [
 		{
-			"id": "6e44033c-64d2-488e-866b-77e3a2c0a70f",
+			"id": "711260d3-9012-43ed-84a5-b4b637edafee",
 			"key": "apiId",
 			"value": "",
 			"type": "string"
 		},
 		{
-			"id": "cc85d10f-24ad-4c59-8d58-41b7a268c2d8",
+			"id": "f7683547-db63-4c72-8ab6-5dbf7d15501e",
 			"key": "authToken",
 			"value": "",
 			"type": "string"

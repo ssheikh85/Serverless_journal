@@ -15,7 +15,7 @@ export class EntriesAccess extends DataSource {
   }
 
   //Gets entries for a specific authorized user
-  async getEntries(userId: String): Promise<EntryItem[]> {
+  async getEntries(userId: string): Promise<EntryItem[]> {
     try {
       const result = await this.awsAssets.docClient
         .query({
@@ -39,7 +39,7 @@ export class EntriesAccess extends DataSource {
 
   //Adds an entry for a specific authorized user
   async createEntry(
-    userIdIn: String,
+    userIdIn: string,
     entryInput: EntryInput
   ): Promise<EntryItem> {
     try {
@@ -71,8 +71,8 @@ export class EntriesAccess extends DataSource {
 
   //Updates an entry for a specific authorized user
   async updateEntry(
-    userId: String,
-    entryIdIn: String,
+    userId: string,
+    entryIdIn: string,
     entryInput: EntryInput
   ): Promise<EntryItem> {
     try {
@@ -99,7 +99,7 @@ export class EntriesAccess extends DataSource {
 
       logger.info(entryIdIn, createdAtEntry);
 
-      const updatedEntry = await this.awsAssets.docClient
+      await this.awsAssets.docClient
         .update({
           Key: { userId, createdAt: createdAtEntry.createdAt },
           TableName: this.awsAssets.entriesTable,
@@ -112,7 +112,15 @@ export class EntriesAccess extends DataSource {
           }
         })
         .promise();
-      return updatedEntry as EntryItem;
+
+      const updatedItem = {
+        userId: userId,
+        entryId: entryIdIn,
+        createdAt: createdAtEntry.createdAt,
+        content: entryInput.content,
+        attachmentUrl: createdAtEntry.attachmentUrl
+      } as EntryItem;
+      return updatedItem;
     } catch (error) {
       console.error(error);
     }
@@ -144,7 +152,7 @@ export class EntriesAccess extends DataSource {
 
       // logger.info(entryIdIn, createdAtEntry);
 
-      const deletedEntry = await this.awsAssets.docClient
+      await this.awsAssets.docClient
         .delete({
           Key: { userId, createdAt: createdAtEntry.createdAt },
           ConditionExpression: "entryId = :entryId",
@@ -154,7 +162,7 @@ export class EntriesAccess extends DataSource {
           TableName: this.awsAssets.entriesTable
         })
         .promise();
-      return deletedEntry as EntryItem;
+      return null;
     } catch (error) {
       console.error(error);
     }

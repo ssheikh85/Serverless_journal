@@ -1,5 +1,4 @@
 import React from 'react';
-// import {Platform} from 'react-native';
 import {ApolloProvider} from '@apollo/react-hooks';
 import {ApolloClient} from 'apollo-client';
 import {InMemoryCache} from 'apollo-cache-inmemory';
