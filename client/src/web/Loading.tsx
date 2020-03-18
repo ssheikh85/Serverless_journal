@@ -3,7 +3,7 @@ import {Card} from 'react-bootstrap';
 import {withRouter} from 'react-router-dom';
 import authHandlerWeb from './AuthHandlerWeb';
 
-const Callback = (props: any) => {
+const Loading = (props: any) => {
   useEffect(() => {
     const authenticate = async () => {
       await authHandlerWeb.handleAuthentication();
@@ -21,4 +21,4 @@ const Callback = (props: any) => {
   );
 };
 
-export default withRouter(Callback);
+export default withRouter(Loading);

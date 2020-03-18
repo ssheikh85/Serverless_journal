@@ -3,6 +3,7 @@ import {Button, InputGroup, FormControl} from 'react-bootstrap';
 import {useQuery, useMutation} from '@apollo/react-hooks';
 import {GET_ENTRIES_Q, ADD_ENTRY_M} from '../graphql-api/entries_api';
 import {SingleEntryItem} from './SingleEntryItemWeb';
+import Loading from './Loading';
 import {EntryItem} from '../models_requests/EntryItem';
 import {EntryInput} from '../models_requests/EntryInput';
 
@@ -21,8 +22,12 @@ export const EntriesWeb = (props: any) => {
   const {loading, data, error} = useQuery(GET_ENTRIES_Q, {
     variables: {userId},
   });
-
-  console.log(data);
+  if (loading) {
+    return <Loading />;
+  }
+  if (error) {
+    return alert('Error has occurred getting your entries');
+  }
 
   const [createEntry] = useMutation(ADD_ENTRY_M);
 
@@ -56,11 +61,12 @@ export const EntriesWeb = (props: any) => {
       </div>
       <div>
         <h2>Your Entries</h2>
-        {data.map((entry: EntryItem) => (
-          <div key={entry.entryId}>
-            <SingleEntryItem entryItem={entry} />
-          </div>
-        ))}
+        {!loading &&
+          data.map((entry: EntryItem) => (
+            <div key={entry.entryId}>
+              <SingleEntryItem entryItem={entry} />
+            </div>
+          ))}
       </div>
     </div>
   );

@@ -5,8 +5,8 @@ import {ApolloProvider} from '@apollo/react-hooks';
 import {ApolloClient} from 'apollo-client';
 import {InMemoryCache} from 'apollo-cache-inmemory';
 import {BrowserRouter} from 'react-router-dom';
-import {apiEndpoint} from '../client_config';
-import authHandlerWeb from './authHandlerWeb';
+import {apiEndpoint} from './client_config';
+import authHandlerWeb from './web/AuthHandlerWeb';
 import App from './web/App';
 
 //Apollo Client set-up
