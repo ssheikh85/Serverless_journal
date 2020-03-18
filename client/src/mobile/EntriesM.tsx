@@ -14,7 +14,7 @@ import {useQuery, useMutation} from '@apollo/react-hooks';
 import {GET_ENTRIES_Q, ADD_ENTRY_M} from '../graphql-api/entries_api';
 import {SingleEntryItemM} from './SingleEntryItemM';
 import {EntryItem} from '../models_requests/EntryItem';
-import authHandlerMobile from './authHandlerMobile';
+import authHandlerMobile from './AuthHandlerMobile';
 
 //List of entries
 export const EntriesM = (props: any) => {
