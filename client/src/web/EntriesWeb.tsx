@@ -3,7 +3,6 @@ import {Button, InputGroup, FormControl} from 'react-bootstrap';
 import {useQuery, useMutation} from '@apollo/react-hooks';
 import {GET_ENTRIES_Q, ADD_ENTRY_M} from '../graphql-api/entries_api';
 import {SingleEntryItem} from './SingleEntryItemWeb';
-import Loading from './Loading';
 import {EntryItem} from '../models_requests/EntryItem';
 import {EntryInput} from '../models_requests/EntryInput';
 
@@ -23,7 +22,14 @@ export const EntriesWeb = (props: any) => {
     variables: {userId},
   });
   if (loading) {
-    return <Loading />;
+    return (
+      <Card className="text-center">
+        <Card.Header>Loading</Card.Header>
+        <Card.Body>
+          <Card.Title>Loading...</Card.Title>
+        </Card.Body>
+      </Card>
+    );
   }
   if (error) {
     return alert('Error has occurred getting your entries');

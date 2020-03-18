@@ -1,7 +1,7 @@
 import React, {useEffect} from 'react';
 import {Route, withRouter} from 'react-router-dom';
 import RootWeb from './RootWeb';
-import Loading from './Loading';
+import Callback from './Callback';
 import authHandlerWeb from './AuthHandlerWeb';
 
 const App = props => {
@@ -22,7 +22,7 @@ const App = props => {
   return (
     <>
       <Route exact path="/" component={RootWeb} />
-      <Route exact path="/callback" component={Loading} />
+      <Route exact path="/callback" component={Callback} />
     </>
   );
 };

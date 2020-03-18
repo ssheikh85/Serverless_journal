@@ -33,25 +33,32 @@ class AuthHandlerWeb {
   }
 
   handleAuthentication() {
-    this.auth0.parseHash((err, authResult) => {
-      if (authResult && authResult.accessToken && authResult.idToken) {
-        console.log('Access token: ', authResult.accessToken);
-        console.log('id token: ', authResult.idToken);
-        this.setSession(authResult);
-        this.auth0.client.userInfo(authResult.accessToken, function(err, user) {
-          if (err) {
-            console.log(err);
-            alert(
-              `Could not get user info (${err.error}: ${err.error_description}).`,
-            );
-          } else {
-            this.user = user;
-          }
-        });
-      } else if (err) {
-        console.log(err);
-        alert(`Error: ${err.error}. Check the console for further details.`);
-      }
+    return new Promise((resolve, reject) => {
+      this.auth0.parseHash((err, authResult) => {
+        if (err || !authResult || !authResult.idToken) {
+          console.log(err);
+          alert(`Error: ${err.error}. Check the console for further details.`);
+          return reject(err);
+        } else {
+          console.log('Access token: ', authResult.accessToken);
+          console.log('id token: ', authResult.idToken);
+          this.setSession(authResult);
+          resolve();
+          this.auth0.client.userInfo(authResult.accessToken, function(
+            err,
+            user,
+          ) {
+            if (err) {
+              console.log(err);
+              alert(
+                `Could not get user info (${err.error}: ${err.error_description}).`,
+              );
+            } else {
+              this.user = user;
+            }
+          });
+        }
+      });
     });
   }
 
