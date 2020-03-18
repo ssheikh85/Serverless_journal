@@ -1,8 +1,8 @@
 import React from 'react';
-import {View, StyleSheet, Text, Button, Image} from 'react-native';
+import {Button} from 'react-bootstrap';
 import {EntryItem} from '../models_requests/EntryItem';
 import {EntryInput} from '../models_requests/EntryInput';
-import {EntryUpdater} from './EntryUpdater';
+import {EntryUpdater} from './EntryUpdaterWeb';
 import {useMutation} from '@apollo/react-hooks';
 import {DELETE_ENTRY_M} from '../graphql-api/entries_api';
 
@@ -21,36 +21,23 @@ export const SingleEntryItem = (props: any) => {
   const {userId, entryId} = entryItem as EntryItem;
 
   return (
-    <View style={styles.entry}>
-      <Text style={styles.content}>{entryItem.content}</Text>
-
-      <Image
-        source={{uri: entryItem.attachmentUrl}}
-        style={{width: 400, height: 400}}
-      />
-
+    <div>
+      <h3>{entryItem.content}</h3>
+      <img src={entryItem.attachmentUrl} width="400" height="300" />
       <Button
-        title="Update"
-        onPress={() => {
+        variant="primary"
+        onClick={() => {
           handleUpdate(entryItem);
-        }}></Button>
+        }}>
+        Update
+      </Button>
       <Button
-        title="Delete"
-        onPress={() => {
+        variant="danger"
+        onClick={() => {
           deleteEntry({variables: {userId, entryId}});
-        }}></Button>
-    </View>
+        }}>
+        Delete
+      </Button>
+    </div>
   );
 };
-
-//Styles
-const styles = StyleSheet.create({
-  entry: {
-    padding: 20,
-    marginVertical: 8,
-    marginHorizontal: 16,
-  },
-  content: {
-    fontSize: 20,
-  },
-});

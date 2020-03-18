@@ -17,7 +17,7 @@ import {
 import * as ImagePicker from 'expo-image-picker';
 import * as Permissions from 'expo-permissions';
 
-export const EntryUpdater = (props: any) => {
+export const EntryUpdaterM = (props: any) => {
   const {entryItem, modalVisibleProp} = props;
   const userId = entryItem.userId as string;
   const entryId = entryItem.entryId as string;

@@ -1,6 +1,6 @@
 import React from 'react';
-import {Button, StyleSheet, View, Text} from 'react-native';
 import {useAuth0} from './authHandlerWeb';
+import {EntriesWeb} from './EntriesWeb';
 
 const LoginWeb = () => {
   const {isAuthenticated, loginWithRedirect, logout, user} = useAuth0();
@@ -12,21 +12,23 @@ const LoginWeb = () => {
 
   return (
     <>
-      <View style={styles.container}>
+      <div>
         {!isAuthenticated && (
           <>
-            <Text>Please log in</Text>
-            <Button onPress={() => loginWithRedirect({})} title="Login" />
+            <h2>Please log in</h2>
+            <button onClick={() => loginWithRedirect({})}>Login</button>
           </>
         )}
         {isAuthenticated && (
           <>
-            <Text style={styles.header}> Welcome, {name} </Text>
-            <Button onPress={() => logout()} title="Logout" />
-            <></>
+            <h1> Welcome, {name} </h1>>
+            <button onClick={() => logout()}>Logout</button>
+            <>
+              <EntriesWeb />
+            </>
           </>
         )}
-      </View>
+      </div>
     </>
   );
 };

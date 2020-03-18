@@ -12,20 +12,17 @@ import {
 } from 'react-native';
 import {useQuery, useMutation} from '@apollo/react-hooks';
 import {GET_ENTRIES_Q, ADD_ENTRY_M} from '../graphql-api/entries_api';
-import {SingleEntryItem} from './SingleEntryItem';
+import {SingleEntryItemM} from './SingleEntryItemM';
 import {EntryItem} from '../models_requests/EntryItem';
 import authHandlerMobile from './authHandlerMobile';
-import {useAuth0} from '../web/authHandlerWeb';
 
 //List of entries
-export const Entries = (props: any) => {
+export const EntriesM = (props: any) => {
   const [userId, setUserId] = useState('');
   const [entries, setEntries] = useState([]);
   const [inputNewContent, setInputNewContent] = useState({
     content: '',
   });
-
-  const {user} = useAuth0();
 
   const getUserId = async () => {
     try {
@@ -37,13 +34,7 @@ export const Entries = (props: any) => {
     }
   };
 
-  const userIdWeb = user.sub;
-
-  if (Platform.OS === 'web') {
-    setUserId(userIdWeb);
-  } else {
-    getUserId();
-  }
+  getUserId();
 
   const {data, error} = useQuery(GET_ENTRIES_Q, {
     variables: {userId},
@@ -79,7 +70,7 @@ export const Entries = (props: any) => {
           <Text style={styles.header}>Your Entries</Text>
           <FlatList
             data={entries as EntryItem[]}
-            renderItem={({item}) => <SingleEntryItem content={item} />}
+            renderItem={({item}) => <SingleEntryItemM entryItem={item} />}
             keyExtractor={item => item.entryId}
           />
         </ScrollView>
