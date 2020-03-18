@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import {Alert, Button, StyleSheet, Text, View} from 'react-native';
 import authHandlerMobile from '../auth/authHandlerMobile';
+import {Entries} from '../components/Entries';
 
 const LoginMobile = () => {
   const [accessToken, setAccessToken] = useState(null);
@@ -40,6 +41,9 @@ const LoginMobile = () => {
           <>
             <Text style={styles.header}> Welcome, {name} </Text>
             <Button onPress={() => logout()} title="Logout" />
+            <>
+              <Entries />
+            </>
           </>
         )}
       </View>

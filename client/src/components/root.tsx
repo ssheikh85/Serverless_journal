@@ -1,18 +1,10 @@
 import React from 'react';
-import authHandlerMobile from '../auth/authHandlerMobile';
-import {useAuth0} from '../auth/authHandlerWeb';
-import {Login} from '../components/Login';
-import {Entries} from '../components/Entries';
+import {Platform} from 'react-native';
+import LoginWeb from './LoginWeb';
+import LoginMobile from './LoginMobile';
 
 const Root = () => {
-  const {isAuthenticated} = useAuth0();
-  const authToken = authHandlerMobile.getAccessToken();
-
-  return <></>;
+  return Platform.OS === 'web' ? <LoginWeb /> : <LoginMobile />;
 };
 
 export default Root;
-
-// {(isAuthenticated || authToken) &&
-//component={Login}
-//   component={Entries}
