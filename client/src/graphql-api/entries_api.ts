@@ -1,5 +1,5 @@
 import gql from 'graphql-tag';
-import axios from 'axios';
+import {PushNotificationIOS} from 'react-native';
 
 //Query
 export const GET_ENTRIES_Q = gql`
@@ -66,5 +66,8 @@ export async function uploadFileToS3(
   uploadUrl: string,
   file: Buffer,
 ): Promise<void> {
-  await axios.put(uploadUrl, file);
+  await fetch(uploadUrl, {
+    method: 'PUT',
+    body: file,
+  });
 }
