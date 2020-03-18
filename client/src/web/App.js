@@ -4,6 +4,8 @@ import RootWeb from './RootWeb';
 import Callback from './Callback';
 import authHandlerWeb from './AuthHandlerWeb';
 
+// Class developed from this tutorial
+//https://auth0.com/blog/develop-modern-apps-with-react-graphql-apollo-and-add-authentication/
 const App = props => {
   useEffect(() => {
     const authenticate = async () => {
@@ -17,7 +19,7 @@ const App = props => {
       }
     };
     authenticate();
-  }, []);
+  }, [props.location.pathname]);
 
   return (
     <>

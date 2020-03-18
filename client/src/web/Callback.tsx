@@ -1,16 +1,19 @@
 import React, {useEffect} from 'react';
 import {Card} from 'react-bootstrap';
-import {withRouter} from 'react-router-dom';
 import authHandlerWeb from './AuthHandlerWeb';
+import {withRouter} from 'react-router-dom';
 
-const Callback = (props: any) => {
+// Class developed from this tutorial
+//https://auth0.com/blog/develop-modern-apps-with-react-graphql-apollo-and-add-authentication/
+
+const Callback: React.FC = (props: any) => {
   useEffect(() => {
     const authenticate = async () => {
       await authHandlerWeb.handleAuthentication();
       props.history.replace('/');
     };
     authenticate();
-  }, []);
+  }, [props.history]);
   return (
     <Card className="text-center">
       <Card.Header>Loading</Card.Header>

@@ -1,10 +1,9 @@
 import React from 'react';
 import {Navbar, Nav, Card, Button} from 'react-bootstrap';
-import {withRouter} from 'react-router-dom';
 import authHandlerWeb from './AuthHandlerWeb';
-// import {EntriesWeb} from './EntriesWeb';
+import {withRouter} from 'react-router-dom';
 
-const RootWeb = (props: any) => {
+const RootWeb: React.FC = (props: any) => {
   const isAuthenticated = authHandlerWeb.isAuthenticated();
   const user = authHandlerWeb.getUserInfo();
 
@@ -12,10 +11,6 @@ const RootWeb = (props: any) => {
   if (isAuthenticated && user) {
     name = user.given_name;
   }
-
-  const handleLogin = () => {
-    authHandlerWeb.login();
-  };
 
   const handleLogout = () => {
     authHandlerWeb.logout();
@@ -31,7 +26,7 @@ const RootWeb = (props: any) => {
               <Card.Header>Welcome</Card.Header>
               <Card.Body>
                 <Card.Title>Please Login In</Card.Title>
-                <Button onClick={() => handleLogin()}>Login</Button>
+                <Button onClick={() => authHandlerWeb.login()}>Login</Button>
               </Card.Body>
             </Card>
           </>
