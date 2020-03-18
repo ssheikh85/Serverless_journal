@@ -39,20 +39,6 @@ const LoginWeb = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
-  },
-  header: {
-    fontSize: 36,
-    textAlign: 'center',
-    margin: 10,
-  },
-});
-
 export default LoginWeb;
 
 //Code to get a jwt token to test the server
