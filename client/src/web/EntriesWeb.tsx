@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {Button, InputGroup, FormControl} from 'react-bootstrap';
+import {Button, InputGroup, FormControl, Card} from 'react-bootstrap';
 import {useQuery, useMutation} from '@apollo/react-hooks';
 import {GET_ENTRIES_Q, ADD_ENTRY_M} from '../graphql-api/entries_api';
 import {SingleEntryItem} from './SingleEntryItemWeb';
