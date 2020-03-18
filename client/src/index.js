@@ -1,30 +1,32 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from './web/App';
 import * as serviceWorker from './serviceWorker';
-import {Auth0Provider} from './web/authHandlerWeb';
-import {authConfig} from './client_config';
-import history from './history';
+import {ApolloProvider} from '@apollo/react-hooks';
+import {ApolloClient} from 'apollo-client';
+import {InMemoryCache} from 'apollo-cache-inmemory';
+// import {setContext} from 'apollo-link-context';
+import {apiEndpoint} from '../client_config';
+import authHandlerWeb from './authHandlerWeb';
+import App from './web/App';
 
-// A function that routes the user to the right place
-// after login
-const onRedirectCallback = appState => {
-  history.push(
-    appState && appState.targetUrl
-      ? appState.targetUrl
-      : window.location.pathname,
-  );
-};
+//Apollo Client set-up
+const client = new ApolloClient({
+  uri: `${apiEndpoint}/entries`,
+  request: operation => {
+    operation.setContext(context => ({
+      headers: {
+        ...context.headers,
+        authorization: authHandlerWeb.getIdToken(),
+      },
+    }));
+  },
+  cache: new InMemoryCache(),
+});
 
 ReactDOM.render(
-  <Auth0Provider
-    domain={authConfig.domain}
-    client_id={authConfig.clientId}
-    redirect_uri={window.location.origin}
-    onRedirectCallback={onRedirectCallback}>
-    >
+  <ApolloProvider client={client}>
     <App />
-  </Auth0Provider>,
+  </ApolloProvider>,
   document.getElementById('root'),
 );
 

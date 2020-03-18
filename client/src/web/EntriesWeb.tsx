@@ -9,27 +9,22 @@ import {EntryInput} from '../models_requests/EntryInput';
 //List of entries
 export const EntriesWeb = (props: any) => {
   const [userId, setUserId] = useState('');
-  const [entries, setEntries] = useState([]);
   const [inputNewContent, setInputNewContent] = useState('');
-  const {userProp} = props;
-  console.log(userProp);
+  const {user} = props;
+
   const newContent = {
     content: inputNewContent,
   } as EntryInput;
 
-  setUserId(userProp.sub);
+  setUserId(user.sub);
 
-  const {data, error} = useQuery(GET_ENTRIES_Q, {
+  const {data} = useQuery(GET_ENTRIES_Q, {
     variables: {userId},
   });
 
-  const [createEntry] = useMutation(ADD_ENTRY_M);
+  console.log(data);
 
-  if (error) {
-    alert(`An error has occurred ${error.message}`);
-  } else {
-    setEntries(data);
-  }
+  const [createEntry] = useMutation(ADD_ENTRY_M);
 
   const handleNewInput = (event: any) => {
     setInputNewContent(event.target.value);
@@ -61,7 +56,7 @@ export const EntriesWeb = (props: any) => {
       </div>
       <div>
         <h2>Your Entries</h2>
-        {entries.map((entry: EntryItem) => (
+        {data.map((entry: EntryItem) => (
           <div key={entry.entryId}>
             <SingleEntryItem entryItem={entry} />
           </div>

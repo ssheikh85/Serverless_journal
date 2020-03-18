@@ -1,88 +1,123 @@
-import React, {useState, useEffect, useContext} from 'react';
-import createAuth0Client from '@auth0/auth0-spa-js';
+import auth0 from 'auth0-js';
+import {authConfig} from '../client_config';
 
-const DEFAULT_REDIRECT_CALLBACK = () =>
-  window.history.replaceState({}, document.title, window.location.pathname);
+export default class AuthHandlerWeb {
+  accessToken;
+  idToken;
+  expiresAt;
 
-export const Auth0Context = React.createContext();
-export const useAuth0 = () => useContext(Auth0Context);
-export const Auth0Provider = ({
-  children,
-  onRedirectCallback = DEFAULT_REDIRECT_CALLBACK,
-  ...initOptions
-}) => {
-  const [isAuthenticated, setIsAuthenticated] = useState();
-  const [user, setUser] = useState();
-  const [auth0Client, setAuth0] = useState();
-  const [loading, setLoading] = useState(true);
-  const [popupOpen, setPopupOpen] = useState(false);
+  auth0 = new auth0.WebAuth({
+    domain: authConfig.domain,
+    clientID: authConfig.clientId,
+    redirectUri: authConfig.callbackUrl,
+    responseType: 'token id_token',
+    scope: 'openid',
+  });
 
-  useEffect(() => {
-    const initAuth0 = async () => {
-      const auth0FromHook = await createAuth0Client(initOptions);
-      setAuth0(auth0FromHook);
+  constructor() {
+    this.login = this.login.bind(this);
+    this.logout = this.logout.bind(this);
+    this.handleAuthentication = this.handleAuthentication.bind(this);
+    this.isAuthenticated = this.isAuthenticated.bind(this);
+    this.getAccessToken = this.getAccessToken.bind(this);
+    this.getIdToken = this.getIdToken.bind(this);
+    this.renewSession = this.renewSession.bind(this);
+  }
 
-      if (
-        window.location.search.includes('code=') &&
-        window.location.search.includes('state=')
-      ) {
-        const {appState} = await auth0FromHook.handleRedirectCallback();
-        onRedirectCallback(appState);
+  login() {
+    this.auth0.authorize();
+  }
+
+  handleAuthentication() {
+    this.auth0.parseHash((err, authResult) => {
+      if (authResult && authResult.accessToken && authResult.idToken) {
+        console.log('Access token: ', authResult.accessToken);
+        console.log('id token: ', authResult.idToken);
+        this.setSession(authResult);
+      } else if (err) {
+        this.history.replace('/');
+        console.log(err);
+        alert(`Error: ${err.error}. Check the console for further details.`);
       }
+    });
+  }
 
-      const isAuthenticated = await auth0FromHook.isAuthenticated();
+  getAccessToken() {
+    return this.accessToken;
+  }
 
-      setIsAuthenticated(isAuthenticated);
+  getIdToken() {
+    return this.idToken;
+  }
 
-      if (isAuthenticated) {
-        const user = await auth0FromHook.getUser();
-        setUser(user);
+  setSession(authResult) {
+    // Set isLoggedIn flag in localStorage
+    localStorage.setItem('isLoggedIn', 'true');
+
+    // Set the time that the access token will expire at
+    let expiresAt = authResult.expiresIn * 1000 + new Date().getTime();
+    this.accessToken = authResult.accessToken;
+    this.idToken = authResult.idToken;
+    this.expiresAt = expiresAt;
+
+    // navigate to the home route
+    this.history.replace('/');
+  }
+
+  renewSession() {
+    this.auth0.checkSession({}, (err, authResult) => {
+      if (authResult && authResult.accessToken && authResult.idToken) {
+        this.setSession(authResult);
+      } else if (err) {
+        this.logout();
+        console.log(err);
+        alert(
+          `Could not get a new token (${err.error}: ${err.error_description}).`,
+        );
       }
+    });
+  }
 
-      setLoading(false);
-    };
-    initAuth0();
-    // eslint-disable-next-line
-  }, []);
+  logout() {
+    // Remove tokens and expiry time
+    this.accessToken = null;
+    this.idToken = null;
+    this.expiresAt = 0;
 
-  const loginWithPopup = async (params = {}) => {
-    setPopupOpen(true);
-    try {
-      await auth0Client.loginWithPopup(params);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setPopupOpen(false);
-    }
-    const user = await auth0Client.getUser();
-    setUser(user);
-    setIsAuthenticated(true);
-  };
+    // Remove isLoggedIn flag from localStorage
+    localStorage.removeItem('isLoggedIn');
 
-  const handleRedirectCallback = async () => {
-    setLoading(true);
-    await auth0Client.handleRedirectCallback();
-    const user = await auth0Client.getUser();
-    setLoading(false);
-    setIsAuthenticated(true);
-    setUser(user);
-  };
-  return (
-    <Auth0Context.Provider
-      value={{
-        isAuthenticated,
-        user,
-        loading,
-        popupOpen,
-        loginWithPopup,
-        handleRedirectCallback,
-        getIdTokenClaims: (...p) => auth0Client.getIdTokenClaims(...p),
-        loginWithRedirect: (...p) => auth0Client.loginWithRedirect(...p),
-        getTokenSilently: (...p) => auth0Client.getTokenSilently(...p),
-        getTokenWithPopup: (...p) => auth0Client.getTokenWithPopup(...p),
-        logout: (...p) => auth0Client.logout(...p),
-      }}>
-      {children}
-    </Auth0Context.Provider>
-  );
-};
+    this.auth0.logout({
+      return_to: window.location.origin,
+    });
+
+    // navigate to the home route
+    this.history.replace('/');
+  }
+
+  isAuthenticated() {
+    // Check whether the current time is past the
+    // access token's expiry time
+    let expiresAt = this.expiresAt;
+    return new Date().getTime() < expiresAt;
+  }
+  setUserInfo() {
+    this.auth0.client.userInfo(this.accessToken, function(err, user) {
+      if (err) {
+        console.log(err);
+        alert(
+          `Could not get user info (${err.error}: ${err.error_description}).`,
+        );
+      } else {
+        this.user = user;
+      }
+    });
+  }
+  getUserInfo() {
+    return this.user;
+  }
+}
+
+const authHandlerWeb = new AuthHandlerWeb();
+
+export default authHandlerWeb;
