@@ -64,7 +64,7 @@ const EntriesWeb = (userId: string) => {
   return (
     <div>
       <div>
-        <h4>Add a new entry</h4>
+        <h6>Add a new entry</h6>
         <InputGroup className="mb-3">
           <FormControl
             placeholder="Type here to create a new entry"
@@ -76,14 +76,13 @@ const EntriesWeb = (userId: string) => {
           />
           <InputGroup.Append>
             <Button variant="primary" onClick={submitNewInput}>
-              >Add a new entry
+              Add a new entry
             </Button>
           </InputGroup.Append>
         </InputGroup>
       </div>
-      );
       <div>
-        <h4>Your Entries</h4>
+        <h6>Your Entries</h6>
         {!loading &&
           data.getEntries.map((entry: EntryItem) => {
             return (

@@ -20,7 +20,7 @@ export const SingleEntryItem = (props: any) => {
             userId: userId,
           },
         }) as any;
-        newData.getEntries.push(deleteEntry);
+        newData.getEntries.pop(deleteEntry);
         client.writeQuery({
           query: GET_ENTRIES_Q,
           data: newData,
