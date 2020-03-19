@@ -1,15 +1,15 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {Button, Container, Row, Col} from 'react-bootstrap';
 import {EntryItem} from '../models_requests/EntryItem';
-// import {EntryInput} from '../models_requests/EntryInput';
-// import {EntryUpdater} from './EntryUpdaterWeb';
+import {EntryUpdater} from './EntryUpdaterWeb';
 import {useMutation} from '@apollo/react-hooks';
 import {GET_ENTRIES_Q, DELETE_ENTRY_M} from '../graphql-api/entries_api';
 
 export const SingleEntryItem = (props: any) => {
   const {entryItem} = props;
   const {userId, entryId} = entryItem as EntryItem;
-  // const modalVisibleProp = true;
+  const modalVisibleProp = true;
+  const [clicked, setClicked] = useState(false);
 
   const [deleteEntry] = useMutation(DELETE_ENTRY_M, {
     update(client, {data: {deleteEntry}}) {
@@ -31,6 +31,11 @@ export const SingleEntryItem = (props: any) => {
     },
   });
 
+  const handleDelete = async (event: any) => {
+    event.preventDefault();
+    deleteEntry({variables: {userId: userId, entryId: entryId}});
+  };
+
   return (
     <div>
       <Container>
@@ -39,26 +44,27 @@ export const SingleEntryItem = (props: any) => {
             {entryItem.content}
           </Col>
           <Col xs lg="2">
-            {/* <Button
+            <Button
               variant="primary"
               onClick={() => {
-                <EntryUpdater
-                  entryItem={entryItem}
-                  modalVisible={modalVisibleProp}
-                />;
+                setClicked(true);
               }}>
               Update
-            </Button> */}
+            </Button>
           </Col>
           <Col xs lg="2">
-            <Button
-              variant="danger"
-              onClick={() => {
-                deleteEntry({variables: {userId, entryId}});
-              }}>
+            <Button variant="danger" onClick={handleDelete}>
               Delete
             </Button>
           </Col>
+          <>
+            {clicked && (
+              <EntryUpdater
+                entryItem={entryItem}
+                modalVisibleProp={modalVisibleProp}
+              />
+            )}
+          </>
         </Row>
         <Row>
           <Col>

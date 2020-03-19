@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import {Button, Modal, InputGroup, FormControl} from 'react-bootstrap';
 import {useMutation} from '@apollo/react-hooks';
 import {
+  GET_ENTRIES_Q,
   UPDATE_ENTRY_M,
   GENERATE_URL_M,
   uploadFileToS3,
@@ -21,23 +22,43 @@ export const EntryUpdater = (props: any) => {
     content: inputContent,
   } as EntryInput;
 
-  const [updateEntry] = useMutation(UPDATE_ENTRY_M);
+  const [updateEntry] = useMutation(UPDATE_ENTRY_M, {
+    update(client, {data: {updateEntry}}) {
+      try {
+        const newData = client.readQuery({
+          query: GET_ENTRIES_Q,
+          variables: {
+            userId: userId,
+          },
+        }) as any;
+        const newEntries = newData.getEntries.map((item: any) => {
+          if (item.entryId === updateEntry.entryId) {
+            item.content = updateEntry.content;
+          }
+          return item;
+        });
+        client.writeQuery({
+          query: GET_ENTRIES_Q,
+          data: newEntries,
+        });
+      } catch (error) {
+        console.error(error);
+      }
+    },
+  });
   const [generateUploadUrl, {error}] = useMutation(GENERATE_URL_M);
 
   //File Uploader function that handles files from web upload or mobile upload and
   //sends file to S3 presigned URL
   const handleFileUpload = async (event: any) => {
+    //Upload to presignedURL
     event.preventDefault();
-    const files = event.target.files;
-    if (!files) return;
-
-    setFile(files[0]);
     if (!file) {
       alert('Please select a file');
       return;
     }
+    console.log(file);
 
-    //Upload to presignedURL
     try {
       let presignedUrl = '';
       if (error) {
@@ -48,6 +69,8 @@ export const EntryUpdater = (props: any) => {
         })) as string;
       }
       const fileToUpload = file as any;
+      let body = new FormData();
+      body.append('file', fileToUpload);
       await uploadFileToS3(presignedUrl, fileToUpload);
       alert('File was uploaded!');
     } catch (e) {
@@ -57,6 +80,26 @@ export const EntryUpdater = (props: any) => {
 
   const handleUpdateInput = (event: any) => {
     setInputContent(event.target.value);
+  };
+
+  const submitUpdatedInput = async (event: any) => {
+    event.preventDefault();
+    updateEntry({
+      variables: {
+        userId: userId,
+        entryId: entryId,
+        entryInput: updatedContent,
+      },
+    });
+    setInputContent('');
+  };
+
+  const handleUpload = (event: any) => {
+    event.preventDefault();
+    const files = event.target.files;
+    if (!files) return;
+
+    setFile(files[0]);
   };
 
   const handleClose = () => setModalVisible(false);
@@ -74,8 +117,8 @@ export const EntryUpdater = (props: any) => {
               aria-label="Type here to create a new entry"
               aria-describedby="basic-addon2"
               type="text"
-              onChange={() => handleUpdateInput}
               value={inputContent}
+              onChange={handleUpdateInput}
             />
           </InputGroup>
           <InputGroup className="mb-3">
@@ -83,20 +126,17 @@ export const EntryUpdater = (props: any) => {
               placeholder="Type here to create a new entry"
               aria-label="Type here to create a new entry"
               aria-describedby="basic-addon2"
-              type="image"
-              value={file}
+              type="file"
+              accept="image/*"
+              onChange={handleUpload}
             />
           </InputGroup>
         </Modal.Body>
         <Modal.Footer>
-          <Button
-            variant="primary"
-            onClick={() => {
-              updateEntry({variables: {userId, entryId, updatedContent}});
-            }}>
+          <Button variant="primary" onClick={submitUpdatedInput}>
             Update
           </Button>
-          <Button variant="primary" onClick={() => handleFileUpload}>
+          <Button variant="primary" onClick={handleFileUpload}>
             Upload
           </Button>
         </Modal.Footer>

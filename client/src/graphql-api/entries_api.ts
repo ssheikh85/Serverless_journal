@@ -63,10 +63,15 @@ export const GENERATE_URL_M = gql`
 //Upload File
 export async function uploadFileToS3(
   uploadUrl: string,
-  file: Buffer,
+  file: any,
 ): Promise<void> {
-  await fetch(uploadUrl, {
-    method: 'PUT',
-    body: file,
-  });
+  try {
+    await fetch(uploadUrl, {
+      method: 'POST',
+      mode: 'cors',
+      body: file,
+    });
+  } catch (error) {
+    console.error(error);
+  }
 }
