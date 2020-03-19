@@ -18,6 +18,14 @@ const AddEntryWeb = (props: any) => {
 
   const [createEntry] = useMutation(ADD_ENTRY_M);
 
+  const submitNewInput = async (event: any) => {
+    event.preventDefault();
+    createEntry({
+      variables: {userId: userId, entryInput: newContent},
+    });
+    setInputNewContent('');
+  };
+
   return (
     <div>
       <h4>Add a new entry</h4>
@@ -27,17 +35,11 @@ const AddEntryWeb = (props: any) => {
           aria-label="Type here to create a new entry"
           aria-describedby="basic-addon2"
           type="text"
-          onChange={() => handleNewInput}
           value={inputNewContent}
+          onChange={handleNewInput}
         />
         <InputGroup.Append>
-          <Button
-            variant="primary"
-            onClick={() => {
-              createEntry({
-                variables: {userId: userId, entryInput: newContent},
-              });
-            }}>
+          <Button variant="primary" onClick={submitNewInput}>
             >Add a new entry
           </Button>
         </InputGroup.Append>

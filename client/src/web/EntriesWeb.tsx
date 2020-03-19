@@ -8,7 +8,6 @@ import AddEntryWeb from './AddEntryWeb';
 
 //List of entries
 const EntriesWeb = (userId: string) => {
-  console.log(userId);
   const {loading, data, error} = useQuery(GET_ENTRIES_Q, {
     variables: {userId},
   });
@@ -26,7 +25,6 @@ const EntriesWeb = (userId: string) => {
     console.log(error);
     return alert('An error has occurred getting your entries');
   }
-  console.log(data);
 
   return (
     <div>

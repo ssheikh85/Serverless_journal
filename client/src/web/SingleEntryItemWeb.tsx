@@ -48,12 +48,14 @@ export const SingleEntryItem = (props: any) => {
         </Row>
         <Row>
           <Col>
-            <img
-              src={entryItem.attachmentUrl}
-              width="400"
-              height="300"
-              alt=""
-            />
+            {entryItem.attachmentUrl && (
+              <img
+                src={entryItem.attachmentUrl}
+                width="400"
+                height="300"
+                alt=""
+              />
+            )}
           </Col>
         </Row>
       </Container>

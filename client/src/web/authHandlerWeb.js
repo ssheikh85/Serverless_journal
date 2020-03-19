@@ -51,8 +51,8 @@ class AuthHandlerWeb {
   setSession(authResult) {
     this.idToken = authResult.idToken;
     this.accessToken = authResult.accessToken;
-    console.log('Access token is:', this.accessToken);
-    console.log('Id token is:', this.idToken);
+    // console.log('Access token is:', this.accessToken);
+    // console.log('Id token is:', this.idToken);
     localStorage.setItem('isLoggedIn', true);
     // set the time that the id token will expire at
     this.expiresAt = authResult.expiresIn * 1000 + new Date().getTime();
