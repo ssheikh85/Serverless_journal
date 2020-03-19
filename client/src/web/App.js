@@ -13,11 +13,12 @@ import history from './history';
 
 const App = () => {
   //Get idToken
-  const {getIdtokenClaims} = useAuth0;
+  const {getIdTokenClaims} = useAuth0;
 
-  const getIdToken = () => {
-    const claims = getIdtokenClaims();
-    return claims.__raw;
+  const getToken = async () => {
+    const token = await getIdTokenClaims();
+    const idToken = token.__raw;
+    console.log(idToken);
   };
 
   // A function that routes the user to the right place
@@ -36,7 +37,7 @@ const App = () => {
   });
 
   const authLink = setContext((_, {headers}) => {
-    const token = getIdToken();
+    const token = getToken();
     // return the headers to the context so httpLink can read them
     return {
       headers: {

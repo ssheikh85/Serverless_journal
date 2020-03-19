@@ -2,29 +2,16 @@ import React from 'react';
 import {Navbar, Nav, Card, Button} from 'react-bootstrap';
 import {withRouter} from 'react-router-dom';
 import {useAuth0} from './AuthHandlerWeb';
-// import EntriesWeb from './EntriesWeb';
+import EntriesWeb from './EntriesWeb';
 
 const RootWeb: React.FC<any> = () => {
-  const {
-    isAuthenticated,
-    loginWithRedirect,
-    logout,
-    user,
-    getIdTokenClaims,
-  } = useAuth0();
+  const {isAuthenticated, loginWithRedirect, logout, user} = useAuth0();
   let name = '';
-  // let userId = '';
+  let userId = '';
   if (isAuthenticated && user) {
     name = user.given_name;
-    // userId = user.sub;
+    userId = user.sub;
   }
-
-  const getIdToken = async () => {
-    const claims = await getIdTokenClaims({});
-    const idToken = claims.__raw;
-    console.log(idToken);
-    return idToken;
-  };
 
   return (
     <div>
@@ -47,15 +34,18 @@ const RootWeb: React.FC<any> = () => {
             <Button variant="danger" onClick={() => logout()}>
               Logout
             </Button>
-            <Button variant="danger" onClick={() => getIdToken()}>
-              claims
-            </Button>
           </Navbar>
         </>
       )}
-      {/* {isAuthenticated && user && EntriesWeb(userId)} */}
+      {isAuthenticated && user && EntriesWeb(userId)}
     </div>
   );
 };
 
 export default withRouter(RootWeb);
+
+// const getToken = async () => {
+//   const token = await getIdTokenClaims();
+//   const idToken = token.__raw;
+//   console.log(idToken);
+// };
