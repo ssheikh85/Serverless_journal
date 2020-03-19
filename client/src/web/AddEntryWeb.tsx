@@ -5,7 +5,7 @@ import {ADD_ENTRY_M} from '../graphql-api/entries_api';
 import {EntryInput} from '../models_requests/EntryInput';
 
 //Add an entry
-export const AddEntryWeb = (props: any) => {
+const AddEntryWeb = (props: any) => {
   const {userId} = props;
   const [inputNewContent, setInputNewContent] = useState('');
   const newContent = {
@@ -45,3 +45,5 @@ export const AddEntryWeb = (props: any) => {
     </div>
   );
 };
+
+export default AddEntryWeb;

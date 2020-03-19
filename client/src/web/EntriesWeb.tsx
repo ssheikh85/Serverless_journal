@@ -1,18 +1,14 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {Card} from 'react-bootstrap';
 import {useQuery} from '@apollo/react-hooks';
-import {GET_ENTRIES_Q, ADD_ENTRY_M} from '../graphql-api/entries_api';
+import {GET_ENTRIES_Q} from '../graphql-api/entries_api';
 import {SingleEntryItem} from './SingleEntryItemWeb';
 import {EntryItem} from '../models_requests/EntryItem';
-import {AddEntryWeb} from './AddEntryWeb';
+import AddEntryWeb from './AddEntryWeb';
 
 //List of entries
-export const EntriesWeb = (props: any) => {
-  const [userId, setUserId] = useState('');
-  const {user} = props;
-
-  setUserId(user.sub);
-
+const EntriesWeb = (userId: string) => {
+  console.log(userId);
   const {loading, data, error} = useQuery(GET_ENTRIES_Q, {
     variables: {userId},
   });
@@ -27,27 +23,31 @@ export const EntriesWeb = (props: any) => {
     );
   }
   if (error) {
+    console.log(error);
     return alert('Error has occurred getting your entries');
   }
 
   return (
-    <>
+    <div>
       <div>
         <AddEntryWeb userId={userId} />
       </div>
       <div>
         <h2>Your Entries</h2>
         {!loading &&
-          data.map((entry: EntryItem) => (
-            <>
-              key={entry.entryId}>
-              <SingleEntryItem entryItem={entry} />
-            </>
-          ))}
+          data.map((entry: EntryItem) => {
+            return (
+              <div key={entry.entryId}>
+                <SingleEntryItem entryItem={entry} />
+              </div>
+            );
+          })}
       </div>
-    </>
+    </div>
   );
 };
+
+export default EntriesWeb;
 
 // const usePrevious = (value: any) => {
 //   const ref = useRef();
