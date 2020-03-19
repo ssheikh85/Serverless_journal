@@ -1,21 +1,14 @@
 import React from 'react';
 import {Navbar, Nav, Card, Button} from 'react-bootstrap';
-import authHandlerWeb from './AuthHandlerWeb';
 import {withRouter} from 'react-router-dom';
-
+import {useAuth0} from './AuthHandlerWeb';
 const RootWeb: React.FC = (props: any) => {
-  const isAuthenticated = authHandlerWeb.isAuthenticated();
-  const user = authHandlerWeb.getUserInfo();
+  const {isAuthenticated, loginWithRedirect, logout, user} = useAuth0();
 
   let name = '';
   if (isAuthenticated && user) {
     name = user.given_name;
   }
-
-  const handleLogout = () => {
-    authHandlerWeb.logout();
-    props.history.replace('/');
-  };
 
   return (
     <>
@@ -26,7 +19,7 @@ const RootWeb: React.FC = (props: any) => {
               <Card.Header>Welcome</Card.Header>
               <Card.Body>
                 <Card.Title>Please Login In</Card.Title>
-                <Button onClick={() => authHandlerWeb.login()}>Login</Button>
+                <Button onClick={() => loginWithRedirect({})}>Login</Button>
               </Card.Body>
             </Card>
           </>
@@ -36,7 +29,7 @@ const RootWeb: React.FC = (props: any) => {
             <Navbar bg="primary" variant="dark">
               <Navbar.Brand href="#home"> Hello {name} </Navbar.Brand>
               <Nav className="mr-auto"></Nav>
-              <Button variant="danger" onClick={() => handleLogout()}>
+              <Button variant="danger" onClick={() => logout()}>
                 Logout
               </Button>
             </Navbar>
