@@ -32,7 +32,9 @@ export const EntriesWeb = (props: any) => {
 
   return (
     <>
-      <div>{/* <AddEntryWeb userId={userId} /> */}</div>
+      <div>
+        <AddEntryWeb userId={userId} />
+      </div>
       <div>
         <h2>Your Entries</h2>
         {!loading &&
