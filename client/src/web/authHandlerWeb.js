@@ -12,7 +12,8 @@ class AuthHandlerWeb {
       scope: 'openid email profile',
     });
 
-    this.userInfo = null;
+    this.accessToken = '';
+    this.idToken = '';
     this.login = this.login.bind(this);
     this.logout = this.logout.bind(this);
     this.handleAuthentication = this.handleAuthentication.bind(this);
@@ -28,6 +29,10 @@ class AuthHandlerWeb {
     return this.idToken;
   }
 
+  getAccesstoken() {
+    return this.accessToken;
+  }
+
   handleAuthentication() {
     return new Promise((resolve, reject) => {
       this.auth0.parseHash((err, authResult) => {
@@ -36,7 +41,6 @@ class AuthHandlerWeb {
           return reject(err);
         }
         this.setSession(authResult);
-        this.setUserInfo(authResult);
         resolve();
       });
     });
@@ -44,19 +48,20 @@ class AuthHandlerWeb {
 
   setSession(authResult) {
     this.idToken = authResult.idToken;
-    console.log(this.idToken);
+    this.accessToken = authResult.accessToken;
+    console.log('Access token is:', this.accessToken);
+    console.log('Id token is:', this.idToken);
     localStorage.setItem('isLoggedIn', true);
     // set the time that the id token will expire at
     this.expiresAt = authResult.expiresIn * 1000 + new Date().getTime();
   }
 
-  setUserInfo(authResult) {
-    this.auth0.client.userInfo(authResult.accessToken, (err, user) => {
-      this.userInfo = user;
-      if (err) {
-        console.error(err);
-      }
+  getUserInfo(accessToken) {
+    let userInfo = null;
+    this.auth0.client.userInfo(accessToken, (err, user) => {
+      userInfo = user;
     });
+    console.log(userInfo);
   }
 
   logout() {
@@ -80,11 +85,6 @@ class AuthHandlerWeb {
   isAuthenticated() {
     // Check whether the current time is past the token's expiry time
     return new Date().getTime() < this.expiresAt;
-  }
-
-  getUserInfo() {
-    console.log(this.userInfo);
-    return this.userInfo;
   }
 }
 

@@ -6,14 +6,17 @@ import authHandlerWeb from './AuthHandlerWeb';
 
 const RootWeb: React.FC<any> = () => {
   const isAuthenticated = authHandlerWeb.isAuthenticated();
-  const user = authHandlerWeb.getUserInfo();
-  console.log(user);
+  const accessToken = authHandlerWeb.getAccesstoken();
+  // const user = authHandlerWeb.getUserInfo(accessToken);
+  console.log();
   let name = '';
   // let userId = '';
-  // if (isAuthenticated && user) {
-  //   name = user.given_name;
-  //   userId = user.sub;
-  // }
+  if (isAuthenticated && accessToken) {
+    const user = authHandlerWeb.getUserInfo(accessToken);
+    console.log(user);
+    // name = user.given_name;
+    // userId = user.sub;
+  }
 
   return (
     <div>
