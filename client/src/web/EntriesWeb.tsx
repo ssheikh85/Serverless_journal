@@ -12,13 +12,10 @@ const EntriesWeb = (userId: string) => {
   const newContent = {
     content: inputNewContent,
   } as EntryInput;
+
   const {loading, data, error} = useQuery(GET_ENTRIES_Q, {
     variables: {userId},
   });
-
-  const handleNewInput = (event: any) => {
-    setInputNewContent(event.target.value);
-  };
 
   const [createEntry] = useMutation(ADD_ENTRY_M, {
     update(client, {data: {createEntry}}) {
@@ -39,6 +36,10 @@ const EntriesWeb = (userId: string) => {
       }
     },
   });
+
+  const handleNewInput = (event: any) => {
+    setInputNewContent(event.target.value);
+  };
 
   const submitNewInput = async (event: any) => {
     event.preventDefault();
