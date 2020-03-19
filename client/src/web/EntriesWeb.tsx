@@ -97,19 +97,3 @@ const EntriesWeb = (userId: string) => {
 };
 
 export default EntriesWeb;
-
-// const usePrevious = (value: any) => {
-//   const ref = useRef();
-//   useEffect(() => {
-//     ref.current = value;
-//   });
-//   return ref.current;
-// };
-
-// const prevValues = usePrevious(entries) as unknown;
-// const prevEntries = prevValues as [];
-
-// useEffect(() => {
-//   if (entries.length !== prevEntries.length) {
-//   }
-// });
