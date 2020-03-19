@@ -49,9 +49,3 @@ const RootWeb: React.FC<any> = () => {
 };
 
 export default withRouter(RootWeb);
-
-// const getToken = async () => {
-//   const token = await getIdTokenClaims();
-//   const idToken = token.__raw;
-//   console.log(idToken);
-// };

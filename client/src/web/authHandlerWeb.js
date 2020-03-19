@@ -1,6 +1,8 @@
 import auth0 from 'auth0-js';
 import {authConfig} from '../client_config';
 
+//Code for AuthHandler web was taken from this tutorial
+//https://auth0.com/blog/develop-modern-apps-with-react-graphql-apollo-and-add-authentication/
 class AuthHandlerWeb {
   constructor() {
     this.auth0 = new auth0.WebAuth({

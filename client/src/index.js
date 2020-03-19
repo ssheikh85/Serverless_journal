@@ -8,7 +8,7 @@ import {setContext} from 'apollo-link-context';
 import {InMemoryCache} from 'apollo-cache-inmemory';
 import {BrowserRouter} from 'react-router-dom';
 import {apiEndpoint} from './client_config';
-import authHandlerWeb from './web/AuthHandlerWeb';
+// import authHandlerWeb from './web/';
 import App from './web/App';
 
 //Apollo Client set-up
