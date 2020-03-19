@@ -5,7 +5,6 @@ import {GET_ENTRIES_Q, ADD_ENTRY_M} from '../graphql-api/entries_api';
 import {SingleEntryItem} from './SingleEntryItemWeb';
 import {EntryItem} from '../models_requests/EntryItem';
 import {EntryInput} from '../models_requests/EntryInput';
-// import AddEntryWeb from './AddEntryWeb';
 
 //List of entries
 const EntriesWeb = (userId: string) => {
@@ -21,7 +20,25 @@ const EntriesWeb = (userId: string) => {
     setInputNewContent(event.target.value);
   };
 
-  const [createEntry] = useMutation(ADD_ENTRY_M);
+  const [createEntry] = useMutation(ADD_ENTRY_M, {
+    update(client, {data: {createEntry}}) {
+      try {
+        const newData = client.readQuery({
+          query: GET_ENTRIES_Q,
+          variables: {
+            userId: userId,
+          },
+        }) as any;
+        newData.getEntries.push(createEntry);
+        client.writeQuery({
+          query: GET_ENTRIES_Q,
+          data: newData,
+        });
+      } catch (error) {
+        console.error(error);
+      }
+    },
+  });
 
   const submitNewInput = async (event: any) => {
     event.preventDefault();

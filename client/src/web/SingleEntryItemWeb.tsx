@@ -1,24 +1,35 @@
 import React from 'react';
 import {Button, Container, Row, Col} from 'react-bootstrap';
 import {EntryItem} from '../models_requests/EntryItem';
-import {EntryInput} from '../models_requests/EntryInput';
-import {EntryUpdater} from './EntryUpdaterWeb';
+// import {EntryInput} from '../models_requests/EntryInput';
+// import {EntryUpdater} from './EntryUpdaterWeb';
 import {useMutation} from '@apollo/react-hooks';
-import {DELETE_ENTRY_M} from '../graphql-api/entries_api';
+import {GET_ENTRIES_Q, DELETE_ENTRY_M} from '../graphql-api/entries_api';
 
 export const SingleEntryItem = (props: any) => {
   const {entryItem} = props;
-  const modalVisibleProp = true;
-
-  const handleUpdate = (entryItem: EntryInput) => {
-    return (
-      <EntryUpdater entryItem={entryItem} modalVisible={modalVisibleProp} />
-    );
-  };
-
-  const [deleteEntry] = useMutation(DELETE_ENTRY_M);
-
   const {userId, entryId} = entryItem as EntryItem;
+  // const modalVisibleProp = true;
+
+  const [deleteEntry] = useMutation(DELETE_ENTRY_M, {
+    update(client, {data: {deleteEntry}}) {
+      try {
+        const newData = client.readQuery({
+          query: GET_ENTRIES_Q,
+          variables: {
+            userId: userId,
+          },
+        }) as any;
+        newData.getEntries.push(deleteEntry);
+        client.writeQuery({
+          query: GET_ENTRIES_Q,
+          data: newData,
+        });
+      } catch (error) {
+        console.error(error);
+      }
+    },
+  });
 
   return (
     <div>
@@ -28,13 +39,16 @@ export const SingleEntryItem = (props: any) => {
             {entryItem.content}
           </Col>
           <Col xs lg="2">
-            <Button
+            {/* <Button
               variant="primary"
               onClick={() => {
-                handleUpdate(entryItem);
+                <EntryUpdater
+                  entryItem={entryItem}
+                  modalVisible={modalVisibleProp}
+                />;
               }}>
               Update
-            </Button>
+            </Button> */}
           </Col>
           <Col xs lg="2">
             <Button
