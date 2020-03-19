@@ -1,17 +1,19 @@
 import React from 'react';
 import {Navbar, Nav, Card, Button} from 'react-bootstrap';
 import {withRouter} from 'react-router-dom';
-import {useAuth0} from './AuthHandlerWeb';
-import EntriesWeb from './EntriesWeb';
+import authHandlerWeb from './AuthHandlerWeb';
+// import EntriesWeb from './EntriesWeb';
 
 const RootWeb: React.FC<any> = () => {
-  const {isAuthenticated, loginWithRedirect, logout, user} = useAuth0();
+  const isAuthenticated = authHandlerWeb.isAuthenticated();
+  const user = authHandlerWeb.getUserInfo();
+  console.log(user);
   let name = '';
-  let userId = '';
-  if (isAuthenticated && user) {
-    name = user.given_name;
-    userId = user.sub;
-  }
+  // let userId = '';
+  // if (isAuthenticated && user) {
+  //   name = user.given_name;
+  //   userId = user.sub;
+  // }
 
   return (
     <div>
@@ -21,7 +23,7 @@ const RootWeb: React.FC<any> = () => {
             <Card.Header>Welcome</Card.Header>
             <Card.Body>
               <Card.Title>Please Login In</Card.Title>
-              <Button onClick={() => loginWithRedirect({})}>Login</Button>
+              <Button onClick={() => authHandlerWeb.login()}>Login</Button>
             </Card.Body>
           </Card>
         </>
@@ -31,13 +33,13 @@ const RootWeb: React.FC<any> = () => {
           <Navbar bg="primary" variant="dark">
             <Navbar.Brand href="#home"> Hello {name} </Navbar.Brand>
             <Nav className="mr-auto"></Nav>
-            <Button variant="danger" onClick={() => logout()}>
+            <Button variant="danger" onClick={() => authHandlerWeb.logout()}>
               Logout
             </Button>
           </Navbar>
         </>
       )}
-      {isAuthenticated && user && EntriesWeb(userId)}
+      {/* {isAuthenticated && user && EntriesWeb(userId)} */}
     </div>
   );
 };

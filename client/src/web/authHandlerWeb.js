@@ -1,89 +1,93 @@
-//Code was taken from the following tutorial https://auth0.com/docs/quickstart/spa/react
-import React, {useState, useEffect, useContext} from 'react';
-import createAuth0Client from '@auth0/auth0-spa-js';
+import auth0 from 'auth0-js';
+import {authConfig} from '../client_config';
 
-const DEFAULT_REDIRECT_CALLBACK = () =>
-  window.history.replaceState({}, document.title, window.location.pathname);
+class AuthHandlerWeb {
+  constructor() {
+    this.auth0 = new auth0.WebAuth({
+      domain: authConfig.domain,
+      clientID: authConfig.clientId,
+      redirectUri: authConfig.callbackUrl,
+      audience: `https://${authConfig.domain}/userinfo`,
+      responseType: 'token id_token',
+      scope: 'openid email profile',
+    });
 
-export const Auth0Context = React.createContext();
-export const useAuth0 = () => useContext(Auth0Context);
-export const Auth0Provider = ({
-  children,
-  onRedirectCallback = DEFAULT_REDIRECT_CALLBACK,
-  ...initOptions
-}) => {
-  const [isAuthenticated, setIsAuthenticated] = useState();
-  const [user, setUser] = useState();
-  const [auth0Client, setAuth0] = useState();
-  const [loading, setLoading] = useState(true);
-  const [popupOpen, setPopupOpen] = useState(false);
+    this.userInfo = null;
+    this.login = this.login.bind(this);
+    this.logout = this.logout.bind(this);
+    this.handleAuthentication = this.handleAuthentication.bind(this);
+    this.isAuthenticated = this.isAuthenticated.bind(this);
+    this.getUserInfo = this.getUserInfo.bind(this);
+  }
 
-  useEffect(() => {
-    const initAuth0 = async () => {
-      const auth0FromHook = await createAuth0Client(initOptions);
-      setAuth0(auth0FromHook);
+  login() {
+    this.auth0.authorize();
+  }
 
-      if (
-        window.location.search.includes('code=') &&
-        window.location.search.includes('state=')
-      ) {
-        const {appState} = await auth0FromHook.handleRedirectCallback();
-        onRedirectCallback(appState);
+  getIdToken() {
+    return this.idToken;
+  }
+
+  handleAuthentication() {
+    return new Promise((resolve, reject) => {
+      this.auth0.parseHash((err, authResult) => {
+        if (err) return reject(err);
+        if (!authResult || !authResult.idToken) {
+          return reject(err);
+        }
+        this.setSession(authResult);
+        this.setUserInfo(authResult);
+        resolve();
+      });
+    });
+  }
+
+  setSession(authResult) {
+    this.idToken = authResult.idToken;
+    console.log(this.idToken);
+    localStorage.setItem('isLoggedIn', true);
+    // set the time that the id token will expire at
+    this.expiresAt = authResult.expiresIn * 1000 + new Date().getTime();
+  }
+
+  setUserInfo(authResult) {
+    this.auth0.client.userInfo(authResult.accessToken, (err, user) => {
+      this.userInfo = user;
+      if (err) {
+        console.error(err);
       }
+    });
+  }
 
-      const isAuthenticated = await auth0FromHook.isAuthenticated();
+  logout() {
+    this.auth0.logout({
+      returnTo: window.location.origin,
+      clientID: authConfig.clientId,
+    });
+    localStorage.setItem('isLoggedIn', false);
+  }
 
-      setIsAuthenticated(isAuthenticated);
+  silentAuth() {
+    return new Promise((resolve, reject) => {
+      this.auth0.checkSession({}, (err, authResult) => {
+        if (err) return reject(err);
+        this.setSession(authResult);
+        resolve();
+      });
+    });
+  }
 
-      if (isAuthenticated) {
-        const user = await auth0FromHook.getUser();
-        setUser(user);
-      }
+  isAuthenticated() {
+    // Check whether the current time is past the token's expiry time
+    return new Date().getTime() < this.expiresAt;
+  }
 
-      setLoading(false);
-    };
-    initAuth0();
-    // eslint-disable-next-line
-  }, []);
+  getUserInfo() {
+    console.log(this.userInfo);
+    return this.userInfo;
+  }
+}
 
-  const loginWithPopup = async (params = {}) => {
-    setPopupOpen(true);
-    try {
-      await auth0Client.loginWithPopup(params);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setPopupOpen(false);
-    }
-    const user = await auth0Client.getUser();
-    setUser(user);
-    setIsAuthenticated(true);
-  };
+const authHandlerWeb = new AuthHandlerWeb();
 
-  const handleRedirectCallback = async () => {
-    setLoading(true);
-    await auth0Client.handleRedirectCallback();
-    const user = await auth0Client.getUser();
-    setLoading(false);
-    setIsAuthenticated(true);
-    setUser(user);
-  };
-  return (
-    <Auth0Context.Provider
-      value={{
-        isAuthenticated,
-        user,
-        loading,
-        popupOpen,
-        loginWithPopup,
-        handleRedirectCallback,
-        getIdTokenClaims: (...p) => auth0Client.getIdTokenClaims(...p),
-        loginWithRedirect: (...p) => auth0Client.loginWithRedirect(...p),
-        getTokenSilently: (...p) => auth0Client.getTokenSilently(...p),
-        getTokenWithPopup: (...p) => auth0Client.getTokenWithPopup(...p),
-        logout: (...p) => auth0Client.logout(...p),
-      }}>
-      {children}
-    </Auth0Context.Provider>
-  );
-};
+export default authHandlerWeb;
