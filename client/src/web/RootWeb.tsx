@@ -2,13 +2,13 @@ import React, {useState, useEffect} from 'react';
 import {Navbar, Nav, Card, Button} from 'react-bootstrap';
 import {withRouter} from 'react-router-dom';
 import authHandlerWeb from './AuthHandlerWeb';
-// import EntriesWeb from './EntriesWeb';
+import EntriesWeb from './EntriesWeb';
 
 const RootWeb: React.FC<any> = () => {
   const isAuthenticated = authHandlerWeb.isAuthenticated();
 
   const [userName, setUserName] = useState('');
-  // const [userId, setUserId] = useState('');
+  const [userId, setUserId] = useState('');
 
   useEffect(() => {
     const accessToken = authHandlerWeb.getAccesstoken();
@@ -16,6 +16,7 @@ const RootWeb: React.FC<any> = () => {
       try {
         const user = await authHandlerWeb.getUserInfo(accessToken);
         setUserName(user.given_name);
+        setUserId(user.sub);
       } catch (error) {
         console.error(error);
       }
@@ -47,7 +48,7 @@ const RootWeb: React.FC<any> = () => {
           </Navbar>
         </>
       )}
-      {/* {isAuthenticated && user && EntriesWeb(userId)} */}
+      {isAuthenticated && EntriesWeb(userId)}
     </div>
   );
 };

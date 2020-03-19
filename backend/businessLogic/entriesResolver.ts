@@ -5,7 +5,8 @@ export const resolvers = {
   Query: {
     getEntries: async (_, args, { dataSources, user }) => {
       try {
-        // logger.info(user, args.userId);
+        // logger.info(user);
+        // logger.info(args.userId);
         if (user === args.userId) {
           return await dataSources.entriesAccess.getEntries(args.userId);
         } else {

@@ -24,8 +24,9 @@ const EntriesWeb = (userId: string) => {
   }
   if (error) {
     console.log(error);
-    return alert('Error has occurred getting your entries');
+    return alert('An error has occurred getting your entries');
   }
+  console.log(data);
 
   return (
     <div>
@@ -33,9 +34,9 @@ const EntriesWeb = (userId: string) => {
         <AddEntryWeb userId={userId} />
       </div>
       <div>
-        <h2>Your Entries</h2>
+        <h4>Your Entries</h4>
         {!loading &&
-          data.map((entry: EntryItem) => {
+          data.getEntries.map((entry: EntryItem) => {
             return (
               <div key={entry.entryId}>
                 <SingleEntryItem entryItem={entry} />

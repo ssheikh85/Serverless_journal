@@ -20,7 +20,7 @@ const AddEntryWeb = (props: any) => {
 
   return (
     <div>
-      <h3>Add a new entry</h3>
+      <h4>Add a new entry</h4>
       <InputGroup className="mb-3">
         <FormControl
           placeholder="Type here to create a new entry"
