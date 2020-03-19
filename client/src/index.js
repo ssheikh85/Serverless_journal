@@ -13,6 +13,7 @@ import {useAuth0} from './web/AuthHandlerWeb';
 import history from './history';
 import App from './web/App';
 
+//A function to get the Id_Token
 const {getIdTokenClaims} = useAuth0();
 
 const getIdToken = async () => {
