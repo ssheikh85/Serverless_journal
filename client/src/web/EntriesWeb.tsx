@@ -1,16 +1,36 @@
-import React from 'react';
-import {Card} from 'react-bootstrap';
-import {useQuery} from '@apollo/react-hooks';
-import {GET_ENTRIES_Q} from '../graphql-api/entries_api';
+import React, {useState} from 'react';
+import {Card, Button, InputGroup, FormControl} from 'react-bootstrap';
+import {useQuery, useMutation} from '@apollo/react-hooks';
+import {GET_ENTRIES_Q, ADD_ENTRY_M} from '../graphql-api/entries_api';
 import {SingleEntryItem} from './SingleEntryItemWeb';
 import {EntryItem} from '../models_requests/EntryItem';
-import AddEntryWeb from './AddEntryWeb';
+import {EntryInput} from '../models_requests/EntryInput';
+// import AddEntryWeb from './AddEntryWeb';
 
 //List of entries
 const EntriesWeb = (userId: string) => {
+  const [inputNewContent, setInputNewContent] = useState('');
+  const newContent = {
+    content: inputNewContent,
+  } as EntryInput;
   const {loading, data, error} = useQuery(GET_ENTRIES_Q, {
     variables: {userId},
   });
+
+  const handleNewInput = (event: any) => {
+    setInputNewContent(event.target.value);
+  };
+
+  const [createEntry] = useMutation(ADD_ENTRY_M);
+
+  const submitNewInput = async (event: any) => {
+    event.preventDefault();
+    createEntry({
+      variables: {userId: userId, entryInput: newContent},
+    });
+    setInputNewContent('');
+  };
+
   if (loading) {
     return (
       <Card className="text-center">
@@ -20,17 +40,31 @@ const EntriesWeb = (userId: string) => {
         </Card.Body>
       </Card>
     );
-  }
-  if (error) {
+  } else if (error) {
     console.log(error);
-    return alert('An error has occurred getting your entries');
   }
 
   return (
     <div>
       <div>
-        <AddEntryWeb userId={userId} />
+        <h4>Add a new entry</h4>
+        <InputGroup className="mb-3">
+          <FormControl
+            placeholder="Type here to create a new entry"
+            aria-label="Type here to create a new entry"
+            aria-describedby="basic-addon2"
+            type="text"
+            value={inputNewContent}
+            onChange={handleNewInput}
+          />
+          <InputGroup.Append>
+            <Button variant="primary" onClick={submitNewInput}>
+              >Add a new entry
+            </Button>
+          </InputGroup.Append>
+        </InputGroup>
       </div>
+      );
       <div>
         <h4>Your Entries</h4>
         {!loading &&
