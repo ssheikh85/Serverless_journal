@@ -13,8 +13,12 @@ const RootWeb: React.FC<any> = () => {
   useEffect(() => {
     const accessToken = authHandlerWeb.getAccesstoken();
     const getTheUser = async () => {
-      const user = await authHandlerWeb.getUserInfo(accessToken);
-      setUserName(user.given_name);
+      try {
+        const user = await authHandlerWeb.getUserInfo(accessToken);
+        setUserName(user.given_name);
+      } catch (error) {
+        console.error(error);
+      }
     };
     getTheUser();
   }, []);
