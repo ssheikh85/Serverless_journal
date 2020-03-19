@@ -1,12 +1,13 @@
+import React from 'react';
 import {ApolloProvider} from '@apollo/react-hooks';
 import {ApolloClient} from 'apollo-client';
 import {createHttpLink} from 'apollo-link-http';
 import {setContext} from 'apollo-link-context';
 import {InMemoryCache} from 'apollo-cache-inmemory';
 import {BrowserRouter} from 'react-router-dom';
-import {authConfig, apiEndpoint} from './client_config';
+import {authConfig, apiEndpoint} from '../client_config';
 import {useAuth0} from './AuthHandlerWeb';
-import {Auth0Provider} from './web/AuthHandlerWeb';
+import {Auth0Provider} from './AuthHandlerWeb';
 import RootWeb from './RootWeb';
 import history from './history';
 

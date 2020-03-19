@@ -1,5 +1,4 @@
 //Code was taken from the following tutorial https://auth0.com/docs/quickstart/spa/react
-
 import React, {useState, useEffect, useContext} from 'react';
 import createAuth0Client from '@auth0/auth0-spa-js';
 
