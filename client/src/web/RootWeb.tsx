@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import {Navbar, Nav, Card, Button} from 'react-bootstrap';
 import {withRouter} from 'react-router-dom';
 import authHandlerWeb from './AuthHandlerWeb';
@@ -6,17 +6,18 @@ import authHandlerWeb from './AuthHandlerWeb';
 
 const RootWeb: React.FC<any> = () => {
   const isAuthenticated = authHandlerWeb.isAuthenticated();
-  const accessToken = authHandlerWeb.getAccesstoken();
-  // const user = authHandlerWeb.getUserInfo(accessToken);
-  console.log();
-  let name = '';
-  // let userId = '';
-  if (isAuthenticated && accessToken) {
-    const user = authHandlerWeb.getUserInfo(accessToken);
-    console.log(user);
-    // name = user.given_name;
-    // userId = user.sub;
-  }
+
+  const [userName, setUserName] = useState('');
+  // const [userId, setUserId] = useState('');
+
+  useEffect(() => {
+    const accessToken = authHandlerWeb.getAccesstoken();
+    const getTheUser = async () => {
+      const user = await authHandlerWeb.getUserInfo(accessToken);
+      setUserName(user.given_name);
+    };
+    getTheUser();
+  }, []);
 
   return (
     <div>
@@ -34,7 +35,7 @@ const RootWeb: React.FC<any> = () => {
       {isAuthenticated && (
         <>
           <Navbar bg="primary" variant="dark">
-            <Navbar.Brand href="#home"> Hello {name} </Navbar.Brand>
+            <Navbar.Brand href="#home"> Hello {userName} </Navbar.Brand>
             <Nav className="mr-auto"></Nav>
             <Button variant="danger" onClick={() => authHandlerWeb.logout()}>
               Logout

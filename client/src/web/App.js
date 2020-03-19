@@ -12,8 +12,10 @@ const App = props => {
         await authHandlerWeb.silentAuth();
         this.forceUpdate();
       } catch (err) {
-        if (err.error === 'login_required') return;
-        console.log(err.error);
+        if (err.error === 'login_required') {
+          console.error(err);
+          return;
+        }
       }
     };
     authenticate();

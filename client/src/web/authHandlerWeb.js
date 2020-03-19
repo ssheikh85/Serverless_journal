@@ -57,11 +57,15 @@ class AuthHandlerWeb {
   }
 
   getUserInfo(accessToken) {
-    let userInfo = null;
-    this.auth0.client.userInfo(accessToken, (err, user) => {
-      userInfo = user;
+    return new Promise((resolve, reject) => {
+      this.auth0.client.userInfo(accessToken, (err, user) => {
+        if (err) {
+          return reject(err);
+        } else {
+          resolve(user);
+        }
+      });
     });
-    console.log(userInfo);
   }
 
   logout() {
