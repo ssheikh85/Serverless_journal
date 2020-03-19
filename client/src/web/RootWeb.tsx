@@ -2,6 +2,7 @@ import React from 'react';
 import {Navbar, Nav, Card, Button} from 'react-bootstrap';
 import {withRouter} from 'react-router-dom';
 import {useAuth0} from './AuthHandlerWeb';
+import {EntriesWeb} from './EntriesWeb';
 
 const RootWeb = (props: any) => {
   const {isAuthenticated, loginWithRedirect, logout, user} = useAuth0();
@@ -33,7 +34,7 @@ const RootWeb = (props: any) => {
                 Logout
               </Button>
             </Navbar>
-            {/* <>{isAuthenticated && user && <EntriesWeb user={user} />}</> */}
+            <>{isAuthenticated && user && <EntriesWeb user={user} />}</>
           </>
         )}
       </div>
