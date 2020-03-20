@@ -11,7 +11,7 @@ An applicaiton that allows users to login in with their Google Account to create
 The backend is built using the following technologies:
 
 - Serverless Framework
-- AWS CloudFormation, AWS APIGateway, AWS Lambda, AWS DynamodB
+- AWS CloudFormation, AWS APIGateway, AWS Lambda, AWS DynamodB, AWS S3
 - Apollo Server Lambda
 - Graphql
 - NodeJS - Typescript
