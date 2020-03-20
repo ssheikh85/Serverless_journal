@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 45,
     padding: 15,
-    backgroundColor: 'steelblue',
+    backgroundColor: 'skyblue',
   },
 });
 

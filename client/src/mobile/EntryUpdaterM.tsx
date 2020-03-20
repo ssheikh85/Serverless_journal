@@ -100,23 +100,27 @@ export const EntryUpdaterM = (props: any) => {
   //File Uploader function that handles files from web upload or mobile upload and
   //sends file to S3 presigned URL
   const handleUpload = async () => {
-    if (Platform.OS === 'ios') {
-      const {status} = await Permissions.askAsync(Permissions.CAMERA_ROLL);
-      if (status !== 'granted') {
-        alert('Sorry, we need camera roll permissions to make this work!');
-      } else {
-        const result = await ImagePicker.launchImageLibraryAsync({
-          mediaTypes: ImagePicker.MediaTypeOptions.All,
-          allowsEditing: true,
-          aspect: [4, 3],
-          quality: 1,
-        });
+    try {
+      if (Platform.OS === 'ios') {
+        const {status} = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+        if (status !== 'granted') {
+          alert('Sorry, we need camera roll permissions to make this work!');
+        } else {
+          const result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.All,
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1,
+          });
 
-        if (!result.cancelled) {
-          let file = result.uri as any;
-          setFile(file);
+          if (!result.cancelled) {
+            let file = result.uri as any;
+            setFile(file);
+          }
         }
       }
+    } catch (error) {
+      console.error(error);
     }
   };
 
@@ -157,7 +161,7 @@ export const EntryUpdaterM = (props: any) => {
 
             <Button title="Upload" onPress={handleFileUpload}></Button>
 
-            <Button title="Cancel" onPress={handleClose}></Button>
+            <Button title="Close" onPress={handleClose}></Button>
           </View>
         </View>
       </Modal>

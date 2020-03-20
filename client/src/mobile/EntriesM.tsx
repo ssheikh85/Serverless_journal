@@ -113,35 +113,41 @@ export const EntriesM = (props: any) => {
           data.getEntries.map((entryItem: EntryItem) => {
             return (
               <View style={styles.entry}>
-                <Text>{entryItem.content}</Text>
-                <Button
-                  title="Update"
-                  onPress={() => {
-                    setClicked(true);
-                  }}></Button>
-                <Button
-                  title="Delete"
-                  onPress={() => {
-                    deleteEntry({
-                      variables: {
-                        userId: entryItem.userId,
-                        entryId: entryItem.entryId,
-                      },
-                    });
-                  }}></Button>
-                {clicked && (
-                  <EntryUpdaterM
-                    entryItem={entryItem}
-                    idToken={idToken}
-                    modalVisibleProp={modalVisibleProp}
-                  />
-                )}
-                {entryItem.attachmentUrl && (
-                  <Image
-                    source={{uri: entryItem.attachmentUrl}}
-                    style={{width: 400, height: 400}}
-                  />
-                )}
+                <Text style={styles.content}>{entryItem.content}</Text>
+                <View style={styles.updateButton}>
+                  <Button
+                    title="Update"
+                    onPress={() => {
+                      setClicked(true);
+                    }}></Button>
+                </View>
+                <View style={styles.deleteButton}>
+                  <Button
+                    title="Delete"
+                    onPress={() => {
+                      deleteEntry({
+                        variables: {
+                          userId: entryItem.userId,
+                          entryId: entryItem.entryId,
+                        },
+                      });
+                    }}></Button>
+                  {clicked && (
+                    <EntryUpdaterM
+                      entryItem={entryItem}
+                      idToken={idToken}
+                      modalVisibleProp={modalVisibleProp}
+                    />
+                  )}
+                </View>
+                <View style={styles.image}>
+                  {entryItem.attachmentUrl && (
+                    <Image
+                      source={{uri: entryItem.attachmentUrl}}
+                      style={{width: 400, height: 400}}
+                    />
+                  )}
+                </View>
               </View>
             );
           })}
@@ -159,21 +165,34 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    justifyContent: 'flex-start',
-    alignItems: 'flex-start',
     backgroundColor: '#F5FCFF',
   },
   entry: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    height: 60,
+    justifyContent: 'center',
+    alignItems: 'flex-start',
+    fontSize: 14,
     padding: 10,
-    margin: 30,
+    height: 100,
+    width: 600,
   },
   content: {
     flex: 1,
     fontSize: 14,
+    width: 300,
+    marginRight: 50,
     padding: 10,
-    margin: 30,
+  },
+  updateButton: {
+    flex: 2,
+    fontSize: 14,
+  },
+  deleteButton: {
+    flex: 3,
+    fontSize: 14,
+    padding: 10,
+  },
+  image: {
+    flex: 4,
   },
 });

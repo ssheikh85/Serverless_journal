@@ -48,8 +48,8 @@ For Android based app
 
 ### Known Bugs
 
-    Web app
-        Browser refresh needed when an image is uploaded to display the image
+    Web and Mobile app
+        Browser/App refresh/relogin needed when an image is uploaded to display the image
         Need to enter text into the add entry dialog to get an entry that has been updated to render
 
 ### Future Features/Open Items
