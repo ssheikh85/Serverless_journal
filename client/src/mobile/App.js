@@ -74,7 +74,9 @@ const App = () => {
             <View>
               <Text style={styles.header}> Welcome, {name} </Text>
               <Button onPress={() => logout()} title="Logout" />
-              <>{accessToken && <EntriesM userId={userId} />}</>
+              <>
+                {accessToken && <EntriesM userId={userId} idToken={idToken} />}
+              </>
             </View>
           </>
         )}

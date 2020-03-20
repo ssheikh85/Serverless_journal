@@ -6,21 +6,27 @@ import {
   View,
   Text,
   TextInput,
-  FlatList,
+  Image,
   Button,
   ActivityIndicator,
 } from 'react-native';
 import {useQuery, useMutation} from '@apollo/react-hooks';
-import {GET_ENTRIES_Q, ADD_ENTRY_M} from '../graphql-api/entries_api';
+import {
+  GET_ENTRIES_Q,
+  ADD_ENTRY_M,
+  DELETE_ENTRY_M,
+} from '../graphql-api/entries_api';
 import {EntryItem} from '../models_requests/EntryItem';
 import {EntryInput} from '../models_requests/EntryInput';
-import {SingleEntryItemM} from '../mobile/SingleEntryItemM';
+import {EntryUpdaterM} from './EntryUpdaterM';
+import {remove} from '../utils';
 
 //List of entries
 export const EntriesM = (props: any) => {
-  const [inputNewContent, setInputNewContent] = useState('');
-  const {userId} = props;
+  const {userId, idToken} = props;
   const modalVisibleProp = true;
+  const [inputNewContent, setInputNewContent] = useState('');
+  const [clicked, setClicked] = useState(false);
 
   const newContent = {
     content: inputNewContent,
@@ -58,6 +64,27 @@ export const EntriesM = (props: any) => {
     setInputNewContent('');
   };
 
+  const [deleteEntry] = useMutation(DELETE_ENTRY_M, {
+    update(cache, {data: {deleteEntry}}) {
+      try {
+        const newData = cache.readQuery({
+          query: GET_ENTRIES_Q,
+          variables: {
+            userId: userId,
+          },
+        }) as any;
+        cache.writeQuery({
+          query: GET_ENTRIES_Q,
+          data: {
+            getEntries: remove(newData.getEntries, deleteEntry),
+          },
+        });
+      } catch (error) {
+        console.error(error);
+      }
+    },
+  });
+
   if (loading) {
     return (
       <View>
@@ -70,51 +97,83 @@ export const EntriesM = (props: any) => {
   }
   return (
     <>
-      {/* <View>
-          <Text>Add a new Entry</Text>
-          <TextInput
-            style={{height: 40}}
-            placeholder="Type here to create a new entry"
-            value={inputNewContent}
-            onChangeText={text => setInputNewContent(text)}
-          />
-          <Button title="Add a new entry" onPress={submitNewInput}></Button>
-        </View> */}
-      <SafeAreaView style={styles.container}>
-        <View style={styles.scrollView}>
-          <Text style={styles.header}>Your Entries</Text>
-          <FlatList
-            data={data.getEntries}
-            renderItem={({item}) => (
-              <SingleEntryItemM
-                entryItem={item}
-                modalVisibleProp={modalVisibleProp}
-              />
-            )}
-            keyExtractor={(entryItem: EntryItem) => entryItem.entryId}
-          />
-        </View>
-      </SafeAreaView>
+      <View>
+        <Text>Add a new Entry</Text>
+        <TextInput
+          style={{height: 40}}
+          placeholder="Type here to create a new entry"
+          onChangeText={text => setInputNewContent(text)}
+          value={inputNewContent}
+        />
+        <Button title="Add a new entry" onPress={submitNewInput}></Button>
+      </View>
+      <Text style={styles.header}>Your Entries</Text>
+      <View style={styles.container}>
+        {!loading &&
+          data.getEntries.map((entryItem: EntryItem) => {
+            return (
+              <View style={styles.entry}>
+                <Text>{entryItem.content}</Text>
+                <Button
+                  title="Update"
+                  onPress={() => {
+                    setClicked(true);
+                  }}></Button>
+                <Button
+                  title="Delete"
+                  onPress={() => {
+                    deleteEntry({
+                      variables: {
+                        userId: entryItem.userId,
+                        entryId: entryItem.entryId,
+                      },
+                    });
+                  }}></Button>
+                {clicked && (
+                  <EntryUpdaterM
+                    entryItem={entryItem}
+                    idToken={idToken}
+                    modalVisibleProp={modalVisibleProp}
+                  />
+                )}
+                {entryItem.attachmentUrl && (
+                  <Image
+                    source={{uri: entryItem.attachmentUrl}}
+                    style={{width: 400, height: 400}}
+                  />
+                )}
+              </View>
+            );
+          })}
+      </View>
     </>
   );
 };
 
 //Styles
 const styles = StyleSheet.create({
+  header: {
+    fontSize: 24,
+    textAlign: 'left',
+    margin: 10,
+  },
   container: {
-    flex: 2,
+    flex: 1,
     justifyContent: 'flex-start',
     alignItems: 'flex-start',
     backgroundColor: '#F5FCFF',
   },
-  scrollView: {
-    flex: 3,
-    backgroundColor: 'white',
-    marginHorizontal: 20,
+  entry: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    height: 60,
+    padding: 10,
+    margin: 30,
   },
-  header: {
-    fontSize: 32,
-    textAlign: 'left',
-    margin: 10,
+  content: {
+    flex: 1,
+    fontSize: 14,
+    padding: 10,
+    margin: 30,
   },
 });

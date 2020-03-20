@@ -15,17 +15,14 @@ import {
   uploadFileToS3,
 } from '../graphql-api/entries_api';
 import {EntryInput} from '../models_requests/EntryInput';
-import authHandlerMobile from './AuthHandlerMobile';
 import {apiEndpoint} from '../client_config';
 import * as ImagePicker from 'expo-image-picker';
 import * as Permissions from 'expo-permissions';
 
 export const EntryUpdaterM = (props: any) => {
-  const {entryItem, modalVisibleProp} = props;
+  const {entryItem, modalVisibleProp, idToken} = props;
   const userId = entryItem.userId as string;
   const entryId = entryItem.entryId as string;
-
-  const idToken = authHandlerMobile.getIdToken();
 
   const [modalVisible, setModalVisible] = useState(modalVisibleProp);
   const [file, setFile] = useState();
