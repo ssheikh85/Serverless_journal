@@ -8,46 +8,68 @@ import {
   TextInput,
   FlatList,
   Button,
-  Platform,
+  ActivityIndicator,
 } from 'react-native';
 import {useQuery, useMutation} from '@apollo/react-hooks';
 import {GET_ENTRIES_Q, ADD_ENTRY_M} from '../graphql-api/entries_api';
-import {SingleEntryItemM} from './SingleEntryItemM';
 import {EntryItem} from '../models_requests/EntryItem';
-import authHandlerMobile from './AuthHandlerMobile';
+import {EntryInput} from '../models_requests/EntryInput';
+import {SingleEntryItemM} from '../mobile/SingleEntryItemM';
 
 //List of entries
 export const EntriesM = (props: any) => {
-  const [userId, setUserId] = useState('');
-  const [entries, setEntries] = useState([]);
-  const [inputNewContent, setInputNewContent] = useState({
-    content: '',
-  });
+  const [inputNewContent, setInputNewContent] = useState('');
+  const {userId} = props;
+  const modalVisibleProp = true;
 
-  const getUserId = async () => {
-    try {
-      const accessToken = await authHandlerMobile.getAccessToken();
-      const user = await authHandlerMobile.getUserInfo(accessToken);
-      setUserId(user.sub);
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  const newContent = {
+    content: inputNewContent,
+  } as EntryInput;
 
-  getUserId();
-
-  const {data, error} = useQuery(GET_ENTRIES_Q, {
+  const {loading, data, error} = useQuery(GET_ENTRIES_Q, {
     variables: {userId},
   });
 
-  const [createEntry] = useMutation(ADD_ENTRY_M);
+  const [createEntry] = useMutation(ADD_ENTRY_M, {
+    update(cache, {data: {createEntry}}) {
+      try {
+        const newData = cache.readQuery({
+          query: GET_ENTRIES_Q,
+          variables: {
+            userId: userId,
+          },
+        }) as any;
+        newData.getEntries.push(createEntry);
+        cache.writeQuery({
+          query: GET_ENTRIES_Q,
+          data: {getEntries: newData},
+        });
+      } catch (error) {
+        console.error(error);
+      }
+    },
+  });
 
-  if (error) {
-    alert(`An error has occurred ${error.message}`);
+  const submitNewInput = async (event: any) => {
+    event.preventDefault();
+    createEntry({
+      variables: {userId: userId, entryInput: newContent},
+    });
+    setInputNewContent('');
+  };
+
+  if (loading) {
+    return (
+      <View>
+        <Text>Loading...</Text>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  } else if (error) {
+    console.log(error);
   } else {
-    setEntries(data);
   }
-
+  const dataEntries = data.getEntries;
   return (
     <>
       <SafeAreaView style={styles.container}>
@@ -57,21 +79,21 @@ export const EntriesM = (props: any) => {
             <TextInput
               style={{height: 40}}
               placeholder="Type here to create a new entry"
-              onChangeText={text => setInputNewContent({content: text})}
-              value={inputNewContent.content}
+              value={inputNewContent}
+              onChangeText={text => setInputNewContent(text)}
             />
-
-            <Button
-              title="Add a new entry"
-              onPress={() => {
-                createEntry({variables: {userId, inputNewContent}});
-              }}></Button>
+            <Button title="Add a new entry" onPress={submitNewInput}></Button>
           </View>
           <Text style={styles.header}>Your Entries</Text>
           <FlatList
-            data={entries as EntryItem[]}
-            renderItem={({item}) => <SingleEntryItemM entryItem={item} />}
-            keyExtractor={item => item.entryId}
+            data={dataEntries}
+            renderItem={({item}) => (
+              <SingleEntryItemM
+                entryItem={item}
+                modalVisibleProp={modalVisibleProp}
+              />
+            )}
+            keyExtractor={(entryItem: EntryItem) => entryItem.entryId}
           />
         </ScrollView>
       </SafeAreaView>
@@ -97,19 +119,3 @@ const styles = StyleSheet.create({
     margin: 10,
   },
 });
-
-// const usePrevious = (value: any) => {
-//   const ref = useRef();
-//   useEffect(() => {
-//     ref.current = value;
-//   });
-//   return ref.current;
-// };
-
-// const prevValues = usePrevious(entries) as unknown;
-// const prevEntries = prevValues as [];
-
-// useEffect(() => {
-//   if (entries.length !== prevEntries.length) {
-//   }
-// });

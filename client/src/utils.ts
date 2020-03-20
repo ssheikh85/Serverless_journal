@@ -1,4 +1,4 @@
-import {EntryItem} from '../models_requests/EntryItem';
+import {EntryItem} from './models_requests/EntryItem';
 
 //Helper method for update in useMutation hook for deleteEntry
 export const remove = (inArr: EntryItem[], inElem: EntryItem) => {

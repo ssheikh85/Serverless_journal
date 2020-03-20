@@ -54,12 +54,6 @@ export const DELETE_ENTRY_M = gql`
   }
 `;
 
-export const GENERATE_URL_M = gql`
-  mutation generateUploadUrl($userId: String, $entryId: String) {
-    generateUploadUrl(userId: $userId, entryId: $entryId)
-  }
-`;
-
 //Upload File
 export async function uploadFileToS3(
   uploadUrl: string,
@@ -67,7 +61,7 @@ export async function uploadFileToS3(
 ): Promise<void> {
   try {
     await fetch(uploadUrl, {
-      method: 'POST',
+      method: 'PUT',
       mode: 'cors',
       body: file,
     });

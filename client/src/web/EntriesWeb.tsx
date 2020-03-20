@@ -18,7 +18,7 @@ import {
 import {EntryItem} from '../models_requests/EntryItem';
 import {EntryInput} from '../models_requests/EntryInput';
 import EntryUpdaterWeb from './EntryUpdaterWeb';
-import {remove} from './utils';
+import {remove} from '../utils';
 
 //List of entries, Adds and Deletes Entries as well
 const EntriesWeb = (props: any) => {

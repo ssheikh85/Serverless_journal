@@ -1,23 +1,27 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {Button, Modal, InputGroup, FormControl} from 'react-bootstrap';
 import {withRouter} from 'react-router-dom';
 import {useMutation} from '@apollo/react-hooks';
 import {
   GET_ENTRIES_Q,
   UPDATE_ENTRY_M,
-  GENERATE_URL_M,
-  // uploadFileToS3,
+  uploadFileToS3,
 } from '../graphql-api/entries_api';
 import {EntryInput} from '../models_requests/EntryInput';
+import authHandlerWeb from './AuthHandlerWeb';
+import {apiEndpoint} from '../client_config';
 
 const EntryUpdaterWeb = (props: any) => {
   const {entryItem, modalVisibleProp} = props;
   const userId = entryItem.userId as string;
   const entryId = entryItem.entryId as string;
 
+  const idToken = authHandlerWeb.getIdToken();
+
   const [modalVisible, setModalVisible] = useState(modalVisibleProp);
   const [file, setFile] = useState();
   const [inputContent, setInputContent] = useState(entryItem.content);
+  const [uploadUrl, setUploadUrl] = useState('');
 
   const updatedContent = {
     content: inputContent,
@@ -47,23 +51,29 @@ const EntryUpdaterWeb = (props: any) => {
       }
     },
   });
-  const [generateUploadUrl, {error}] = useMutation(GENERATE_URL_M);
 
-  const getUrl = async () => {
-    try {
-      let data = null;
-      if (error) {
-        alert(`An error has occurred ${error.message}`);
-      } else {
-        data = (await generateUploadUrl({
-          variables: {userId, entryId},
-        })) as any;
+  useEffect(() => {
+    const getUploadUrl = async () => {
+      try {
+        const response = (await fetch(
+          `${apiEndpoint}/entries/${entryId}/attachment`,
+          {
+            method: 'PUT',
+            mode: 'cors',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${idToken}`,
+            },
+          },
+        )) as any;
+        const returnedData = await response.json();
+        setUploadUrl(returnedData.uploadUrl);
+      } catch (error) {
+        console.error(error);
       }
-      return data;
-    } catch (error) {
-      console.error(error);
-    }
-  };
+    };
+    getUploadUrl();
+  }, [entryId, idToken]);
 
   //File Uploader function that handles files from web upload or mobile upload and
   //sends file to S3 presigned URL
@@ -74,17 +84,12 @@ const EntryUpdaterWeb = (props: any) => {
       alert('Please select a file');
       return;
     }
-    const urlData = await getUrl();
-
-    const {generateUploadUrl} = urlData;
-    console.log(generateUploadUrl);
-
-    // try {
-    //   await uploadFileToS3(presignedUrl, file);
-    //   alert('File was uploaded!');
-    // } catch (e) {
-    //   alert('Could not upload a file: ' + e.message);
-    // }
+    try {
+      await uploadFileToS3(uploadUrl, file);
+      alert('File was uploaded!');
+    } catch (e) {
+      alert('Could not upload a file: ' + e.message);
+    }
   };
 
   const handleUpdateInput = (event: any) => {

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   Modal,
   View,
@@ -10,10 +10,13 @@ import {
 } from 'react-native';
 import {useMutation} from '@apollo/react-hooks';
 import {
+  GET_ENTRIES_Q,
   UPDATE_ENTRY_M,
-  GENERATE_URL_M,
   uploadFileToS3,
 } from '../graphql-api/entries_api';
+import {EntryInput} from '../models_requests/EntryInput';
+import authHandlerMobile from './AuthHandlerMobile';
+import {apiEndpoint} from '../client_config';
 import * as ImagePicker from 'expo-image-picker';
 import * as Permissions from 'expo-permissions';
 
@@ -22,23 +25,84 @@ export const EntryUpdaterM = (props: any) => {
   const userId = entryItem.userId as string;
   const entryId = entryItem.entryId as string;
 
+  const idToken = authHandlerMobile.getIdToken();
+
   const [modalVisible, setModalVisible] = useState(modalVisibleProp);
   const [file, setFile] = useState();
-  const [inputContent, setInputContent] = useState({
-    content: entryItem.content,
+  const [inputContent, setInputContent] = useState(entryItem.content);
+  const [uploadUrl, setUploadUrl] = useState('');
+
+  const updatedContent = {
+    content: inputContent,
+  } as EntryInput;
+
+  const [updateEntry] = useMutation(UPDATE_ENTRY_M, {
+    update(client, {data: {updateEntry}}) {
+      try {
+        const newData = client.readQuery({
+          query: GET_ENTRIES_Q,
+          variables: {
+            userId: userId,
+          },
+        }) as any;
+        const newEntries = newData.getEntries.map((item: any) => {
+          if (item.entryId === updateEntry.entryId) {
+            item.content = updateEntry.content;
+          }
+          return item;
+        });
+        client.writeQuery({
+          query: GET_ENTRIES_Q,
+          data: {getEntries: newEntries},
+        });
+      } catch (error) {
+        console.error(error);
+      }
+    },
   });
 
-  const [updateEntry] = useMutation(UPDATE_ENTRY_M);
-  const [generateUploadUrl, {error}] = useMutation(GENERATE_URL_M);
+  useEffect(() => {
+    const getUploadUrl = async () => {
+      try {
+        const response = (await fetch(
+          `${apiEndpoint}/entries/${entryId}/attachment`,
+          {
+            method: 'PUT',
+            mode: 'cors',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${idToken}`,
+            },
+          },
+        )) as any;
+        const returnedData = await response.json();
+        setUploadUrl(returnedData.uploadUrl);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    getUploadUrl();
+  }, [entryId, idToken]);
+
+  const handleUpdateInput = (text: string) => {
+    setInputContent(text);
+  };
+
+  const submitUpdatedInput = async (event: any) => {
+    event.preventDefault();
+    updateEntry({
+      variables: {
+        userId: userId,
+        entryId: entryId,
+        entryInput: updatedContent,
+      },
+    });
+    setInputContent('');
+  };
 
   //File Uploader function that handles files from web upload or mobile upload and
   //sends file to S3 presigned URL
-  const handleFileUpload = async () => {
-    if (!file) {
-      alert('Please select a file');
-      return;
-    }
-
+  const handleUpload = async () => {
     if (Platform.OS === 'ios') {
       const {status} = await Permissions.askAsync(Permissions.CAMERA_ROLL);
       if (status !== 'granted') {
@@ -57,24 +121,24 @@ export const EntryUpdaterM = (props: any) => {
         }
       }
     }
+  };
 
+  const handleFileUpload = async () => {
     //Upload to presignedURL
+    await handleUpload();
+    if (!file) {
+      alert('Please select a file');
+      return;
+    }
     try {
-      let presignedUrl = '';
-      if (error) {
-        alert(`An error has occurred ${error.message}`);
-      } else {
-        presignedUrl = (await generateUploadUrl({
-          variables: {userId, entryId},
-        })) as string;
-      }
-      const fileToUpload = file as any;
-      await uploadFileToS3(presignedUrl, fileToUpload);
+      await uploadFileToS3(uploadUrl, file);
       alert('File was uploaded!');
     } catch (e) {
       alert('Could not upload a file: ' + e.message);
     }
   };
+
+  const handleClose = () => setModalVisible(false);
 
   return (
     <View style={{marginTop: 22}}>
@@ -82,31 +146,21 @@ export const EntryUpdaterM = (props: any) => {
         animationType="slide"
         transparent={false}
         visible={modalVisible}
-        onRequestClose={() => {}}>
+        onRequestClose={() => handleClose}>
         <View style={{marginTop: 22}}>
           <View>
             <TextInput
               style={{height: 40}}
               placeholder="Type here to edit"
-              onChangeText={text => setInputContent({content: text})}
-              value={inputContent.content}
+              value={inputContent}
+              onChangeText={text => handleUpdateInput(text)}
             />
-
-            <Button
-              title="Update"
-              onPress={() => {
-                updateEntry({variables: {userId, entryId, inputContent}});
-              }}></Button>
-
+            <Button title="Update" onPress={submitUpdatedInput}></Button>
             <Text>Upload some content</Text>
 
-            <Button title="Upload" onPress={() => handleFileUpload}></Button>
+            <Button title="Upload" onPress={handleFileUpload}></Button>
 
-            <Button
-              title="Cancel"
-              onPress={() => {
-                setModalVisible(!modalVisible);
-              }}></Button>
+            <Button title="Cancel" onPress={handleClose}></Button>
           </View>
         </View>
       </Modal>
