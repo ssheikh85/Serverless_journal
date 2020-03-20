@@ -1,66 +1,38 @@
-import React, {useState} from 'react';
-import {Alert, Button, StyleSheet, Text, View} from 'react-native';
-import authHandleMobile from './AuthHandlerMobile';
-import {EntriesM} from './EntriesM';
+import React from 'react';
+import {ApolloProvider} from '@apollo/react-hooks';
+import {ApolloClient} from 'apollo-client';
+import {InMemoryCache} from 'apollo-cache-inmemory';
+import {createHttpLink} from 'apollo-link-http';
+import {setContext} from 'apollo-link-context';
+import authHandlerMobile from './src/mobile/AuthHandlerMobile';
+import {apiEndpoint} from './src/client_config';
+import RootM from './RootM';
 
-const App = () => {
-  const [accessToken, setAccessToken] = useState(null);
-  const [name, setName] = useState(' ');
-
-  const login = async () => {
-    try {
-      const credentials = await authHandlerMobile.handleLogin();
-      const user = await authHandlerMobile.getUserInfo(credentials.accessToken);
-      setAccessToken(credentials.accessToken);
-      setName(user.givenName);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const logout = async () => {
-    const sucess = await authHandlerMobile.handleLogout();
-
-    if (sucess) {
-      setAccessToken(null);
-    } else {
-      Alert.alert('An error occurred in logging you out');
-    }
-  };
-
-  return (
-    <>
-      <View style={styles.container}>
-        {!accessToken && (
-          <>
-            <Text>Please log in</Text>
-            <Button onPress={() => login()} title="Login" />
-          </>
-        )}
-        {accessToken && (
-          <>
-            <Text style={styles.header}> Welcome, {name} </Text>
-            <Button onPress={() => logout()} title="Logout" />
-            <>{accessToken && <EntriesM userId={userId} />}</>
-          </>
-        )}
-      </View>
-    </>
-  );
-};
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
-  },
-  header: {
-    fontSize: 36,
-    textAlign: 'center',
-    margin: 10,
-  },
+//Apollo Client set-up
+const httpLink = createHttpLink({
+  uri: `${apiEndpoint}/entries`,
 });
+
+const authLink = setContext((_, {headers}) => {
+  // get the authentication token from local storage if it exists
+  const token = authHandlerMobile.getIdToken();
+  // return the headers to the context so httpLink can read them
+  return {
+    headers: {
+      ...headers,
+      authorization: token ? `bearer ${token}` : '',
+    },
+  };
+});
+const client = new ApolloClient({
+  link: authLink.concat(httpLink),
+  cache: new InMemoryCache(),
+});
+
+const App = () => (
+  <ApolloProvider client={client}>
+    <RootM />
+  </ApolloProvider>
+);
 
 export default App;
