@@ -48,7 +48,7 @@ const RootWeb: React.FC<any> = () => {
           </Navbar>
         </>
       )}
-      {isAuthenticated && EntriesWeb(userId)}
+      {isAuthenticated && <EntriesWeb userId={userId} />}
     </div>
   );
 };

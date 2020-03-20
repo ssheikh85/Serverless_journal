@@ -1,18 +1,19 @@
 import React, {useState} from 'react';
 import {Button, Container, Row, Col} from 'react-bootstrap';
+import {withRouter} from 'react-router-dom';
 import {EntryItem} from '../models_requests/EntryItem';
-import {EntryUpdater} from './EntryUpdaterWeb';
+import EntryUpdaterWeb from './EntryUpdaterWeb';
 import {useMutation} from '@apollo/react-hooks';
 import {GET_ENTRIES_Q, DELETE_ENTRY_M} from '../graphql-api/entries_api';
 
-export const SingleEntryItem = (props: any) => {
+const SingleEntryItemWeb = (props: any) => {
   const {entryItem} = props;
   const {userId, entryId} = entryItem as EntryItem;
   const modalVisibleProp = true;
   const [clicked, setClicked] = useState(false);
 
   const [deleteEntry] = useMutation(DELETE_ENTRY_M, {
-    update(client, {data: {deleteEntry}}) {
+    update: client => {
       try {
         const newData = client.readQuery({
           query: GET_ENTRIES_Q,
@@ -20,10 +21,14 @@ export const SingleEntryItem = (props: any) => {
             userId: userId,
           },
         }) as any;
-        newData.getEntries.pop(deleteEntry);
+        console.log(newData);
         client.writeQuery({
           query: GET_ENTRIES_Q,
-          data: newData,
+          data: {
+            getEntries: newData.getEntries.filter(
+              (item: any) => item.entryId !== entryId,
+            ),
+          },
         });
       } catch (error) {
         console.error(error);
@@ -59,7 +64,7 @@ export const SingleEntryItem = (props: any) => {
           </Col>
           <>
             {clicked && (
-              <EntryUpdater
+              <EntryUpdaterWeb
                 entryItem={entryItem}
                 modalVisibleProp={modalVisibleProp}
               />
@@ -82,3 +87,5 @@ export const SingleEntryItem = (props: any) => {
     </div>
   );
 };
+
+export default withRouter(SingleEntryItemWeb);

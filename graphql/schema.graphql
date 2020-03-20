@@ -19,6 +19,10 @@ type EntryItem {
   attachmentUrl: String
 }
 
+type UploadUrl {
+  uploadUrl: String
+}
+
 type Mutation {
   createEntry(userId: String, entryInput: EntryInput): EntryItem
   updateEntry(
@@ -27,7 +31,7 @@ type Mutation {
     entryId: String
   ): EntryItem
   deleteEntry(userId: String, entryId: String): EntryItem
-  generateUploadUrl(userId: String, entryId: String): String
+  generateUploadUrl(userId: String, entryId: String): UploadUrl
 }
 
 type Query {

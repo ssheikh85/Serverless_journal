@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import {Button, Modal, InputGroup, FormControl} from 'react-bootstrap';
+import {withRouter} from 'react-router-dom';
 import {useMutation} from '@apollo/react-hooks';
 import {
   GET_ENTRIES_Q,
@@ -9,7 +10,7 @@ import {
 } from '../graphql-api/entries_api';
 import {EntryInput} from '../models_requests/EntryInput';
 
-export const EntryUpdater = (props: any) => {
+const EntryUpdaterWeb = (props: any) => {
   const {entryItem, modalVisibleProp} = props;
   const userId = entryItem.userId as string;
   const entryId = entryItem.entryId as string;
@@ -39,7 +40,7 @@ export const EntryUpdater = (props: any) => {
         });
         client.writeQuery({
           query: GET_ENTRIES_Q,
-          data: newEntries,
+          data: {getEntries: newEntries},
         });
       } catch (error) {
         console.error(error);
@@ -47,6 +48,22 @@ export const EntryUpdater = (props: any) => {
     },
   });
   const [generateUploadUrl, {error}] = useMutation(GENERATE_URL_M);
+
+  const getUrl = async () => {
+    try {
+      let data = null;
+      if (error) {
+        alert(`An error has occurred ${error.message}`);
+      } else {
+        data = (await generateUploadUrl({
+          variables: {userId, entryId},
+        })) as any;
+      }
+      return data;
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   //File Uploader function that handles files from web upload or mobile upload and
   //sends file to S3 presigned URL
@@ -57,21 +74,12 @@ export const EntryUpdater = (props: any) => {
       alert('Please select a file');
       return;
     }
-    console.log(file);
+    const urlData = await getUrl();
+
+    const presignedUrl = urlData.generateUploadUrl;
 
     try {
-      let presignedUrl = '';
-      if (error) {
-        alert(`An error has occurred ${error.message}`);
-      } else {
-        presignedUrl = (await generateUploadUrl({
-          variables: {userId, entryId},
-        })) as string;
-      }
-      const fileToUpload = file as any;
-      let body = new FormData();
-      body.append('file', fileToUpload);
-      await uploadFileToS3(presignedUrl, fileToUpload);
+      await uploadFileToS3(presignedUrl.generateUploadUrl, file);
       alert('File was uploaded!');
     } catch (e) {
       alert('Could not upload a file: ' + e.message);
@@ -144,3 +152,5 @@ export const EntryUpdater = (props: any) => {
     </div>
   );
 };
+
+export default withRouter(EntryUpdaterWeb);

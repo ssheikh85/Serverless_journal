@@ -1,14 +1,17 @@
 import React, {useState} from 'react';
 import {Card, Button, InputGroup, FormControl} from 'react-bootstrap';
+import {withRouter} from 'react-router-dom';
 import {useQuery, useMutation} from '@apollo/react-hooks';
 import {GET_ENTRIES_Q, ADD_ENTRY_M} from '../graphql-api/entries_api';
-import {SingleEntryItem} from './SingleEntryItemWeb';
+import SingleEntryItemWeb from './SingleEntryItemWeb';
 import {EntryItem} from '../models_requests/EntryItem';
 import {EntryInput} from '../models_requests/EntryInput';
 
 //List of entries
-const EntriesWeb = (userId: string) => {
+const EntriesWeb = (props: any) => {
+  const {userId} = props;
   const [inputNewContent, setInputNewContent] = useState('');
+  const [entries, setEntries] = useState([]);
   const newContent = {
     content: inputNewContent,
   } as EntryInput;
@@ -18,18 +21,18 @@ const EntriesWeb = (userId: string) => {
   });
 
   const [createEntry] = useMutation(ADD_ENTRY_M, {
-    update(client, {data: {createEntry}}) {
+    update(cache, {data: {createEntry}}) {
       try {
-        const newData = client.readQuery({
+        const newData = cache.readQuery({
           query: GET_ENTRIES_Q,
           variables: {
             userId: userId,
           },
         }) as any;
         newData.getEntries.push(createEntry);
-        client.writeQuery({
+        cache.writeQuery({
           query: GET_ENTRIES_Q,
-          data: newData,
+          data: {getEntries: newData},
         });
       } catch (error) {
         console.error(error);
@@ -60,6 +63,7 @@ const EntriesWeb = (userId: string) => {
     );
   } else if (error) {
     console.log(error);
+  } else {
   }
 
   return (
@@ -88,7 +92,7 @@ const EntriesWeb = (userId: string) => {
           data.getEntries.map((entry: EntryItem) => {
             return (
               <div key={entry.entryId}>
-                <SingleEntryItem entryItem={entry} />
+                <SingleEntryItemWeb entryItem={entry} />
               </div>
             );
           })}
@@ -97,4 +101,4 @@ const EntriesWeb = (userId: string) => {
   );
 };
 
-export default EntriesWeb;
+export default withRouter(EntriesWeb);
