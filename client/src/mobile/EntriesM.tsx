@@ -1,8 +1,6 @@
 import React, {useState} from 'react';
 import {
-  SafeAreaView,
   StyleSheet,
-  ScrollView,
   View,
   Text,
   TextInput,
@@ -186,6 +184,7 @@ const styles = StyleSheet.create({
   updateButton: {
     flex: 2,
     fontSize: 14,
+    padding: 10,
   },
   deleteButton: {
     flex: 3,

@@ -92,11 +92,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#F5FCFF',
   },
-  loggedIn: {
-    flex: 1,
-    justifyContent: 'flex-start',
-    backgroundColor: '#F5FCFF',
-  },
   header: {
     fontSize: 36,
     color: 'white',

@@ -48,9 +48,9 @@ For Android based app
 
 ### Known Bugs
 
-    Web and Mobile app
-        Browser/App refresh/relogin needed when an image is uploaded to display the image
-        Need to enter text into the add entry dialog to get an entry that has been updated to render
+    - Browser/App refresh/relogin needed when an image is uploaded to display the image
+    - Need to enter text into the add entry dialog to get an entry that has been updated to render
+    - Cannot reupdate entries, pressing update again does not call the update component
 
 ### Future Features/Open Items
 

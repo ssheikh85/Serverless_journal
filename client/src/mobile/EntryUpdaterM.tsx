@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react';
 import {
   Modal,
   View,
-  // StyleSheet,
+  StyleSheet,
   Button,
   Text,
   TextInput,
@@ -142,29 +142,56 @@ export const EntryUpdaterM = (props: any) => {
   const handleClose = () => setModalVisible(false);
 
   return (
-    <View style={{marginTop: 22}}>
+    <View style={styles.modal}>
       <Modal
         animationType="slide"
         transparent={false}
         visible={modalVisible}
         onRequestClose={() => handleClose}>
-        <View style={{marginTop: 22}}>
+        <View>
           <View>
+            <Text style={styles.modalHeader}>
+              Edit your entry or Upload some content
+            </Text>
             <TextInput
-              style={{height: 40}}
+              style={styles.textInput}
               placeholder="Type here to edit"
               value={inputContent}
               onChangeText={text => handleUpdateInput(text)}
             />
-            <Button title="Update" onPress={submitUpdatedInput}></Button>
-            <Text>Upload some content</Text>
+            <View style={styles.buttonGroup}>
+              <Button title="Update" onPress={submitUpdatedInput}></Button>
 
-            <Button title="Upload" onPress={handleFileUpload}></Button>
+              <Button title="Upload" onPress={handleFileUpload}></Button>
 
-            <Button title="Close" onPress={handleClose}></Button>
+              <Button title="Close" onPress={handleClose}></Button>
+            </View>
           </View>
         </View>
       </Modal>
     </View>
   );
 };
+
+//Styles
+const styles = StyleSheet.create({
+  modal: {
+    marginTop: 200,
+  },
+  modalHeader: {
+    color: 'white',
+    backgroundColor: 'skyblue',
+    fontSize: 24,
+    marginTop: 100,
+    height: 30,
+  },
+  textInput: {
+    fontSize: 16,
+    marginTop: 15,
+    marginBottom: 15,
+    height: 40,
+  },
+  buttonGroup: {
+    flexDirection: 'row',
+  },
+});
