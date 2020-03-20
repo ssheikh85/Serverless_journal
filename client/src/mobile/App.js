@@ -64,6 +64,7 @@ const App = () => {
         {!accessToken && (
           <>
             <View style={styles.loggedOut}>
+              <Text>Welcome</Text>
               <Text>Please log in</Text>
               <Button onPress={() => login()} title="Login" />
             </View>
@@ -72,7 +73,7 @@ const App = () => {
         {accessToken && (
           <>
             <View>
-              <Text style={styles.header}> Welcome, {name} </Text>
+              <Text style={styles.header}> Hello {name} </Text>
               <Button onPress={() => logout()} title="Logout" />
               <>
                 {accessToken && <EntriesM userId={userId} idToken={idToken} />}
@@ -87,6 +88,7 @@ const App = () => {
 
 const styles = StyleSheet.create({
   loggedOut: {
+    fontSize: 36,
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',

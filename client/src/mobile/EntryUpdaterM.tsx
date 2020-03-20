@@ -1,11 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import {Modal, View, StyleSheet, Button, Text, TextInput} from 'react-native';
 import {useMutation} from '@apollo/react-hooks';
-import {
-  GET_ENTRIES_Q,
-  UPDATE_ENTRY_M,
-  // uploadFileToS3,
-} from '../graphql-api/entries_api';
+import {GET_ENTRIES_Q, UPDATE_ENTRY_M} from '../graphql-api/entries_api';
 import {EntryInput} from '../models_requests/EntryInput';
 import {apiEndpoint} from '../client_config';
 import ImagePicker from 'react-native-image-picker';
@@ -16,7 +12,6 @@ export const EntryUpdaterM = (props: any) => {
   const entryId = entryItem.entryId as string;
 
   const [modalVisible, setModalVisible] = useState(modalVisibleProp);
-  // const [file, setFile] = useState();
   const [inputContent, setInputContent] = useState(entryItem.content);
   const [uploadUrl, setUploadUrl] = useState('');
 
@@ -106,12 +101,24 @@ export const EntryUpdaterM = (props: any) => {
         } else if (response.customButton) {
           console.log('User tapped custom button: ', response.customButton);
         } else {
-          const source = {uri: response.uri};
-
-          console.log(source);
+          const xhr = new XMLHttpRequest();
+          xhr.open('PUT', uploadUrl);
+          xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4) {
+              if (xhr.status === 200) {
+                console.log('Image successfully uploaded to S3');
+              } else {
+                console.log('Error while sending the image to S3');
+              }
+            }
+          };
+          xhr.send({
+            uri: response.uri,
+            type: response.type,
+            name: response.fileName,
+          });
         }
       });
-      // await uploadFileToS3(uploadUrl, file);
       alert('File was uploaded!');
     } catch (error) {
       alert('Could not upload a file: ' + error.message);
