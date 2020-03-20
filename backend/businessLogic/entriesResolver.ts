@@ -61,20 +61,6 @@ export const resolvers = {
       } catch (error) {
         console.error(error);
       }
-    },
-    generateUploadUrl: async (_, args, { dataSources, user }) => {
-      try {
-        if (user === args.userId) {
-          return await dataSources.entriesAccess.generateUploadUrl(
-            args.userId,
-            args.entryId
-          );
-        } else {
-          console.log("User is not authorized to perform this action");
-        }
-      } catch (error) {
-        console.error(error);
-      }
     }
   }
 };

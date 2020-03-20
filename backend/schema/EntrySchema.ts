@@ -25,6 +25,5 @@ export const typeDefs = gql`
       entryId: String
     ): EntryItem
     deleteEntry(userId: String, entryId: String): EntryItem
-    generateUploadUrl(userId: String, entryId: String): String
   }
 `;
