@@ -16,7 +16,7 @@ The backend is built using the following technologies:
 - Graphql
 - NodeJS - Typescript
 
-The Front is built using the following technologies _(Under Development)_
+The Front is built using the following technologies
 
 - Typescript
 - Graphql
