@@ -163,7 +163,14 @@ export class EntriesAccess extends DataSource {
         })
         .promise();
 
-      return null;
+      const deletedItem = {
+        userId: userId,
+        entryId: entryIdIn,
+        createdAt: createdAtEntry.createdAt,
+        content: createdAtEntry.content,
+        attachmentUrl: createdAtEntry.attachmentUrl
+      };
+      return deletedItem as EntryItem;
     } catch (error) {
       console.error(error);
     }

@@ -1,17 +1,32 @@
 import React, {useState} from 'react';
-import {Card, Button, InputGroup, FormControl} from 'react-bootstrap';
+import {
+  Card,
+  Button,
+  InputGroup,
+  FormControl,
+  Container,
+  Row,
+  Col,
+} from 'react-bootstrap';
 import {withRouter} from 'react-router-dom';
 import {useQuery, useMutation} from '@apollo/react-hooks';
-import {GET_ENTRIES_Q, ADD_ENTRY_M} from '../graphql-api/entries_api';
-import SingleEntryItemWeb from './SingleEntryItemWeb';
+import {
+  GET_ENTRIES_Q,
+  ADD_ENTRY_M,
+  DELETE_ENTRY_M,
+} from '../graphql-api/entries_api';
 import {EntryItem} from '../models_requests/EntryItem';
 import {EntryInput} from '../models_requests/EntryInput';
+import EntryUpdaterWeb from './EntryUpdaterWeb';
+import {remove} from './utils';
 
-//List of entries
+//List of entries, Adds and Deletes Entries as well
 const EntriesWeb = (props: any) => {
-  const {userId} = props;
   const [inputNewContent, setInputNewContent] = useState('');
-  const [entries, setEntries] = useState([]);
+  const [clicked, setClicked] = useState(false);
+
+  const {userId} = props;
+  const modalVisibleProp = true;
   const newContent = {
     content: inputNewContent,
   } as EntryInput;
@@ -51,6 +66,27 @@ const EntriesWeb = (props: any) => {
     });
     setInputNewContent('');
   };
+
+  const [deleteEntry] = useMutation(DELETE_ENTRY_M, {
+    update(cache, {data: {deleteEntry}}) {
+      try {
+        const newData = cache.readQuery({
+          query: GET_ENTRIES_Q,
+          variables: {
+            userId: userId,
+          },
+        }) as any;
+        cache.writeQuery({
+          query: GET_ENTRIES_Q,
+          data: {
+            getEntries: remove(newData.getEntries, deleteEntry),
+          },
+        });
+      } catch (error) {
+        console.error(error);
+      }
+    },
+  });
 
   if (loading) {
     return (
@@ -92,7 +128,54 @@ const EntriesWeb = (props: any) => {
           data.getEntries.map((entry: EntryItem) => {
             return (
               <div key={entry.entryId}>
-                <SingleEntryItemWeb entryItem={entry} />
+                <Container>
+                  <Row className="justify-content-md-center">
+                    <Col xs lg="auto">
+                      {entry.content}
+                    </Col>
+                    <Col xs lg="2">
+                      <Button
+                        variant="primary"
+                        onClick={() => {
+                          setClicked(true);
+                        }}>
+                        Update
+                      </Button>
+                    </Col>
+                    <Col xs lg="2">
+                      <Button
+                        variant="danger"
+                        onClick={(e: any) => {
+                          e.preventDefault();
+                          deleteEntry({
+                            variables: {userId: userId, entryId: entry.entryId},
+                          });
+                        }}>
+                        Delete
+                      </Button>
+                    </Col>
+                    <>
+                      {clicked && (
+                        <EntryUpdaterWeb
+                          entryItem={entry}
+                          modalVisibleProp={modalVisibleProp}
+                        />
+                      )}
+                    </>
+                  </Row>
+                  <Row>
+                    <Col>
+                      {entry.attachmentUrl && (
+                        <img
+                          src={entry.attachmentUrl}
+                          width="400"
+                          height="300"
+                          alt=""
+                        />
+                      )}
+                    </Col>
+                  </Row>
+                </Container>
               </div>
             );
           })}

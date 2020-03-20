@@ -6,7 +6,7 @@ import {
   GET_ENTRIES_Q,
   UPDATE_ENTRY_M,
   GENERATE_URL_M,
-  uploadFileToS3,
+  // uploadFileToS3,
 } from '../graphql-api/entries_api';
 import {EntryInput} from '../models_requests/EntryInput';
 
@@ -76,14 +76,15 @@ const EntryUpdaterWeb = (props: any) => {
     }
     const urlData = await getUrl();
 
-    const presignedUrl = urlData.generateUploadUrl;
+    const {generateUploadUrl} = urlData;
+    console.log(generateUploadUrl);
 
-    try {
-      await uploadFileToS3(presignedUrl.generateUploadUrl, file);
-      alert('File was uploaded!');
-    } catch (e) {
-      alert('Could not upload a file: ' + e.message);
-    }
+    // try {
+    //   await uploadFileToS3(presignedUrl, file);
+    //   alert('File was uploaded!');
+    // } catch (e) {
+    //   alert('Could not upload a file: ' + e.message);
+    // }
   };
 
   const handleUpdateInput = (event: any) => {
