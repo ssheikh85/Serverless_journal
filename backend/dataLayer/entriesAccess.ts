@@ -3,7 +3,6 @@ const uuid = require("uuid");
 
 import { EntryItem } from "../models_requests/EntryItem";
 import { EntryInput } from "../models_requests/EntryInput";
-import { UploadUrl } from "../models_requests/UploadUrl";
 
 const { createLogger } = require("../utils/logger");
 const logger = createLogger("entryAccess");
@@ -171,10 +170,7 @@ export class EntriesAccess extends DataSource {
   }
 
   //Crates a presigned url and updates the entry with the correspondign url
-  async generateUploadUrl(
-    userId: String,
-    entryIdIn: String
-  ): Promise<UploadUrl> {
+  async generateUploadUrl(userId: String, entryIdIn: String): Promise<String> {
     try {
       const preSignedUrl = this.awsAssets.s3.getSignedUrl("putObject", {
         Bucket: this.awsAssets.bucketName,
@@ -219,7 +215,7 @@ export class EntriesAccess extends DataSource {
         })
         .promise();
 
-      return preSignedUrl;
+      return preSignedUrl as String;
     } catch (error) {
       console.error(error);
     }
