@@ -7,7 +7,6 @@ class AuthHandlerMobile {
       domain: authConfig.domain,
       clientId: authConfig.clientId,
     });
-    this.credentials = null;
   }
 
   async handleLogin() {
@@ -26,14 +25,6 @@ class AuthHandlerMobile {
     } catch (error) {
       console.error(error);
     }
-  }
-
-  getAccessToken() {
-    return this.credentials.accessToken;
-  }
-
-  getIdToken() {
-    return this.credentials.IdToken;
   }
 
   async getUserInfo(accessToken) {

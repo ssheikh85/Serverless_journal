@@ -67,26 +67,24 @@ export const EntriesM = (props: any) => {
     );
   } else if (error) {
     console.log(error);
-  } else {
   }
-  const dataEntries = data.getEntries;
   return (
     <>
+      {/* <View>
+          <Text>Add a new Entry</Text>
+          <TextInput
+            style={{height: 40}}
+            placeholder="Type here to create a new entry"
+            value={inputNewContent}
+            onChangeText={text => setInputNewContent(text)}
+          />
+          <Button title="Add a new entry" onPress={submitNewInput}></Button>
+        </View> */}
       <SafeAreaView style={styles.container}>
-        <ScrollView style={styles.scrollView}>
-          <View>
-            <Text>Add a new Entry</Text>
-            <TextInput
-              style={{height: 40}}
-              placeholder="Type here to create a new entry"
-              value={inputNewContent}
-              onChangeText={text => setInputNewContent(text)}
-            />
-            <Button title="Add a new entry" onPress={submitNewInput}></Button>
-          </View>
+        <View style={styles.scrollView}>
           <Text style={styles.header}>Your Entries</Text>
           <FlatList
-            data={dataEntries}
+            data={data.getEntries}
             renderItem={({item}) => (
               <SingleEntryItemM
                 entryItem={item}
@@ -95,7 +93,7 @@ export const EntriesM = (props: any) => {
             )}
             keyExtractor={(entryItem: EntryItem) => entryItem.entryId}
           />
-        </ScrollView>
+        </View>
       </SafeAreaView>
     </>
   );
@@ -104,12 +102,13 @@ export const EntriesM = (props: any) => {
 //Styles
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flex: 2,
     justifyContent: 'flex-start',
     alignItems: 'flex-start',
     backgroundColor: '#F5FCFF',
   },
   scrollView: {
+    flex: 3,
     backgroundColor: 'white',
     marginHorizontal: 20,
   },
