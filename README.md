@@ -46,6 +46,12 @@ For Android based app
 
 - npm run android
 
+### Known Bugs
+
+    Web app
+        Browser refresh needed when an image is uploaded to display the image
+        Need to enter text into the add entry dialog to get an entry that has been updated to render
+
 ### Future Features/Open Items
 
 - Expanded test coverage
