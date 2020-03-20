@@ -1,23 +1,14 @@
 import React, {useState, useEffect} from 'react';
-import {
-  Modal,
-  View,
-  StyleSheet,
-  Button,
-  Text,
-  TextInput,
-  Platform,
-} from 'react-native';
+import {Modal, View, StyleSheet, Button, Text, TextInput} from 'react-native';
 import {useMutation} from '@apollo/react-hooks';
 import {
   GET_ENTRIES_Q,
   UPDATE_ENTRY_M,
-  uploadFileToS3,
+  // uploadFileToS3,
 } from '../graphql-api/entries_api';
 import {EntryInput} from '../models_requests/EntryInput';
 import {apiEndpoint} from '../client_config';
-import * as ImagePicker from 'expo-image-picker';
-import * as Permissions from 'expo-permissions';
+import ImagePicker from 'react-native-image-picker';
 
 export const EntryUpdaterM = (props: any) => {
   const {entryItem, modalVisibleProp, idToken} = props;
@@ -25,7 +16,7 @@ export const EntryUpdaterM = (props: any) => {
   const entryId = entryItem.entryId as string;
 
   const [modalVisible, setModalVisible] = useState(modalVisibleProp);
-  const [file, setFile] = useState();
+  // const [file, setFile] = useState();
   const [inputContent, setInputContent] = useState(entryItem.content);
   const [uploadUrl, setUploadUrl] = useState('');
 
@@ -101,41 +92,30 @@ export const EntryUpdaterM = (props: any) => {
   //sends file to S3 presigned URL
   const handleUpload = async () => {
     try {
-      if (Platform.OS === 'ios') {
-        const {status} = await Permissions.askAsync(Permissions.CAMERA_ROLL);
-        if (status !== 'granted') {
-          alert('Sorry, we need camera roll permissions to make this work!');
+      const options = {
+        title: 'Select Image',
+      };
+
+      ImagePicker.showImagePicker(options, response => {
+        console.log('Response = ', response);
+
+        if (response.didCancel) {
+          console.log('User cancelled image picker');
+        } else if (response.error) {
+          console.log('ImagePicker Error: ', response.error);
+        } else if (response.customButton) {
+          console.log('User tapped custom button: ', response.customButton);
         } else {
-          const result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.All,
-            allowsEditing: true,
-            aspect: [4, 3],
-            quality: 1,
-          });
+          const source = {uri: response.uri};
 
-          if (!result.cancelled) {
-            let file = result.uri as any;
-            setFile(file);
-          }
+          console.log(source);
         }
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const handleFileUpload = async () => {
-    //Upload to presignedURL
-    await handleUpload();
-    if (!file) {
-      alert('Please select a file');
-      return;
-    }
-    try {
-      await uploadFileToS3(uploadUrl, file);
+      });
+      // await uploadFileToS3(uploadUrl, file);
       alert('File was uploaded!');
-    } catch (e) {
-      alert('Could not upload a file: ' + e.message);
+    } catch (error) {
+      alert('Could not upload a file: ' + error.message);
+      console.error(error);
     }
   };
 
@@ -162,7 +142,7 @@ export const EntryUpdaterM = (props: any) => {
             <View style={styles.buttonGroup}>
               <Button title="Update" onPress={submitUpdatedInput}></Button>
 
-              <Button title="Upload" onPress={handleFileUpload}></Button>
+              <Button title="Upload" onPress={handleUpload}></Button>
 
               <Button title="Close" onPress={handleClose}></Button>
             </View>
