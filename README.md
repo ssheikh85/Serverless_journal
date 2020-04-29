@@ -29,6 +29,11 @@ The Front is built using the following technologies
 
 git clone 'https://github.com/ssheikh85/CDND_Capstone.git' (This repository)
 
+#### Update April 2020: The backend stack has been removed from my AWS account, to deploy the backend, the serverless command line tools should be installed and an active AWS account will be needed with serverless set-up to use valid AWS credentials. Then once the repository is cloned (see above) 
+
+cd backend
+sls deploy
+
 cd client
 npm i
 
