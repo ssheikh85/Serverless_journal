@@ -1,10 +1,10 @@
 language: node_js
 node_js:
   - node
-# cache:
-#   directories:
-#     - node_modules
-# before_script: cd backend
-# script:
-#   - npm install -g serverless
+cache:
+  directories:
+    - node_modules
+before_script: cd backend
+script:
+  - npm install -g serverless
 #   - sls deploy -v
