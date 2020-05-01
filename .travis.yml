@@ -4,7 +4,7 @@ node_js:
 cache:
   directories:
     - node_modules
-before_script: cd backend
-script:
-  - npm install -g serverless
-  - sls deploy -v
+# before_script: cd backend
+# script:
+#   - npm install -g serverless
+#   - sls deploy -v
